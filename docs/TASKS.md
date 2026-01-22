@@ -2,25 +2,134 @@
 
 ## Current Status
 
-**Phase:** 5 - Web Dashboard (COMPLETE)
+**Phase:** 6 & 7 - Custom Data, Timeframes & Backtesting (PLANNING)
 **Last Updated:** 2026-01-22
-**Status:** All phases complete! Fully functional CNN stock prediction system with web dashboard.
+**Status:** Phases 1-5 complete. Phase 6 (custom data/timeframes) and Phase 7 (backtesting) planned.
 
 ---
 
 ## Active Tasks (In Progress)
 
-*None - All planned tasks completed*
+*Phase 6 implementation pending*
 
 ---
 
 ## Next Tasks (Ready to Start)
 
-*Consider future enhancements:*
+### Phase 6: Custom Data & Timeframes
+
+#### ⬚ TASK-6.1: CSV Data Loader
+- Create `src/data/csv_loader.py`
+- Implement `load_csv(file_path, column_mapping=None)`
+- Implement `validate_ohlcv_data(df)`
+- Implement `infer_timeframe(df)`
+- Implement `resample_ohlcv(df, target_timeframe)`
+- Support flexible column mapping
+- Handle various CSV formats and delimiters
+
+#### ⬚ TASK-6.2: Configurable Timeframe Support
+- Update `src/utils/config.py` with TIMEFRAME parameter
+- Update `src/data/preprocessor.py` for configurable columns
+- Add timeframe-aware data validation
+- Support 1m, 5m, 15m, 1h, 4h, 1d, 1w timeframes
+
+#### ⬚ TASK-6.3: Dynamic Window Size Configuration
+- Update `src/models/cnn.py` to accept window_size parameter
+- Auto-calculate flatten layer size based on window size
+- Update `src/training/trainer.py` to store window size in checkpoints
+- Support window sizes from 128 to 512+
+
+#### ⬚ TASK-6.4: Unified Data Interface
+- Create `src/data/data_source.py`
+- Implement `DataSource` abstract base class
+- Implement `YahooFinanceSource(DataSource)`
+- Implement `CSVSource(DataSource)`
+- Implement `DataSourceFactory`
+
+#### ⬚ TASK-6.5: Multi-Asset Configuration Presets
+- Create `src/utils/presets.py`
+- Define presets for: stock_daily, crypto_hourly, crypto_daily, forex_4h, intraday_1m
+- Include window_size, horizons, timeframe, trading_days_ratio per preset
+
+#### ⬚ TASK-6.6: Custom Data Training Notebook
+- Create `notebooks/04_custom_data_training.ipynb`
+- Demonstrate CSV loading and training
+- Show configuration for different timeframes
+- Include cryptocurrency example
+
+#### ⬚ TASK-6.7: Enhanced Dashboard for Custom Data
+- Update `app.py` with CSV upload widget
+- Add column mapping interface
+- Add timeframe and asset type selection
+- Add model selection for different configurations
+
+#### ⬚ TASK-6.8: Data Format Documentation
+- Create `docs/DATA-FORMATS.md`
+- Document required columns and variations
+- Include example CSVs for each asset class
+- Add troubleshooting guide
+
+### Phase 7: Backtesting Framework
+
+#### ⬚ TASK-7.1: Backtesting Engine Core
+- Create `src/backtesting/engine.py`
+- Implement `BacktestEngine` class
+- Implement `BacktestConfig` for parameters
+- Implement `BacktestResult` container
+- Support chronological simulation (no look-ahead bias)
+- Add walk-forward validation option
+
+#### ⬚ TASK-7.2: Performance Metrics Module
+- Create `src/backtesting/metrics.py`
+- Prediction metrics: accuracy, precision, recall, F1, confusion matrix
+- Trading metrics: returns, Sharpe ratio, Sortino ratio, max drawdown
+- Risk metrics: volatility, VaR, Calmar ratio, win rate, profit factor
+
+#### ⬚ TASK-7.3: Trade Simulator
+- Create `src/backtesting/simulator.py`
+- Implement `TradeSimulator` class
+- Support long-only and long/short strategies
+- Configurable position sizing (fixed, percentage, Kelly)
+- Transaction cost modeling (commission, slippage)
+- Generate equity curve
+
+#### ⬚ TASK-7.4: Backtest Visualization
+- Create `src/backtesting/plots.py`
+- Equity curve and drawdown charts
+- Confusion matrix heatmap
+- Returns distribution histogram
+- Monthly/yearly returns heatmap
+- Signal timeline with price overlay
+
+#### ⬚ TASK-7.5: Backtest Report Generator
+- Create `src/backtesting/report.py`
+- Generate HTML reports with all visualizations
+- Generate PDF reports
+- Export trade log to CSV
+- Export metrics to JSON
+
+#### ⬚ TASK-7.6: Backtesting Notebook
+- Create `notebooks/05_backtesting.ipynb`
+- Complete backtesting workflow
+- Model comparison examples
+- Walk-forward validation example
+- Report generation
+
+#### ⬚ TASK-7.7: Dashboard Backtesting Tab
+- Update `app.py` with Backtesting tab
+- Model and date range selection
+- Configuration options (costs, position sizing)
+- Results display with interactive charts
+- Report download option
+
+---
+
+## Future Enhancements (Post Phase 7)
+
 - Fine-tuning model hyperparameters
-- Adding more prediction horizons
-- Backtesting framework
 - Model ensemble approaches
+- Transfer learning between asset classes
+- Real-time prediction streaming
 
 
 ---

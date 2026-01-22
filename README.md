@@ -4,16 +4,19 @@ S&P 500 stock market prediction using 1D Convolutional Neural Networks (CNN). Ba
 
 ## 🎯 Project Status
 
-**✅ COMPLETE** - All 5 phases implemented and functional!
+**Phases 1-5 Complete** | **Phases 6-7 In Planning**
 
 - ✅ Phase 1: Data Pipeline (fetching, preprocessing, caching)
 - ✅ Phase 2: CNN Model Architecture (8-layer Conv1D)
 - ✅ Phase 3: Training Pipeline (metrics, visualization, checkpointing)
 - ✅ Phase 4: Prediction & Inference (single/batch predictions)
 - ✅ Phase 5: Web Dashboard (Streamlit interface)
+- ⬚ Phase 6: Custom Data & Timeframes (planned)
+- ⬚ Phase 7: Backtesting Framework (planned)
 
 ## 🚀 Features
 
+### Current Features
 - **Data Pipeline**: Fetch historical OHLCV data from Yahoo Finance with caching
 - **CNN Model**: 8-layer 1D CNN with batch normalization and dropout
 - **Training**: Complete training pipeline with early stopping and checkpointing
@@ -22,6 +25,20 @@ S&P 500 stock market prediction using 1D Convolutional Neural Networks (CNN). Ba
 - **Web Dashboard**: Interactive Streamlit app for predictions
 - **Batch Analysis**: Analyze multiple stocks and rank by confidence
 - **Multiple Horizons**: Support for T+5 and T+30 day predictions
+
+### Planned Features (Phase 6)
+- **Custom CSV Data**: Train on your own OHLCV data from any source
+- **Arbitrary Timeframes**: Support for 1m, 5m, 15m, 1h, 4h, 1d, 1w data
+- **Multi-Asset Support**: Stocks, cryptocurrencies, forex, futures, commodities
+- **Configurable Windows**: Dynamic window sizes for different use cases
+- **Asset Presets**: Pre-configured settings for different asset classes
+
+### Planned Features (Phase 7)
+- **Backtesting Engine**: Evaluate trained models on historical unseen data
+- **Performance Metrics**: Accuracy, Sharpe ratio, max drawdown, win rate
+- **Trade Simulation**: Realistic P&L with transaction costs and slippage
+- **Walk-Forward Validation**: Robust model evaluation over multiple periods
+- **Report Generation**: Automated HTML/PDF backtest reports
 
 ## 📋 Prerequisites
 
@@ -100,13 +117,16 @@ CNNStockMarket/
 ├── docs/                       # Documentation
 │   ├── PROJECT-SPEC.md        # Project requirements
 │   ├── IMPLEMENTATION-PLAN.md # Phase breakdown
-│   ├── TASKS.md               # Task tracker (all tasks complete!)
+│   ├── TASKS.md               # Task tracker
+│   ├── DATA-FORMATS.md        # CSV format docs (Phase 6)
 │   └── reference/             # Research paper
 ├── src/                       # Source code
 │   ├── data/                  # Data fetching & preprocessing
 │   │   ├── fetcher.py         # Yahoo Finance data fetching
 │   │   ├── preprocessor.py    # Normalization & windowing
-│   │   └── dataset.py         # PyTorch Dataset class
+│   │   ├── dataset.py         # PyTorch Dataset class
+│   │   ├── csv_loader.py      # CSV file loading (Phase 6)
+│   │   └── data_source.py     # Unified data interface (Phase 6)
 │   ├── models/                # Model architecture
 │   │   └── cnn.py             # 1D CNN implementation
 │   ├── training/              # Training pipeline
@@ -114,16 +134,26 @@ CNNStockMarket/
 │   │   └── metrics.py         # Loss/accuracy tracking
 │   ├── prediction/            # Prediction service
 │   │   └── predictor.py       # Inference interface
+│   ├── backtesting/           # Backtesting framework (Phase 7)
+│   │   ├── engine.py          # Backtesting engine
+│   │   ├── metrics.py         # Performance metrics
+│   │   ├── simulator.py       # Trade simulator
+│   │   ├── plots.py           # Backtest visualizations
+│   │   └── report.py          # Report generation
 │   ├── visualization/         # Plotting utilities
 │   │   └── plots.py           # Training curves
 │   └── utils/                 # Configuration
-│       └── config.py          # Hyperparameters
+│       ├── config.py          # Hyperparameters
+│       └── presets.py         # Asset class presets (Phase 6)
 ├── notebooks/                 # Jupyter notebooks
 │   ├── 01_data_exploration.ipynb
 │   ├── 02_training.ipynb
-│   └── 03_prediction.ipynb
+│   ├── 03_prediction.ipynb
+│   ├── 04_custom_data_training.ipynb  # Phase 6
+│   └── 05_backtesting.ipynb           # Phase 7
 ├── models/                    # Saved model weights
-├── data/                      # Cached stock data
+├── data/                      # Cached stock data & custom CSVs
+├── reports/                   # Generated backtest reports (Phase 7)
 ├── app.py                     # Streamlit dashboard
 ├── requirements.txt           # Python dependencies
 └── README.md                  # This file
@@ -131,7 +161,9 @@ CNNStockMarket/
 
 ## 🧠 Model Architecture
 
-**Input**: `[batch, 256, 5]` - 256-day windows with 5 OHLCV channels
+**Input**: `[batch, window_size, 5]` - Configurable window with 5 OHLCV channels
+- Default: 256 periods (daily data = ~1 year of trading days)
+- Phase 6 will support: 128-512 periods for different timeframes
 
 **Architecture**:
 - 8 Conv1D layers (5→128→256→256→512→1024→1024→1024→1024)
@@ -143,7 +175,7 @@ CNNStockMarket/
 **Output**: `[batch, 2]` - Probability distribution [bearish, bullish]
 
 **Key Hyperparameters**:
-- Window Size: 256 days
+- Window Size: 256 periods (configurable in Phase 6)
 - Batch Size: 128 (CPU optimized)
 - Learning Rate: 1e-3
 - Optimizer: Adam
@@ -188,17 +220,34 @@ The predictions are based on historical patterns and should NOT be used as finan
 ## 🛠️ Technical Details
 
 - **Framework**: PyTorch 2.x
-- **Data Source**: Yahoo Finance (yfinance)
+- **Data Source**: Yahoo Finance (yfinance) + CSV files (Phase 6)
+- **Supported Assets**: Stocks (current), Crypto/Forex/Futures (Phase 6)
+- **Timeframes**: Daily (current), 1m-1w (Phase 6)
 - **Python Version**: 3.12
 - **Training**: CPU-optimized (no GPU required)
 - **Web Framework**: Streamlit
 
 ## 🤝 Contributing
 
-This project is complete but open to enhancements:
+### Active Development (Phases 6 & 7)
+The following features are currently planned:
+
+**Phase 6 - Custom Data & Timeframes:**
+- CSV file loading for custom OHLCV data
+- Arbitrary timeframe support (1m to 1w)
+- Multi-asset configuration presets
+- Dynamic window size configuration
+- Enhanced dashboard with CSV upload
+
+**Phase 7 - Backtesting Framework:**
+- Backtesting engine with walk-forward validation
+- Comprehensive performance metrics
+- Trade simulation with realistic costs
+- Automated report generation (HTML/PDF)
+- Dashboard integration for backtesting
+
+### Future Enhancements
 - Model hyperparameter tuning
-- Additional prediction horizons
-- Backtesting framework
 - Alternative architectures (LSTM, Transformers)
 - Real-time data integration
 

@@ -3,7 +3,7 @@
 ## Overview
 
 **Project:** CNN Stock Movement Predictor
-**Status:** ✅ COMPLETE - All phases implemented and functional
+**Status:** Phases 1-5 Complete | Phase 6 Planned
 **Last Updated:** 2026-01-22
 
 ### Problem Statement
@@ -82,10 +82,82 @@ Predicting stock price movement direction (bullish/bearish) is valuable for iden
    - ✅ Train separate models for different horizons (T+5 vs T+30)
    - ✅ Compare model performances
 
+### Phase 6 Requirements (Planned)
+
+1. **Custom Data Loading** ⬚ PLANNED
+   - ⬚ Load OHLCV data from user-provided CSV files
+   - ⬚ Flexible column mapping (e.g., "close" → "Close", "vol" → "Volume")
+   - ⬚ Auto-detection of date/datetime columns
+   - ⬚ Data validation and quality checks
+   - ⬚ Acceptance: Can train on any properly formatted CSV file
+
+2. **Arbitrary Timeframe Support** ⬚ PLANNED
+   - ⬚ Support 1-minute, 5-minute, 15-minute, hourly, 4-hour, daily, weekly data
+   - ⬚ Configurable window sizes (not fixed to 256)
+   - ⬚ Configurable prediction horizons
+   - ⬚ Acceptance: Can train on 1-minute crypto data with appropriate window size
+
+3. **Multi-Asset Support** ⬚ PLANNED
+   - ⬚ Cryptocurrencies (24/7 trading)
+   - ⬚ Forex pairs (24/5 trading)
+   - ⬚ Futures contracts
+   - ⬚ Commodities
+   - ⬚ Acceptance: Model works on any OHLCV data regardless of asset class
+
+4. **Asset Class Presets** ⬚ PLANNED
+   - ⬚ Pre-configured settings for stocks, crypto, forex, futures
+   - ⬚ Sensible default window sizes and horizons per asset type
+   - ⬚ Trading day ratio configuration (stocks ~67%, crypto 100%, forex ~71%)
+   - ⬚ Acceptance: Can select preset and have appropriate configuration applied
+
+5. **Enhanced Dashboard** ⬚ PLANNED
+   - ⬚ CSV file upload widget
+   - ⬚ Column mapping interface
+   - ⬚ Timeframe and asset type selection
+   - ⬚ Model selection for different configurations
+   - ⬚ Acceptance: Can upload CSV and get predictions in web interface
+
+### Phase 7 Requirements (Planned)
+
+1. **Backtesting Engine** ⬚ PLANNED
+   - ⬚ Run trained model against historical unseen data
+   - ⬚ Chronological simulation (no look-ahead bias)
+   - ⬚ Walk-forward validation support
+   - ⬚ Acceptance: Can evaluate model on any historical period
+
+2. **Performance Metrics** ⬚ PLANNED
+   - ⬚ Prediction accuracy (accuracy, precision, recall, F1)
+   - ⬚ Trading metrics (returns, Sharpe ratio, max drawdown)
+   - ⬚ Risk metrics (volatility, VaR, Calmar ratio)
+   - ⬚ Acceptance: Comprehensive metrics calculated for any backtest
+
+3. **Trade Simulation** ⬚ PLANNED
+   - ⬚ Simulate trades following model signals
+   - ⬚ Configurable position sizing and costs
+   - ⬚ Equity curve generation
+   - ⬚ Acceptance: Realistic P&L simulation with transaction costs
+
+4. **Backtest Visualization** ⬚ PLANNED
+   - ⬚ Equity curve and drawdown charts
+   - ⬚ Confusion matrix and accuracy over time
+   - ⬚ Returns distribution and monthly heatmap
+   - ⬚ Acceptance: Visual analysis of backtest performance
+
+5. **Report Generation** ⬚ PLANNED
+   - ⬚ Automated HTML/PDF report generation
+   - ⬚ Executive summary with key metrics
+   - ⬚ Trade log export to CSV
+   - ⬚ Acceptance: One-click professional backtest report
+
+6. **Dashboard Integration** ⬚ PLANNED
+   - ⬚ Backtesting tab in Streamlit dashboard
+   - ⬚ Interactive configuration and results
+   - ⬚ Report download option
+   - ⬚ Acceptance: Full backtesting workflow in web interface
+
 ### Non-Goals (Explicitly Out of Scope)
 
 - **Real-time trading integration**: No broker API connections or automated trading
-- **Backtesting framework**: No historical performance simulation
 - **Alternative models**: No LSTM, transformer, or ensemble implementations (focus on CNN only)
 - **Sentiment analysis**: No news/social media data integration
 - **Options/derivatives**: Stock movement only, no options pricing
@@ -100,12 +172,14 @@ Predicting stock price movement direction (bullish/bearish) is valuable for iden
 
 - **Language:** Python 3.12 (LTS)
 - **Deep Learning:** PyTorch 2.x
-- **Data Fetching:** yfinance
+- **Data Fetching:** yfinance + CSV files (Phase 6)
 - **Data Processing:** pandas, numpy
 - **Visualization:** matplotlib, seaborn
 - **Notebook:** Jupyter
-- **Web Dashboard (future):** Streamlit or Gradio
+- **Web Dashboard:** Streamlit
 - **Environment:** venv
+- **Supported Assets:** Stocks (current), Crypto/Forex/Futures (Phase 6)
+- **Supported Timeframes:** Daily (current), 1m-1w (Phase 6)
 
 ### Architecture Overview
 
@@ -155,19 +229,26 @@ Predicting stock price movement direction (bullish/bearish) is valuable for iden
 
 ### Input Data Format
 
-| Feature | Description |
-|---------|-------------|
-| Open | Adjusted opening price |
-| High | Adjusted high price |
-| Low | Adjusted low price |
-| Close | Adjusted closing price |
-| Volume | Trading volume |
+| Feature | Description | Notes |
+|---------|-------------|-------|
+| Open | Opening price | Adjusted prices for stocks |
+| High | High price | |
+| Low | Low price | |
+| Close | Closing price | Used for label generation |
+| Volume | Trading volume | Units vary by asset (shares, coins, contracts) |
+
+**Phase 6 Flexibility:**
+- Column names can be mapped (e.g., "close" → "Close")
+- Works with any OHLCV data source (Yahoo Finance, Binance, custom CSVs)
+- Volume units don't matter (normalized per-window)
 
 ### Model Input/Output
 
-- **Input Shape:** `[batch_size, window_size, 5]` where window_size = 256 days
+- **Input Shape:** `[batch_size, window_size, 5]`
+  - Current: window_size = 256 (daily data)
+  - Phase 6: Configurable (e.g., 168 for hourly crypto, 390 for 1-minute intraday)
 - **Output Shape:** `[batch_size, 2]` (softmax probabilities for bearish/bullish)
-- **Label:** 1 if price increased after T days, 0 otherwise
+- **Label:** 1 if price increased after T periods, 0 otherwise
 
 ### Directory Structure
 
@@ -178,14 +259,17 @@ CNNStockMarket/
 │   │   └── 2512.21804v1.pdf      # Original paper
 │   ├── PROJECT-SPEC.md           # This file
 │   ├── IMPLEMENTATION-PLAN.md    # Phased implementation
-│   └── TASKS.md                  # Current tasks
+│   ├── TASKS.md                  # Current tasks
+│   └── DATA-FORMATS.md           # CSV format documentation (Phase 6)
 ├── src/
 │   ├── __init__.py
 │   ├── data/
 │   │   ├── __init__.py
 │   │   ├── fetcher.py            # Yahoo Finance data fetching
 │   │   ├── preprocessor.py       # Normalization, windowing
-│   │   └── dataset.py            # PyTorch Dataset class
+│   │   ├── dataset.py            # PyTorch Dataset class
+│   │   ├── csv_loader.py         # CSV file loading (Phase 6)
+│   │   └── data_source.py        # Unified data interface (Phase 6)
 │   ├── models/
 │   │   ├── __init__.py
 │   │   └── cnn.py                # CNN architecture
@@ -193,18 +277,32 @@ CNNStockMarket/
 │   │   ├── __init__.py
 │   │   ├── trainer.py            # Training loop
 │   │   └── metrics.py            # Accuracy, loss tracking
+│   ├── prediction/
+│   │   ├── __init__.py
+│   │   └── predictor.py          # Inference interface
+│   ├── backtesting/              # Phase 7
+│   │   ├── __init__.py
+│   │   ├── engine.py             # Backtesting engine
+│   │   ├── metrics.py            # Performance metrics
+│   │   ├── simulator.py          # Trade simulator
+│   │   ├── plots.py              # Backtest visualizations
+│   │   └── report.py             # Report generation
 │   ├── visualization/
 │   │   ├── __init__.py
 │   │   └── plots.py              # Training curves
 │   └── utils/
 │       ├── __init__.py
-│       └── config.py             # Hyperparameters, paths
+│       ├── config.py             # Hyperparameters, paths
+│       └── presets.py            # Asset class presets (Phase 6)
 ├── notebooks/
 │   ├── 01_data_exploration.ipynb
 │   ├── 02_training.ipynb
-│   └── 03_prediction.ipynb
+│   ├── 03_prediction.ipynb
+│   ├── 04_custom_data_training.ipynb  # Phase 6
+│   └── 05_backtesting.ipynb           # Phase 7
 ├── models/                       # Saved model weights
-├── data/                         # Cached stock data
+├── data/                         # Cached stock data & custom CSVs
+├── reports/                      # Generated backtest reports (Phase 7)
 ├── requirements.txt
 └── README.md
 ```
@@ -219,6 +317,13 @@ CNNStockMarket/
 - **Memory limits**: May need to limit batch size (64-128) to fit in RAM
 - **Data availability**: Yahoo Finance only provides adjusted prices (5 channels vs paper's 10)
 - **API rate limits**: Yahoo Finance may throttle requests; implement caching
+
+### Phase 6 Considerations
+
+- **Custom data quality**: User-provided CSV data may have gaps, errors, or inconsistent formatting
+- **Timeframe appropriateness**: Not all window sizes work well for all timeframes
+- **Asset-specific patterns**: Models trained on stocks may not transfer to crypto/forex
+- **Volume semantics**: Volume units differ across assets (shares vs coins vs contracts)
 
 ### Performance Requirements
 
