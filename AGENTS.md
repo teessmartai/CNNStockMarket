@@ -125,10 +125,103 @@ python -c "from src.models.cnn import StockCNN; import torch; \
 
 ## Implementation Phases
 
-1. **Phase 1** - Data Pipeline (fetcher, preprocessor, dataset)
-2. **Phase 2** - CNN Model Architecture
-3. **Phase 3** - Training Pipeline (MVP)
-4. **Phase 4** - Prediction & Inference
-5. **Phase 5** - Web Dashboard
+1. **Phase 1** - Data Pipeline (fetcher, preprocessor, dataset) ✅ COMPLETE
+2. **Phase 2** - CNN Model Architecture ✅ COMPLETE
+3. **Phase 3** - Training Pipeline (MVP) ✅ COMPLETE
+4. **Phase 4** - Prediction & Inference ✅ COMPLETE
+5. **Phase 5** - Web Dashboard ✅ COMPLETE
 
-Check `docs/TASKS.md` for current phase and next actions.
+Check `docs/TASKS.md` for detailed task history and status.
+
+## Workflow Guidelines for Agents
+
+### Before Making a Commit
+
+**IMPORTANT:** Always follow these steps before committing code:
+
+1. **Mark Tasks as Done:**
+   - Update `docs/TASKS.md` to move completed tasks from "Next Tasks" to "Completed Tasks"
+   - Add completion date and summary of what was accomplished
+   - Be specific about what was implemented
+
+2. **Update Progress Statuses:**
+   - Update the "Current Status" section in `docs/TASKS.md` with current phase
+   - Update "Last Updated" date
+   - Set "Next Action" to reflect what comes next
+
+3. **Update Related Documentation:**
+   - If completing a phase, update phase status markers (✅) in documentation
+   - Update `README.md` if major features are added
+   - Update `PROJECT-SPEC.md` if requirements or architecture changes
+   - Update `IMPLEMENTATION-PLAN.md` if deliverables are completed
+
+4. **Verify Implementation:**
+   - Run the verification commands specified in the task acceptance criteria
+   - Ensure all acceptance criteria are met
+   - Test that the implementation works as expected
+
+5. **Write Descriptive Commit Messages:**
+   - Format: `TASK-X.Y: Brief description of what was implemented`
+   - Example: `TASK-3.4: Visualization module with loss/accuracy plots`
+   - Reference the task number for traceability
+
+### Commit Message Format
+
+```
+TASK-X.Y: Brief description
+
+- Bullet point of key changes
+- Another change
+- Files modified/created
+
+Acceptance criteria met:
+- Criterion 1
+- Criterion 2
+```
+
+### Example Workflow
+
+```bash
+# 1. Complete implementation
+# (code changes here)
+
+# 2. Update TASKS.md
+# Move TASK-3.4 to "Completed Tasks" section
+# Update current status if phase completed
+
+# 3. Test implementation
+python -c "from src.visualization.plots import plot_loss_curves; print('OK')"
+
+# 4. Commit with proper message
+git add .
+git commit -m "TASK-3.4: Visualization module
+
+- Created src/visualization/plots.py
+- Implemented plot_loss_curves() and plot_accuracy_curves()
+- Added plot_training_summary() for combined view
+- Tested with sample data
+
+Acceptance criteria met:
+- Generates plots matching paper's style
+- Handles empty data gracefully
+- Exports to PNG format"
+
+# 5. Push to feature branch
+git push -u origin feature/visualization
+```
+
+### Documentation Synchronization
+
+Keep these files synchronized:
+- **TASKS.md** - Current task status and history
+- **IMPLEMENTATION-PLAN.md** - Phase completion status
+- **PROJECT-SPEC.md** - Overall project status
+- **README.md** - High-level features and setup
+- **AGENTS.md** - Instructions for agents (this file)
+
+When completing a major milestone (e.g., entire phase):
+1. Mark all phase tasks as complete in TASKS.md
+2. Update phase status (✅) in IMPLEMENTATION-PLAN.md
+3. Update deliverables checklist in IMPLEMENTATION-PLAN.md
+4. Update PROJECT-SPEC.md if it affects requirements/status
+5. Update README.md with new features/capabilities
