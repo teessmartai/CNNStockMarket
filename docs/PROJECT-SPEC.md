@@ -110,10 +110,28 @@ Predicting stock price movement direction (bullish/bearish) is valuable for iden
    - ⬚ Trading day ratio configuration (stocks ~67%, crypto 100%, forex ~71%)
    - ⬚ Acceptance: Can select preset and have appropriate configuration applied
 
-5. **Enhanced Dashboard** ⬚ PLANNED
+5. **Configurable Window Size** ⬚ PLANNED
+   - ⬚ Window size configurable independently of timeframe
+   - ⬚ User can specify any window size (e.g., 128, 256, 512, 1024)
+   - ⬚ Presets provide sensible defaults but can be overridden
+   - ⬚ Model architecture adapts automatically to window size
+   - ⬚ Acceptance: Can train with any window size on any timeframe
+
+6. **Training Sample Mode** ⬚ PLANNED
+   - ⬚ **Overlapping mode** (default): Sliding window with stride=1, maximizes sample count
+   - ⬚ **Non-overlapping mode**: Independent samples with no shared data between windows
+   - ⬚ Configurable stride for partial overlap (e.g., stride=10 for 96% overlap vs 99.6%)
+   - ⬚ Non-overlapping mode viable when data volume is sufficient (intraday, multi-asset, multi-year)
+   - ⬚ Side-by-side comparison: train both modes and compare validation performance
+   - ⬚ Automatic sample count estimation before training (warn if too few samples)
+   - ⬚ Acceptance: Can toggle between modes and compare model performance
+
+7. **Enhanced Dashboard** ⬚ PLANNED
    - ⬚ CSV file upload widget
    - ⬚ Column mapping interface
    - ⬚ Timeframe and asset type selection
+   - ⬚ Window size configuration
+   - ⬚ Training mode selection (overlapping vs non-overlapping)
    - ⬚ Model selection for different configurations
    - ⬚ Acceptance: Can upload CSV and get predictions in web interface
 
@@ -125,33 +143,47 @@ Predicting stock price movement direction (bullish/bearish) is valuable for iden
    - ⬚ Walk-forward validation support
    - ⬚ Acceptance: Can evaluate model on any historical period
 
-2. **Performance Metrics** ⬚ PLANNED
+2. **Randomized Period Backtesting** ⬚ PLANNED
+   - ⬚ Sample non-overlapping test periods randomly from available data
+   - ⬚ Each period: signal generated on first bar, outcome evaluated after horizon bars
+   - ⬚ Configurable period length (default: 2x model timeframe, e.g., 2 days for daily model)
+   - ⬚ Ensure no overlap with training data (strict data separation)
+   - ⬚ Benchmark comparison using same random periods (e.g., index return in same windows)
+   - ⬚ Statistical metrics: win rate, average return, confidence intervals, distribution of outcomes
+   - ⬚ Reduces market regime bias by sampling across diverse market conditions
+   - ⬚ Acceptance: Can say "model was correct X% across N independent periods, avg gain Y% vs index Z%"
+
+3. **Performance Metrics** ⬚ PLANNED
    - ⬚ Prediction accuracy (accuracy, precision, recall, F1)
    - ⬚ Trading metrics (returns, Sharpe ratio, max drawdown)
    - ⬚ Risk metrics (volatility, VaR, Calmar ratio)
+   - ⬚ Randomized period metrics (win rate across periods, return distribution, CI bounds)
    - ⬚ Acceptance: Comprehensive metrics calculated for any backtest
 
-3. **Trade Simulation** ⬚ PLANNED
+4. **Trade Simulation** ⬚ PLANNED
    - ⬚ Simulate trades following model signals
    - ⬚ Configurable position sizing and costs
    - ⬚ Equity curve generation
    - ⬚ Acceptance: Realistic P&L simulation with transaction costs
 
-4. **Backtest Visualization** ⬚ PLANNED
+5. **Backtest Visualization** ⬚ PLANNED
    - ⬚ Equity curve and drawdown charts
    - ⬚ Confusion matrix and accuracy over time
    - ⬚ Returns distribution and monthly heatmap
+   - ⬚ Randomized period results: histogram of outcomes, scatter plot of model vs benchmark
    - ⬚ Acceptance: Visual analysis of backtest performance
 
-5. **Report Generation** ⬚ PLANNED
+6. **Report Generation** ⬚ PLANNED
    - ⬚ Automated HTML/PDF report generation
    - ⬚ Executive summary with key metrics
    - ⬚ Trade log export to CSV
+   - ⬚ Randomized period analysis section with statistical summary
    - ⬚ Acceptance: One-click professional backtest report
 
-6. **Dashboard Integration** ⬚ PLANNED
+7. **Dashboard Integration** ⬚ PLANNED
    - ⬚ Backtesting tab in Streamlit dashboard
    - ⬚ Interactive configuration and results
+   - ⬚ Toggle between chronological and randomized period modes
    - ⬚ Report download option
    - ⬚ Acceptance: Full backtesting workflow in web interface
 
