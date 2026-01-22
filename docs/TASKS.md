@@ -2,25 +2,81 @@
 
 ## Current Status
 
-**Phase:** 5 - Web Dashboard (COMPLETE)
+**Phase:** 6 - Custom Data & Timeframes (PLANNING)
 **Last Updated:** 2026-01-22
-**Status:** All phases complete! Fully functional CNN stock prediction system with web dashboard.
+**Status:** Phases 1-5 complete. Phase 6 planned for custom data and arbitrary timeframe support.
 
 ---
 
 ## Active Tasks (In Progress)
 
-*None - All planned tasks completed*
+*Phase 6 implementation pending*
 
 ---
 
 ## Next Tasks (Ready to Start)
 
-*Consider future enhancements:*
+### Phase 6: Custom Data & Timeframes
+
+#### ⬚ TASK-6.1: CSV Data Loader
+- Create `src/data/csv_loader.py`
+- Implement `load_csv(file_path, column_mapping=None)`
+- Implement `validate_ohlcv_data(df)`
+- Implement `infer_timeframe(df)`
+- Implement `resample_ohlcv(df, target_timeframe)`
+- Support flexible column mapping
+- Handle various CSV formats and delimiters
+
+#### ⬚ TASK-6.2: Configurable Timeframe Support
+- Update `src/utils/config.py` with TIMEFRAME parameter
+- Update `src/data/preprocessor.py` for configurable columns
+- Add timeframe-aware data validation
+- Support 1m, 5m, 15m, 1h, 4h, 1d, 1w timeframes
+
+#### ⬚ TASK-6.3: Dynamic Window Size Configuration
+- Update `src/models/cnn.py` to accept window_size parameter
+- Auto-calculate flatten layer size based on window size
+- Update `src/training/trainer.py` to store window size in checkpoints
+- Support window sizes from 128 to 512+
+
+#### ⬚ TASK-6.4: Unified Data Interface
+- Create `src/data/data_source.py`
+- Implement `DataSource` abstract base class
+- Implement `YahooFinanceSource(DataSource)`
+- Implement `CSVSource(DataSource)`
+- Implement `DataSourceFactory`
+
+#### ⬚ TASK-6.5: Multi-Asset Configuration Presets
+- Create `src/utils/presets.py`
+- Define presets for: stock_daily, crypto_hourly, crypto_daily, forex_4h, intraday_1m
+- Include window_size, horizons, timeframe, trading_days_ratio per preset
+
+#### ⬚ TASK-6.6: Custom Data Training Notebook
+- Create `notebooks/04_custom_data_training.ipynb`
+- Demonstrate CSV loading and training
+- Show configuration for different timeframes
+- Include cryptocurrency example
+
+#### ⬚ TASK-6.7: Enhanced Dashboard for Custom Data
+- Update `app.py` with CSV upload widget
+- Add column mapping interface
+- Add timeframe and asset type selection
+- Add model selection for different configurations
+
+#### ⬚ TASK-6.8: Data Format Documentation
+- Create `docs/DATA-FORMATS.md`
+- Document required columns and variations
+- Include example CSVs for each asset class
+- Add troubleshooting guide
+
+---
+
+## Future Enhancements (Post Phase 6)
+
 - Fine-tuning model hyperparameters
-- Adding more prediction horizons
 - Backtesting framework
 - Model ensemble approaches
+- Transfer learning between asset classes
 
 
 ---
