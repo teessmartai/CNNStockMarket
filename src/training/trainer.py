@@ -20,6 +20,8 @@ from src.utils.config import (
     CHECKPOINT_INTERVAL,
     LOG_INTERVAL,
     MODELS_DIR,
+    WINDOW_SIZE,
+    NUM_CHANNELS,
 )
 
 logger = logging.getLogger(__name__)
@@ -228,16 +230,28 @@ class Trainer:
 
         return self.metrics
 
-    def save_checkpoint(self, filename: str, is_best: bool = False):
+    def save_checkpoint(
+        self,
+        filename: str,
+        is_best: bool = False,
+        extra_config: Optional[Dict[str, Any]] = None,
+    ):
         """
         Save a training checkpoint.
 
         Args:
             filename: Name of the checkpoint file
             is_best: Whether this is the best model so far
+            extra_config: Additional configuration to save (e.g., data config)
         """
         self.checkpoint_dir.mkdir(parents=True, exist_ok=True)
         filepath = self.checkpoint_dir / filename
+
+        # Model configuration
+        model_config = {
+            "window_size": self.model.window_size,
+            "num_channels": self.model.num_channels,
+        }
 
         checkpoint = {
             "epoch": self.current_epoch,
@@ -247,7 +261,12 @@ class Trainer:
             "best_val_loss": self.best_val_loss,
             "metrics": self.metrics.to_dict(),
             "is_best": is_best,
+            "model_config": model_config,
         }
+
+        # Add extra configuration if provided
+        if extra_config:
+            checkpoint["data_config"] = extra_config
 
         torch.save(checkpoint, filepath)
         logger.debug(f"Saved checkpoint to {filepath}")
@@ -275,24 +294,39 @@ class Trainer:
         return self.current_epoch + 1
 
 
-def load_model(filepath: Path, device: torch.device = DEVICE) -> StockCNN:
+def load_model(
+    filepath: Path,
+    device: torch.device = DEVICE,
+    window_size: Optional[int] = None,
+    num_channels: Optional[int] = None,
+) -> StockCNN:
     """
     Load a trained model from a checkpoint.
 
     Args:
         filepath: Path to the checkpoint file
         device: Device to load the model on
+        window_size: Override window size (if not in checkpoint)
+        num_channels: Override num channels (if not in checkpoint)
 
     Returns:
         Loaded StockCNN model
     """
     checkpoint = torch.load(filepath, map_location=device)
 
-    model = StockCNN()
+    # Get model config from checkpoint if available
+    model_config = checkpoint.get("model_config", {})
+
+    # Use checkpoint values or provided overrides or defaults
+    ws = window_size or model_config.get("window_size", WINDOW_SIZE)
+    nc = num_channels or model_config.get("num_channels", NUM_CHANNELS)
+
+    model = StockCNN(window_size=ws, num_channels=nc)
     model.load_state_dict(checkpoint["model_state_dict"])
     model = model.to(device)
     model.eval()
 
+    logger.info(f"Loaded model from {filepath} (window_size={ws}, num_channels={nc})")
     return model
 
 
@@ -308,9 +342,60 @@ def get_checkpoint_info(filepath: Path) -> Dict[str, Any]:
     """
     checkpoint = torch.load(filepath, map_location="cpu")
 
-    return {
+    info = {
         "epoch": checkpoint["epoch"] + 1,
         "best_val_loss": checkpoint["best_val_loss"],
         "is_best": checkpoint.get("is_best", False),
         "metrics": checkpoint.get("metrics", {}),
     }
+
+    # Include model config if available
+    if "model_config" in checkpoint:
+        info["model_config"] = checkpoint["model_config"]
+
+    # Include data config if available
+    if "data_config" in checkpoint:
+        info["data_config"] = checkpoint["data_config"]
+
+    return info
+
+
+def create_trainer(
+    train_loader: DataLoader,
+    val_loader: DataLoader,
+    window_size: int = WINDOW_SIZE,
+    num_channels: int = NUM_CHANNELS,
+    learning_rate: float = LEARNING_RATE,
+    weight_decay: float = WEIGHT_DECAY,
+    device: torch.device = DEVICE,
+    checkpoint_dir: Optional[Path] = None,
+) -> Tuple[StockCNN, "Trainer"]:
+    """
+    Convenience function to create a model and trainer.
+
+    Args:
+        train_loader: DataLoader for training data
+        val_loader: DataLoader for validation data
+        window_size: Size of input windows
+        num_channels: Number of input channels
+        learning_rate: Learning rate
+        weight_decay: L2 regularization
+        device: Device to train on
+        checkpoint_dir: Directory for checkpoints
+
+    Returns:
+        Tuple of (model, trainer)
+    """
+    model = StockCNN(window_size=window_size, num_channels=num_channels)
+
+    trainer = Trainer(
+        model=model,
+        train_loader=train_loader,
+        val_loader=val_loader,
+        learning_rate=learning_rate,
+        weight_decay=weight_decay,
+        device=device,
+        checkpoint_dir=checkpoint_dir,
+    )
+
+    return model, trainer

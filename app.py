@@ -5,6 +5,11 @@ A Streamlit web application for generating stock movement predictions
 using a trained 1D CNN model.
 
 Run with: streamlit run app.py
+
+Phase 6 Features:
+- Custom CSV data upload
+- Configurable timeframes and presets
+- Sample mode selection
 """
 
 import streamlit as st
@@ -13,6 +18,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 from pathlib import Path
+import tempfile
+import io
 
 # Set page config
 st.set_page_config(
@@ -147,7 +154,7 @@ def main():
     # Navigation
     page = st.sidebar.radio(
         "Navigation",
-        ["Single Prediction", "Batch Analysis", "Top Signals", "About"],
+        ["Single Prediction", "Batch Analysis", "Top Signals", "Custom Data", "About"],
     )
 
     st.sidebar.markdown("---")
@@ -167,6 +174,8 @@ def main():
         batch_analysis_page(predictor, horizon)
     elif page == "Top Signals":
         top_signals_page(predictor, horizon)
+    elif page == "Custom Data":
+        custom_data_page(predictor, horizon)
     else:
         about_page()
 
@@ -435,6 +444,249 @@ def top_signals_page(predictor, horizon):
                 st.info("No SELL signals found")
 
 
+def custom_data_page(predictor, horizon):
+    """Custom data analysis page (Phase 6)."""
+    st.title("📁 Custom Data Analysis")
+    st.markdown("Upload your own OHLCV data for analysis and prediction.")
+
+    # Import Phase 6 modules
+    try:
+        from src.data.csv_loader import load_csv, get_data_summary, validate_ohlcv_data, infer_timeframe
+        from src.data.preprocessor import estimate_sample_count, compare_sample_modes
+        from src.utils.presets import list_presets, get_preset, PRESETS
+    except ImportError as e:
+        st.error(f"Phase 6 modules not available: {e}")
+        return
+
+    # Tabs for different functions
+    tab1, tab2, tab3 = st.tabs(["Upload CSV", "Presets", "Data Analysis"])
+
+    with tab1:
+        st.markdown("### Upload CSV File")
+        st.markdown("""
+        Upload a CSV file with OHLCV (Open, High, Low, Close, Volume) data.
+
+        **Supported formats:**
+        - Standard column names: Open, High, Low, Close, Volume
+        - Common variations: open, close, vol, etc.
+        - Auto-detection of date columns
+        """)
+
+        uploaded_file = st.file_uploader(
+            "Choose a CSV file",
+            type=['csv'],
+            help="Upload a CSV file with OHLCV data"
+        )
+
+        if uploaded_file is not None:
+            try:
+                # Read CSV to show preview
+                df_preview = pd.read_csv(uploaded_file)
+                uploaded_file.seek(0)  # Reset file pointer
+
+                st.markdown("#### File Preview")
+                st.dataframe(df_preview.head(10), use_container_width=True)
+
+                st.markdown(f"**Rows:** {len(df_preview)} | **Columns:** {list(df_preview.columns)}")
+
+                # Column mapping options
+                st.markdown("#### Column Mapping")
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    auto_detect = st.checkbox("Auto-detect columns", value=True)
+
+                if not auto_detect:
+                    with col2:
+                        date_col = st.selectbox("Date column", [''] + list(df_preview.columns))
+
+                    col_mapping = {}
+                    cols = st.columns(5)
+                    for i, col_name in enumerate(['Open', 'High', 'Low', 'Close', 'Volume']):
+                        with cols[i]:
+                            selected = st.selectbox(
+                                col_name,
+                                [''] + list(df_preview.columns),
+                                key=f"map_{col_name}"
+                            )
+                            if selected:
+                                col_mapping[col_name] = selected
+                else:
+                    date_col = None
+                    col_mapping = None
+
+                # Load and validate data
+                if st.button("Load and Validate Data", type="primary"):
+                    with st.spinner("Loading data..."):
+                        # Save to temp file
+                        with tempfile.NamedTemporaryFile(delete=False, suffix='.csv') as tmp:
+                            tmp.write(uploaded_file.getvalue())
+                            tmp_path = tmp.name
+
+                        try:
+                            df = load_csv(
+                                tmp_path,
+                                column_mapping=col_mapping,
+                                date_column=date_col if date_col else None,
+                                validate=True
+                            )
+
+                            # Store in session state
+                            st.session_state['custom_data'] = df
+                            st.session_state['custom_data_name'] = uploaded_file.name
+
+                            st.success(f"Data loaded successfully! {len(df)} rows")
+
+                            # Show summary
+                            summary = get_data_summary(df)
+                            st.markdown("#### Data Summary")
+
+                            col1, col2, col3 = st.columns(3)
+                            with col1:
+                                st.metric("Rows", summary['rows'])
+                            with col2:
+                                st.metric("Timeframe", summary.get('timeframe', 'Unknown'))
+                            with col3:
+                                if 'price_latest' in summary:
+                                    st.metric("Latest Price", f"${summary['price_latest']:.2f}")
+
+                            if 'start_date' in summary:
+                                st.markdown(f"**Date Range:** {summary['start_date']} to {summary['end_date']}")
+
+                            # Validation results
+                            is_valid, issues = validate_ohlcv_data(df, strict=False)
+                            if issues:
+                                st.warning("Data validation warnings:")
+                                for issue in issues:
+                                    st.write(f"- {issue}")
+                            else:
+                                st.success("Data validation passed!")
+
+                        except Exception as e:
+                            st.error(f"Error loading data: {e}")
+
+                        finally:
+                            Path(tmp_path).unlink(missing_ok=True)
+
+    with tab2:
+        st.markdown("### Configuration Presets")
+        st.markdown("Select a preset configuration for your asset class and timeframe.")
+
+        # Preset selection
+        preset_name = st.selectbox(
+            "Select Preset",
+            list_presets(),
+            format_func=lambda x: f"{x} - {PRESETS[x].description[:50]}..."
+        )
+
+        if preset_name:
+            preset = get_preset(preset_name)
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.markdown("#### Preset Configuration")
+                st.write(f"**Asset Class:** {preset.asset_class.value}")
+                st.write(f"**Timeframe:** {preset.timeframe}")
+                st.write(f"**Window Size:** {preset.window_size}")
+                st.write(f"**Horizons:** {preset.horizons}")
+
+            with col2:
+                st.markdown("#### Training Settings")
+                st.write(f"**Sample Mode:** {preset.sample_mode}")
+                st.write(f"**Sample Stride:** {preset.sample_stride}")
+                st.write(f"**Trading Days Ratio:** {preset.trading_days_ratio:.0%}")
+                st.write(f"**Min Data Rows:** {preset.min_data_rows}")
+
+            # Sample estimation if data is loaded
+            if 'custom_data' in st.session_state:
+                df = st.session_state['custom_data']
+                st.markdown("---")
+                st.markdown("#### Sample Estimation for Your Data")
+
+                comparison = compare_sample_modes(
+                    df,
+                    window_size=preset.window_size,
+                    horizon=preset.horizons[0],
+                    custom_stride=preset.sample_stride
+                )
+
+                results = []
+                for mode_name, stats in comparison.items():
+                    results.append({
+                        'Mode': mode_name,
+                        'Samples': stats['samples'],
+                        'Train': stats['train_samples'],
+                        'Val': stats['val_samples'],
+                        'Sufficient': 'Yes' if stats['sufficient'] else 'No'
+                    })
+
+                st.dataframe(pd.DataFrame(results), use_container_width=True)
+
+    with tab3:
+        st.markdown("### Data Analysis")
+
+        if 'custom_data' not in st.session_state:
+            st.info("Upload a CSV file in the 'Upload CSV' tab first.")
+            return
+
+        df = st.session_state['custom_data']
+        data_name = st.session_state.get('custom_data_name', 'Custom Data')
+
+        st.markdown(f"**Analyzing:** {data_name}")
+
+        # Price chart
+        st.markdown("#### Price Chart")
+        fig, ax = plt.subplots(figsize=(12, 6))
+        ax.plot(df.index, df['Close'], 'b-', linewidth=0.5, label='Close')
+        ax.fill_between(df.index, df['Low'], df['High'], alpha=0.2, color='blue')
+        ax.set_title(f'{data_name} Price History')
+        ax.set_ylabel('Price')
+        ax.legend()
+        ax.grid(True, alpha=0.3)
+        fig.autofmt_xdate()
+        st.pyplot(fig)
+        plt.close()
+
+        # Volume chart
+        st.markdown("#### Volume")
+        fig, ax = plt.subplots(figsize=(12, 3))
+        ax.bar(df.index, df['Volume'], width=0.8, alpha=0.7)
+        ax.set_ylabel('Volume')
+        fig.autofmt_xdate()
+        st.pyplot(fig)
+        plt.close()
+
+        # Statistics
+        st.markdown("#### Statistics")
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+            st.metric("Min Price", f"${df['Close'].min():.2f}")
+        with col2:
+            st.metric("Max Price", f"${df['Close'].max():.2f}")
+        with col3:
+            st.metric("Mean Price", f"${df['Close'].mean():.2f}")
+        with col4:
+            returns = df['Close'].pct_change().dropna()
+            st.metric("Volatility", f"{returns.std() * 100:.2f}%")
+
+        # Timeframe info
+        detected_tf = infer_timeframe(df)
+        if detected_tf:
+            st.info(f"Detected timeframe: {detected_tf}")
+
+        # Download processed data
+        csv_buffer = io.StringIO()
+        df.to_csv(csv_buffer)
+        st.download_button(
+            label="Download Processed Data",
+            data=csv_buffer.getvalue(),
+            file_name=f"processed_{data_name}",
+            mime="text/csv"
+        )
+
+
 def about_page():
     """About page."""
     st.title("ℹ️ About")
@@ -447,7 +699,7 @@ def about_page():
 
     ### How It Works
 
-    1. **Data Input**: The model uses the last 256 trading days of price data
+    1. **Data Input**: The model uses the last 256 trading periods of price data
     2. **Feature Extraction**: 5 channels (OHLCV) are processed through 8 convolutional layers
     3. **Prediction**: The model outputs probabilities for bearish (price decrease) and bullish (price increase) outcomes
     4. **Signal Generation**: BUY if bullish probability > bearish, SELL otherwise
@@ -461,8 +713,16 @@ def about_page():
 
     ### Prediction Horizons
 
-    - **T+5**: Predicts price movement over the next 5 trading days
-    - **T+30**: Predicts price movement over the next 30 trading days
+    - **T+5**: Predicts price movement over the next 5 trading periods
+    - **T+30**: Predicts price movement over the next 30 trading periods
+
+    ### Phase 6 Features (Custom Data Support)
+
+    - **CSV Upload**: Load your own OHLCV data from CSV files
+    - **Multiple Timeframes**: Support for 1m, 5m, 15m, 1h, 4h, 1d, 1w data
+    - **Asset Class Presets**: Pre-configured settings for stocks, crypto, forex
+    - **Sample Modes**: Choose between overlapping, strided, or non-overlapping samples
+    - **Flexible Column Mapping**: Auto-detection of common column name variations
 
     ### Disclaimer
 
@@ -477,7 +737,7 @@ def about_page():
 
     - Based on: "S&P 500 Stock's Movement Prediction using CNN" (arXiv:2512.21804)
     - Framework: PyTorch
-    - Data Source: Yahoo Finance (via yfinance)
+    - Data Source: Yahoo Finance (via yfinance) + Custom CSV (Phase 6)
     """)
 
 

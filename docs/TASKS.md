@@ -2,72 +2,19 @@
 
 ## Current Status
 
-**Phase:** 6 & 7 - Custom Data, Timeframes & Backtesting (PLANNING)
+**Phase:** 7 - Backtesting Framework (PLANNED)
 **Last Updated:** 2026-01-22
-**Status:** Phases 1-5 complete. Phase 6 (custom data/timeframes) and Phase 7 (backtesting) planned.
+**Status:** Phases 1-6 complete. Phase 7 (backtesting) ready to start.
 
 ---
 
 ## Active Tasks (In Progress)
 
-*Phase 6 implementation pending*
+*Phase 7 implementation ready to start*
 
 ---
 
 ## Next Tasks (Ready to Start)
-
-### Phase 6: Custom Data & Timeframes
-
-#### ⬚ TASK-6.1: CSV Data Loader
-- Create `src/data/csv_loader.py`
-- Implement `load_csv(file_path, column_mapping=None)`
-- Implement `validate_ohlcv_data(df)`
-- Implement `infer_timeframe(df)`
-- Implement `resample_ohlcv(df, target_timeframe)`
-- Support flexible column mapping
-- Handle various CSV formats and delimiters
-
-#### ⬚ TASK-6.2: Configurable Timeframe Support
-- Update `src/utils/config.py` with TIMEFRAME parameter
-- Update `src/data/preprocessor.py` for configurable columns
-- Add timeframe-aware data validation
-- Support 1m, 5m, 15m, 1h, 4h, 1d, 1w timeframes
-
-#### ⬚ TASK-6.3: Dynamic Window Size Configuration
-- Update `src/models/cnn.py` to accept window_size parameter
-- Auto-calculate flatten layer size based on window size
-- Update `src/training/trainer.py` to store window size in checkpoints
-- Support window sizes from 128 to 512+
-
-#### ⬚ TASK-6.4: Unified Data Interface
-- Create `src/data/data_source.py`
-- Implement `DataSource` abstract base class
-- Implement `YahooFinanceSource(DataSource)`
-- Implement `CSVSource(DataSource)`
-- Implement `DataSourceFactory`
-
-#### ⬚ TASK-6.5: Multi-Asset Configuration Presets
-- Create `src/utils/presets.py`
-- Define presets for: stock_daily, crypto_hourly, crypto_daily, forex_4h, intraday_1m
-- Include window_size, horizons, timeframe, trading_days_ratio per preset
-
-#### ⬚ TASK-6.6: Custom Data Training Notebook
-- Create `notebooks/04_custom_data_training.ipynb`
-- Demonstrate CSV loading and training
-- Show configuration for different timeframes
-- Include cryptocurrency example
-
-#### ⬚ TASK-6.7: Enhanced Dashboard for Custom Data
-- Update `app.py` with CSV upload widget
-- Add column mapping interface
-- Add timeframe and asset type selection
-- Add model selection for different configurations
-
-#### ⬚ TASK-6.8: Data Format Documentation
-- Create `docs/DATA-FORMATS.md`
-- Document required columns and variations
-- Include example CSVs for each asset class
-- Add troubleshooting guide
 
 ### Phase 7: Backtesting Framework
 
@@ -135,6 +82,83 @@
 ---
 
 ## Completed Tasks
+
+### ✅ TASK-6.1: CSV Data Loader
+**Completed:** 2026-01-22
+- Created `src/data/csv_loader.py`
+- Implemented `load_csv(file_path, column_mapping=None)` with flexible column detection
+- Implemented `validate_ohlcv_data(df)` for data integrity checks
+- Implemented `infer_timeframe(df)` for automatic timeframe detection
+- Implemented `resample_ohlcv(df, target_timeframe)` for data resampling
+- Support for flexible column mapping with common variations
+- Handle various CSV formats and delimiters
+
+### ✅ TASK-6.2: Configurable Timeframe Support
+**Completed:** 2026-01-22
+- Updated `src/utils/config.py` with TIMEFRAME parameter and SampleMode enum
+- Updated `src/data/preprocessor.py` for configurable columns and stride support
+- Added timeframe-aware data validation
+- Support for 1m, 5m, 15m, 30m, 1h, 4h, 1d, 1w timeframes
+
+### ✅ TASK-6.3: Dynamic Window Size Configuration
+**Completed:** 2026-01-22
+- Model already accepts window_size parameter in `src/models/cnn.py`
+- Uses AdaptiveAvgPool1d for flexible window sizes
+- Updated `src/training/trainer.py` to store window size in checkpoints
+- Support for window sizes from 128 to 512+
+
+### ✅ TASK-6.3b: Training Sample Modes
+**Completed:** 2026-01-22
+- Added stride parameter to `create_sliding_windows()` in preprocessor
+- Added `estimate_sample_count()` for sample estimation before training
+- Added `compare_sample_modes()` for comparing overlapping/strided/non-overlapping
+- Three modes: OVERLAPPING (stride=1), STRIDED (configurable), NON_OVERLAPPING
+
+### ✅ TASK-6.4: Unified Data Interface
+**Completed:** 2026-01-22
+- Created `src/data/data_source.py`
+- Implemented `DataSource` abstract base class
+- Implemented `YahooFinanceSource(DataSource)` wrapping existing fetcher
+- Implemented `CSVSource(DataSource)` for custom CSV data
+- Implemented `MultiSource(DataSource)` for combining multiple sources
+- Implemented `DataSourceFactory` with convenience methods
+- Added `quick_train_data()` helper function
+
+### ✅ TASK-6.5: Multi-Asset Configuration Presets
+**Completed:** 2026-01-22
+- Created `src/utils/presets.py`
+- Defined 15+ presets covering: stock_daily, stock_weekly, crypto_daily, crypto_hourly,
+  crypto_4h, forex_daily, forex_4h, forex_1h, intraday_15m, intraday_5m, intraday_1m,
+  futures_daily, and independent sample variants
+- Each preset includes window_size, horizons, timeframe, trading_days_ratio, sample_mode
+- Added `list_presets()`, `get_preset()`, `apply_preset()` functions
+
+### ✅ TASK-6.6: Custom Data Training Notebook
+**Completed:** 2026-01-22
+- Created `notebooks/04_custom_data_training.ipynb`
+- Demonstrates CSV loading and automatic column detection
+- Shows all available presets with comparison
+- Sample mode comparison with visualization
+- Training workflow with custom data
+- Quick helper functions for rapid prototyping
+
+### ✅ TASK-6.7: Enhanced Dashboard for Custom Data
+**Completed:** 2026-01-22
+- Updated `app.py` with new "Custom Data" navigation page
+- Added CSV file upload widget with drag-and-drop
+- Added column mapping interface (auto and manual)
+- Added preset selection with configuration display
+- Added data analysis tab with charts and statistics
+- Data validation with issue reporting
+
+### ✅ TASK-6.8: Data Format Documentation
+**Completed:** 2026-01-22
+- Created `docs/DATA-FORMATS.md`
+- Documented all supported column name variations
+- Documented date/time formats and parsing
+- Included example CSVs for stocks, crypto, forex, intraday
+- Added troubleshooting guide for common issues
+- Listed recommended data sources (free and paid)
 
 ### ✅ TASK-1.1: Project Structure Setup
 **Completed:** 2026-01-22
