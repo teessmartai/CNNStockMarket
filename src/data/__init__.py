@@ -15,6 +15,12 @@ from .preprocessor import (
     prepare_data,
 )
 
+from .dataset import (
+    StockDataset,
+    create_dataloaders,
+    create_test_dataloader,
+)
+
 __all__ = [
     # Fetcher
     'fetch_stock_data',
@@ -27,4 +33,8 @@ __all__ = [
     'create_sliding_windows',
     'train_val_test_split',
     'prepare_data',
+    # Dataset
+    'StockDataset',
+    'create_dataloaders',
+    'create_test_dataloader',
 ]
