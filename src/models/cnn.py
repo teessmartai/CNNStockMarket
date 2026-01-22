@@ -231,3 +231,51 @@ def create_model(device: Optional[torch.device] = None) -> StockCNN:
     model = StockCNN()
     model = model.to(device)
     return model
+
+
+def validate_model() -> bool:
+    """
+    Validate that the model architecture is correct.
+
+    Runs a forward pass with dummy data and checks output shapes.
+
+    Returns:
+        True if validation passes
+    """
+    print("Validating StockCNN model...")
+
+    # Create model
+    model = StockCNN()
+    print(model.summary())
+
+    # Test forward pass with dummy data
+    batch_size = 32
+    x = torch.randn(batch_size, WINDOW_SIZE, NUM_CHANNELS)
+
+    # Forward pass
+    model.eval()
+    with torch.no_grad():
+        output = model(x)
+
+    # Validate output shape
+    expected_shape = (batch_size, NUM_CLASSES)
+    assert output.shape == expected_shape, f"Output shape {output.shape} != expected {expected_shape}"
+
+    # Validate output is probability distribution (sums to 1)
+    output_sums = output.sum(dim=1)
+    assert torch.allclose(output_sums, torch.ones(batch_size), atol=1e-5), "Output probabilities don't sum to 1"
+
+    # Validate output values are in [0, 1]
+    assert (output >= 0).all() and (output <= 1).all(), "Output values not in [0, 1]"
+
+    print(f"\nValidation passed!")
+    print(f"  Input shape: [{batch_size}, {WINDOW_SIZE}, {NUM_CHANNELS}]")
+    print(f"  Output shape: {list(output.shape)}")
+    print(f"  Output sum (first sample): {output[0].sum().item():.4f}")
+    print(f"  Sample prediction: {output[0].tolist()}")
+
+    return True
+
+
+if __name__ == "__main__":
+    validate_model()
