@@ -1,2 +1,55 @@
 .claude
 .env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environment
+venv/
+ENV/
+env/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Data cache
+data/*.csv
+data/*.pkl
+
+# Saved models (keep structure, ignore weights)
+models/*.pt
+models/*.pth
+models/*.ckpt
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Agent progress
+AGENT_PROGRESS.md
