@@ -1,0 +1,316 @@
+"""Training loop and model training utilities."""
+
+import logging
+from pathlib import Path
+from typing import Optional, Tuple, Dict, Any
+
+import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader
+from tqdm import tqdm
+
+from src.models.cnn import StockCNN
+from src.training.metrics import MetricsTracker, compute_accuracy
+from src.utils.config import (
+    DEVICE,
+    LEARNING_RATE,
+    WEIGHT_DECAY,
+    NUM_EPOCHS,
+    EARLY_STOPPING_PATIENCE,
+    CHECKPOINT_INTERVAL,
+    LOG_INTERVAL,
+    MODELS_DIR,
+)
+
+logger = logging.getLogger(__name__)
+
+
+class Trainer:
+    """
+    Training manager for the StockCNN model.
+
+    Handles training loop, validation, early stopping, and checkpointing.
+    """
+
+    def __init__(
+        self,
+        model: StockCNN,
+        train_loader: DataLoader,
+        val_loader: DataLoader,
+        learning_rate: float = LEARNING_RATE,
+        weight_decay: float = WEIGHT_DECAY,
+        device: torch.device = DEVICE,
+        checkpoint_dir: Optional[Path] = None,
+    ):
+        """
+        Initialize the trainer.
+
+        Args:
+            model: The CNN model to train
+            train_loader: DataLoader for training data
+            val_loader: DataLoader for validation data
+            learning_rate: Learning rate for optimizer
+            weight_decay: L2 regularization weight
+            device: Device to train on
+            checkpoint_dir: Directory for saving checkpoints
+        """
+        self.model = model.to(device)
+        self.train_loader = train_loader
+        self.val_loader = val_loader
+        self.device = device
+        self.checkpoint_dir = checkpoint_dir or MODELS_DIR
+
+        # Loss function and optimizer
+        self.criterion = nn.CrossEntropyLoss()
+        self.optimizer = torch.optim.Adam(
+            model.parameters(), lr=learning_rate, weight_decay=weight_decay
+        )
+
+        # Learning rate scheduler (reduce on plateau)
+        self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            self.optimizer, mode="min", factor=0.5, patience=5, verbose=True
+        )
+
+        # Metrics tracker
+        self.metrics = MetricsTracker()
+
+        # Training state
+        self.current_epoch = 0
+        self.best_val_loss = float("inf")
+        self.patience_counter = 0
+
+    def train_epoch(self) -> Dict[str, float]:
+        """
+        Train for one epoch.
+
+        Returns:
+            Dictionary of training metrics for this epoch
+        """
+        self.model.train()
+        self.metrics.reset_epoch()
+
+        pbar = tqdm(self.train_loader, desc=f"Epoch {self.current_epoch + 1} [Train]")
+
+        for batch_idx, (data, target) in enumerate(pbar):
+            data, target = data.to(self.device), target.to(self.device)
+
+            # Forward pass
+            self.optimizer.zero_grad()
+            output = self.model(data)
+            loss = self.criterion(output, target)
+
+            # Backward pass
+            loss.backward()
+            self.optimizer.step()
+
+            # Compute metrics
+            accuracy = compute_accuracy(output, target)
+            batch_size = data.size(0)
+
+            self.metrics.update("train_loss", loss.item(), batch_size)
+            self.metrics.update("train_accuracy", accuracy, batch_size)
+
+            # Update progress bar
+            if batch_idx % LOG_INTERVAL == 0:
+                pbar.set_postfix({"loss": f"{loss.item():.4f}", "acc": f"{accuracy:.2%}"})
+
+        return {"train_loss": self.metrics.get_history("train_loss")[-1] if self.metrics.history["train_loss"] else 0}
+
+    def validate(self) -> Dict[str, float]:
+        """
+        Validate the model on the validation set.
+
+        Returns:
+            Dictionary of validation metrics
+        """
+        self.model.eval()
+
+        val_loss = 0.0
+        val_correct = 0
+        val_total = 0
+
+        with torch.no_grad():
+            pbar = tqdm(self.val_loader, desc=f"Epoch {self.current_epoch + 1} [Val]")
+
+            for data, target in pbar:
+                data, target = data.to(self.device), target.to(self.device)
+
+                output = self.model(data)
+                loss = self.criterion(output, target)
+
+                batch_size = data.size(0)
+                val_loss += loss.item() * batch_size
+                val_correct += (output.argmax(dim=1) == target).sum().item()
+                val_total += batch_size
+
+        # Compute averages
+        avg_loss = val_loss / val_total if val_total > 0 else 0
+        avg_accuracy = val_correct / val_total if val_total > 0 else 0
+
+        self.metrics.update("val_loss", avg_loss, val_total)
+        self.metrics.update("val_accuracy", avg_accuracy, val_total)
+
+        return {"val_loss": avg_loss, "val_accuracy": avg_accuracy}
+
+    def train(
+        self,
+        num_epochs: int = NUM_EPOCHS,
+        early_stopping_patience: int = EARLY_STOPPING_PATIENCE,
+        checkpoint_interval: int = CHECKPOINT_INTERVAL,
+    ) -> MetricsTracker:
+        """
+        Run the full training loop.
+
+        Args:
+            num_epochs: Maximum number of epochs to train
+            early_stopping_patience: Stop if no improvement for N epochs
+            checkpoint_interval: Save checkpoint every N epochs
+
+        Returns:
+            MetricsTracker with training history
+        """
+        logger.info(f"Starting training for {num_epochs} epochs on {self.device}")
+        logger.info(f"Train batches: {len(self.train_loader)}, Val batches: {len(self.val_loader)}")
+
+        for epoch in range(num_epochs):
+            self.current_epoch = epoch
+
+            # Training phase
+            train_metrics = self.train_epoch()
+
+            # Validation phase
+            val_metrics = self.validate()
+
+            # End epoch and get summary
+            epoch_metrics = self.metrics.end_epoch(epoch)
+
+            # Learning rate scheduling
+            self.scheduler.step(val_metrics["val_loss"])
+
+            # Print epoch summary
+            print(
+                f"\nEpoch {epoch + 1}/{num_epochs} - "
+                f"Train Loss: {epoch_metrics.get('train_loss', 0):.4f}, "
+                f"Train Acc: {epoch_metrics.get('train_accuracy', 0):.2%}, "
+                f"Val Loss: {val_metrics['val_loss']:.4f}, "
+                f"Val Acc: {val_metrics['val_accuracy']:.2%}"
+            )
+
+            # Check for improvement
+            if val_metrics["val_loss"] < self.best_val_loss:
+                self.best_val_loss = val_metrics["val_loss"]
+                self.patience_counter = 0
+
+                # Save best model
+                self.save_checkpoint("best_model.pt", is_best=True)
+                print(f"  ↳ New best model saved!")
+            else:
+                self.patience_counter += 1
+                print(f"  ↳ No improvement for {self.patience_counter} epochs")
+
+            # Periodic checkpoint
+            if (epoch + 1) % checkpoint_interval == 0:
+                self.save_checkpoint(f"checkpoint_epoch_{epoch + 1}.pt")
+
+            # Early stopping
+            if self.patience_counter >= early_stopping_patience:
+                print(f"\nEarly stopping triggered after {epoch + 1} epochs")
+                break
+
+        # Final checkpoint
+        self.save_checkpoint("final_model.pt")
+
+        # Print best results
+        best = self.metrics.get_best_metrics()
+        print(f"\nTraining complete!")
+        print(f"Best validation loss: {best['best_val_loss']:.4f} at epoch {best['best_epoch'] + 1}")
+        print(f"Best validation accuracy: {best['best_val_accuracy']:.2%}")
+
+        return self.metrics
+
+    def save_checkpoint(self, filename: str, is_best: bool = False):
+        """
+        Save a training checkpoint.
+
+        Args:
+            filename: Name of the checkpoint file
+            is_best: Whether this is the best model so far
+        """
+        self.checkpoint_dir.mkdir(parents=True, exist_ok=True)
+        filepath = self.checkpoint_dir / filename
+
+        checkpoint = {
+            "epoch": self.current_epoch,
+            "model_state_dict": self.model.state_dict(),
+            "optimizer_state_dict": self.optimizer.state_dict(),
+            "scheduler_state_dict": self.scheduler.state_dict(),
+            "best_val_loss": self.best_val_loss,
+            "metrics": self.metrics.to_dict(),
+            "is_best": is_best,
+        }
+
+        torch.save(checkpoint, filepath)
+        logger.debug(f"Saved checkpoint to {filepath}")
+
+    def load_checkpoint(self, filepath: Path) -> int:
+        """
+        Load a training checkpoint.
+
+        Args:
+            filepath: Path to the checkpoint file
+
+        Returns:
+            Epoch number to resume from
+        """
+        checkpoint = torch.load(filepath, map_location=self.device)
+
+        self.model.load_state_dict(checkpoint["model_state_dict"])
+        self.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+        self.scheduler.load_state_dict(checkpoint["scheduler_state_dict"])
+        self.best_val_loss = checkpoint["best_val_loss"]
+        self.metrics = MetricsTracker.from_dict(checkpoint["metrics"])
+        self.current_epoch = checkpoint["epoch"]
+
+        logger.info(f"Loaded checkpoint from {filepath} (epoch {self.current_epoch + 1})")
+        return self.current_epoch + 1
+
+
+def load_model(filepath: Path, device: torch.device = DEVICE) -> StockCNN:
+    """
+    Load a trained model from a checkpoint.
+
+    Args:
+        filepath: Path to the checkpoint file
+        device: Device to load the model on
+
+    Returns:
+        Loaded StockCNN model
+    """
+    checkpoint = torch.load(filepath, map_location=device)
+
+    model = StockCNN()
+    model.load_state_dict(checkpoint["model_state_dict"])
+    model = model.to(device)
+    model.eval()
+
+    return model
+
+
+def get_checkpoint_info(filepath: Path) -> Dict[str, Any]:
+    """
+    Get information about a checkpoint without loading the full model.
+
+    Args:
+        filepath: Path to the checkpoint file
+
+    Returns:
+        Dictionary with checkpoint metadata
+    """
+    checkpoint = torch.load(filepath, map_location="cpu")
+
+    return {
+        "epoch": checkpoint["epoch"] + 1,
+        "best_val_loss": checkpoint["best_val_loss"],
+        "is_best": checkpoint.get("is_best", False),
+        "metrics": checkpoint.get("metrics", {}),
+    }
