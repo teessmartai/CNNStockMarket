@@ -4,9 +4,9 @@
 
 This document outlines the implementation phases for the CNN Stock Movement Predictor.
 
-**Total Phases:** 5
+**Total Phases:** 6
 **MVP Phase:** Phase 3 (working model with training visualization)
-**Status:** ✅ ALL PHASES COMPLETE
+**Status:** Phases 1-5 Complete, Phase 6 Pending
 
 **Completion Summary:**
 - ✅ Phase 1: Data Pipeline (COMPLETE)
@@ -14,6 +14,7 @@ This document outlines the implementation phases for the CNN Stock Movement Pred
 - ✅ Phase 3: Training Pipeline/MVP (COMPLETE)
 - ✅ Phase 4: Prediction & Inference (COMPLETE)
 - ✅ Phase 5: Web Dashboard (COMPLETE)
+- ⬚ Phase 6: Custom Data & Timeframes (PENDING)
 
 ---
 
@@ -422,6 +423,256 @@ streamlit run app.py
 
 ---
 
+## Phase 6: Custom Data & Timeframes (Enhancement) ⬚ PENDING
+
+### Objective
+
+Enable training and prediction on arbitrary OHLCV data from CSV files with configurable timeframes, supporting assets beyond stocks (cryptocurrencies, futures, forex, commodities).
+
+### Prerequisites
+
+- Phase 3 complete (training pipeline)
+- Phase 4 complete (prediction service)
+
+### Background
+
+The current implementation is limited to:
+- Yahoo Finance as the only data source
+- Daily OHLC data only
+- Fixed 256-day window size
+- Fixed T+5 and T+30 day prediction horizons
+
+This phase removes these limitations to support:
+- Any OHLCV data from CSV files
+- Any timeframe (1-minute, 5-minute, hourly, daily, weekly)
+- Configurable window sizes
+- Configurable prediction horizons
+- Any asset class (stocks, crypto, forex, futures, commodities)
+
+### Tasks
+
+#### 6.1 CSV Data Loader
+
+- **Description:** Create module to load OHLCV data from user-provided CSV files
+- **Files:**
+  - `src/data/csv_loader.py`
+- **Key Functions:**
+  - `load_csv(file_path, column_mapping=None) -> pd.DataFrame`
+  - `validate_ohlcv_data(df) -> bool`
+  - `infer_timeframe(df) -> str` (detect data frequency from timestamps)
+  - `resample_ohlcv(df, target_timeframe) -> pd.DataFrame`
+- **Features:**
+  - Flexible column mapping (e.g., map "close" to "Close", "vol" to "Volume")
+  - Auto-detection of date/datetime columns
+  - Support for common CSV formats (with/without headers, various delimiters)
+  - Data validation (check for required columns, NaN handling, chronological order)
+- **Acceptance:** Can load CSV with any column names and convert to standard OHLCV format
+- **Dependencies:** 1.4
+
+#### 6.2 Configurable Timeframe Support
+
+- **Description:** Update config and preprocessor to support arbitrary timeframes
+- **Files:**
+  - `src/utils/config.py` (extend)
+  - `src/data/preprocessor.py` (extend)
+- **Key Changes:**
+  - New config parameters:
+    ```python
+    TIMEFRAME = "1d"  # "1m", "5m", "15m", "1h", "4h", "1d", "1w"
+    WINDOW_SIZE = 256  # Now means "256 periods" not "256 days"
+    HORIZONS = [5, 30]  # Now means "5 periods" not "5 days"
+    ```
+  - Update `create_sliding_windows()` to accept configurable column names
+  - Add timeframe-aware data validation
+- **Acceptance:** Can create windows from 1-minute data with appropriate sizes
+- **Dependencies:** 6.1
+
+#### 6.3 Dynamic Window Size Configuration
+
+- **Description:** Allow window size to be specified at runtime, not just in config
+- **Files:**
+  - `src/models/cnn.py` (extend)
+  - `src/training/trainer.py` (extend)
+- **Key Changes:**
+  - Model accepts `window_size` parameter in constructor
+  - Automatic calculation of flatten layer size based on window size
+  - Training configuration includes window size
+  - Model checkpoint stores window size for inference
+- **Acceptance:** Can train model with window_size=128 for intraday or window_size=512 for longer-term
+- **Dependencies:** 6.2
+
+#### 6.4 Unified Data Interface
+
+- **Description:** Create unified interface that works with both Yahoo Finance and CSV files
+- **Files:**
+  - `src/data/data_source.py` (new)
+- **Key Classes:**
+  - `DataSource` - abstract base class
+  - `YahooFinanceSource(DataSource)` - existing Yahoo Finance fetching
+  - `CSVSource(DataSource)` - load from CSV files
+  - `DataSourceFactory` - create appropriate source based on config
+- **Key Functions:**
+  - `get_data(source_config) -> pd.DataFrame`
+  - `prepare_training_data(source, window_size, horizon) -> Tuple[X, y]`
+- **Acceptance:** Same training code works regardless of data source
+- **Dependencies:** 6.1, 6.2
+
+#### 6.5 Multi-Asset Configuration Presets
+
+- **Description:** Provide sensible default configurations for different asset classes
+- **Files:**
+  - `src/utils/presets.py` (new)
+- **Key Presets:**
+  ```python
+  PRESETS = {
+      "stock_daily": {
+          "window_size": 256,
+          "horizons": [5, 30],
+          "timeframe": "1d",
+          "trading_days_ratio": 0.67  # ~252 trading days/year
+      },
+      "crypto_hourly": {
+          "window_size": 168,  # 1 week of hourly data
+          "horizons": [6, 24],  # 6-hour and 24-hour predictions
+          "timeframe": "1h",
+          "trading_days_ratio": 1.0  # 24/7 trading
+      },
+      "crypto_daily": {
+          "window_size": 256,
+          "horizons": [5, 30],
+          "timeframe": "1d",
+          "trading_days_ratio": 1.0
+      },
+      "forex_4h": {
+          "window_size": 180,  # ~30 days of 4h data
+          "horizons": [6, 30],  # 24h and 5-day predictions
+          "timeframe": "4h",
+          "trading_days_ratio": 0.71  # 24/5 market
+      },
+      "intraday_1m": {
+          "window_size": 390,  # Full trading day (6.5 hours)
+          "horizons": [15, 60],  # 15-min and 1-hour predictions
+          "timeframe": "1m",
+          "trading_days_ratio": 0.67
+      }
+  }
+  ```
+- **Acceptance:** Can load preset and have all config values set appropriately
+- **Dependencies:** 6.2
+
+#### 6.6 Updated Training Notebook for Custom Data
+
+- **Description:** Notebook demonstrating training on custom CSV data
+- **Files:**
+  - `notebooks/04_custom_data_training.ipynb`
+- **Features:**
+  - Load data from CSV file
+  - Configure timeframe and window size
+  - Train model on custom data
+  - Compare results with different configurations
+  - Example with cryptocurrency data
+- **Acceptance:** Can train model on user-provided 1-minute crypto data
+- **Dependencies:** 6.4, 6.5
+
+#### 6.7 Updated Dashboard for Custom Data
+
+- **Description:** Extend Streamlit dashboard to support custom data uploads
+- **Files:**
+  - `app.py` (extend)
+- **Features:**
+  - CSV file upload widget
+  - Column mapping interface
+  - Timeframe selection
+  - Model selection (different models for different timeframes)
+  - Asset type indicator (stock/crypto/forex/futures)
+- **Acceptance:** Can upload CSV, configure, and get predictions in dashboard
+- **Dependencies:** 6.4, 6.6
+
+#### 6.8 Data Format Documentation
+
+- **Description:** Document supported CSV formats and data requirements
+- **Files:**
+  - `docs/DATA-FORMATS.md` (new)
+- **Content:**
+  - Required columns and accepted variations
+  - Date/time format requirements
+  - Example CSV files for each asset class
+  - Troubleshooting common data issues
+  - Recommended data sources for different assets
+- **Acceptance:** User can prepare their CSV file following documentation
+- **Dependencies:** 6.1
+
+### Phase 6 Deliverables
+
+- ⬚ CSV data loader with flexible column mapping
+- ⬚ Configurable timeframe support (1m to 1w)
+- ⬚ Dynamic window size configuration
+- ⬚ Unified data interface for multiple sources
+- ⬚ Asset-class presets (stocks, crypto, forex, futures)
+- ⬚ Custom data training notebook
+- ⬚ Enhanced dashboard with CSV upload
+- ⬚ Data format documentation
+
+### Phase 6 Verification
+
+```bash
+# Test CSV loading
+python -c "
+from src.data.csv_loader import load_csv, validate_ohlcv_data
+
+df = load_csv('data/my_btc_1h.csv', column_mapping={
+    'timestamp': 'Date',
+    'open': 'Open',
+    'high': 'High',
+    'low': 'Low',
+    'close': 'Close',
+    'volume': 'Volume'
+})
+print(f'Loaded {len(df)} rows')
+print(f'Valid OHLCV: {validate_ohlcv_data(df)}')
+"
+
+# Test training with custom timeframe
+python -c "
+from src.data.csv_loader import load_csv
+from src.data.preprocessor import create_sliding_windows
+from src.models.cnn import StockCNN
+from src.utils.presets import PRESETS
+
+# Load 1-hour crypto data
+df = load_csv('data/btc_1h.csv')
+config = PRESETS['crypto_hourly']
+
+X, y = create_sliding_windows(
+    df,
+    window_size=config['window_size'],
+    horizon=config['horizons'][0]
+)
+print(f'Created {len(X)} samples with window_size={config[\"window_size\"]}')
+
+model = StockCNN(window_size=config['window_size'])
+print('Model initialized for custom window size')
+"
+
+# Test unified data interface
+python -c "
+from src.data.data_source import DataSourceFactory
+
+# CSV source
+csv_source = DataSourceFactory.create('csv', path='data/btc_1h.csv')
+df_csv = csv_source.get_data()
+
+# Yahoo Finance source (existing)
+yf_source = DataSourceFactory.create('yahoo', ticker='AAPL', start='2020-01-01', end='2024-01-01')
+df_yf = yf_source.get_data()
+
+print(f'CSV data: {len(df_csv)} rows')
+print(f'Yahoo data: {len(df_yf)} rows')
+"
+```
+
+---
+
 ## Dependency Graph
 
 ```
@@ -430,8 +681,13 @@ Phase 1 (Data) ──→ Phase 2 (Model) ──→ Phase 3 (Training/MVP)
                                               ▼
                                        Phase 4 (Prediction)
                                               │
-                                              ▼
-                                       Phase 5 (Dashboard)
+                                              ├──────────────────────┐
+                                              ▼                      ▼
+                                       Phase 5 (Dashboard)    Phase 6 (Custom Data)
+                                              │                      │
+                                              └──────────┬───────────┘
+                                                         ▼
+                                              Enhanced Dashboard (6.7)
 ```
 
 ---
@@ -441,11 +697,14 @@ Phase 1 (Data) ──→ Phase 2 (Model) ──→ Phase 3 (Training/MVP)
 | Decision | Options Considered | Choice | Rationale |
 |----------|-------------------|--------|-----------|
 | Framework | PyTorch vs TensorFlow | PyTorch | User preference, more flexible for learning |
-| Data source | Yahoo Finance vs Alpha Vantage vs Intrinio | Yahoo Finance | Free, reliable, `yfinance` library |
-| Channels | 5 (adjusted only) vs 10 (raw + adjusted) | 5 | Yahoo only provides adjusted; simpler |
+| Data source | Yahoo Finance vs Alpha Vantage vs Intrinio | Yahoo Finance + CSV | Free API + custom data flexibility |
+| Channels | 5 (adjusted only) vs 10 (raw + adjusted) | 5 | Universal OHLCV standard across assets |
 | Batch size | 250 (paper) vs 128 (reduced) | 128 | CPU memory constraints |
 | Web framework | Streamlit vs Gradio vs Flask | Streamlit | Simple, good for ML dashboards |
-| Window size | 256 (paper) | 256 | Match paper for reproducibility |
+| Window size | 256 (paper) vs configurable | Configurable | Support different timeframes and use cases |
+| Timeframe support | Daily only vs configurable | Configurable | Enable intraday and multi-asset support |
+| Data interface | Direct API vs abstraction layer | Abstraction layer | Unified interface for Yahoo + CSV sources |
+| Asset presets | Single config vs presets | Presets | Sensible defaults for stocks, crypto, forex |
 
 ---
 
@@ -458,3 +717,44 @@ Since training will be on CPU:
 3. **Subset training**: Start with 50-100 stocks, scale up once validated
 4. **Patience**: Expect training to take several hours for full dataset
 5. **Progress tracking**: Detailed logging so you can monitor overnight runs
+
+---
+
+## Custom Data & Timeframe Considerations (Phase 6)
+
+When using custom CSV data and different timeframes:
+
+1. **Window size selection**:
+   - Daily data: 256 periods = ~1 year of trading days
+   - Hourly data: 168 periods = 1 week (24/7 markets) or 256 periods = ~2 weeks
+   - 1-minute data: 390 periods = 1 trading day (6.5 hours)
+   - Choose window sizes that capture meaningful patterns for your timeframe
+
+2. **Horizon selection**:
+   - Should be proportional to your timeframe
+   - Daily: T+5 (1 week), T+30 (1 month)
+   - Hourly: T+6 (6 hours), T+24 (1 day)
+   - 1-minute: T+15 (15 minutes), T+60 (1 hour)
+
+3. **Data quality**:
+   - Ensure no gaps in your data (especially for intraday)
+   - Handle missing values appropriately
+   - Verify chronological ordering
+   - Check for outliers and data errors
+
+4. **Asset-specific considerations**:
+   - **Crypto**: 24/7 trading, high volatility, volume in native currency
+   - **Forex**: 24/5 trading, lower volatility, sparse volume data
+   - **Futures**: Contract rollovers, varying trading hours, different volume units
+   - **Stocks**: Market hours only, corporate actions (splits, dividends)
+
+5. **Model retraining**:
+   - Models trained on daily stock data won't transfer well to 1-minute crypto
+   - Train separate models for different timeframes and asset classes
+   - Consider transfer learning for similar assets
+
+6. **CSV format requirements**:
+   - Must have timestamp/date column
+   - Must have OHLCV columns (names can be mapped)
+   - Chronological order (oldest first)
+   - No duplicate timestamps
