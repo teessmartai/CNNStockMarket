@@ -502,6 +502,98 @@ This phase removes these limitations to support:
 - **Acceptance:** Can train model with window_size=128 for intraday or window_size=512 for longer-term
 - **Dependencies:** 6.2
 
+#### 6.3b Training Sample Mode (Overlapping vs Non-Overlapping)
+
+- **Description:** Implement configurable training sample modes to support both overlapping (high sample count) and non-overlapping (independent samples) training
+- **Files:**
+  - `src/data/preprocessor.py` (extend)
+  - `src/data/dataset.py` (extend)
+  - `src/training/trainer.py` (extend)
+  - `src/utils/config.py` (extend)
+- **Key Classes:**
+  - `SampleMode` - enum for OVERLAPPING, NON_OVERLAPPING, STRIDED
+  - `SampleConfig` - configuration for sample generation
+- **Key Functions:**
+  - `create_sliding_windows(df, window_size, horizon, sample_mode, stride=1) -> Tuple[X, y]`
+  - `estimate_sample_count(data_length, window_size, horizon, sample_mode, stride) -> int`
+  - `validate_sample_sufficiency(n_samples, min_samples=100) -> bool`
+- **Configuration Options:**
+  ```python
+  class SampleConfig:
+      mode: SampleMode = SampleMode.OVERLAPPING  # or NON_OVERLAPPING, STRIDED
+      stride: int = 1                             # For STRIDED mode (e.g., 10, 20, 50)
+      min_samples: int = 100                      # Minimum samples required
+      randomize_non_overlapping: bool = True      # Shuffle non-overlapping windows
+  ```
+- **Sample Modes Explained:**
+  ```
+  Data: [========================================] (1000 bars)
+  Window size: 100, Horizon: 5
+
+  OVERLAPPING (stride=1):
+  ├─ Window 1: bars[0:100]   → label from bar[105]
+  ├─ Window 2: bars[1:101]   → label from bar[106]
+  ├─ Window 3: bars[2:102]   → label from bar[107]
+  └─ ... (895 samples, 99% overlap between adjacent)
+
+  STRIDED (stride=20):
+  ├─ Window 1: bars[0:100]   → label from bar[105]
+  ├─ Window 2: bars[20:120]  → label from bar[125]
+  ├─ Window 3: bars[40:140]  → label from bar[145]
+  └─ ... (~45 samples, 80% overlap between adjacent)
+
+  NON_OVERLAPPING (stride=window_size+horizon):
+  ├─ Window 1: bars[0:100]   → label from bar[105]
+  ├─ Window 2: bars[105:205] → label from bar[210]
+  ├─ Window 3: bars[210:310] → label from bar[315]
+  └─ ... (~9 samples, 0% overlap, fully independent)
+  ```
+- **Data Volume Guidance:**
+  ```python
+  # Automatic mode suggestion based on available data
+  def suggest_sample_mode(data_length, window_size, horizon, min_samples=100):
+      non_overlap_samples = data_length // (window_size + horizon)
+      if non_overlap_samples >= min_samples:
+          return SampleMode.NON_OVERLAPPING  # Sufficient for independent samples
+      elif non_overlap_samples >= min_samples // 2:
+          return SampleMode.STRIDED, stride=10  # Partial overlap compromise
+      else:
+          return SampleMode.OVERLAPPING  # Need maximum samples
+
+  # Example calculations:
+  # Daily data, 10 years (2520 bars), window=256, horizon=5:
+  #   Non-overlapping: 2520/261 ≈ 9 samples (NOT ENOUGH)
+  #   → Use OVERLAPPING or add more data (more tickers, more years)
+
+  # Minute data, 1 year (98,280 bars), window=256, horizon=5:
+  #   Non-overlapping: 98280/261 ≈ 376 samples (SUFFICIENT)
+  #   → Can use NON_OVERLAPPING for independent samples
+
+  # Daily data, 50 tickers, 10 years each (126,000 bars), window=256, horizon=5:
+  #   Non-overlapping: 126000/261 ≈ 482 samples (SUFFICIENT)
+  #   → Can use NON_OVERLAPPING
+  ```
+- **Comparison Mode:**
+  ```python
+  # Train both modes and compare
+  def compare_sample_modes(data, config):
+      # Train with overlapping
+      model_overlap = train(data, sample_mode=OVERLAPPING)
+      metrics_overlap = evaluate(model_overlap, test_data)
+
+      # Train with non-overlapping (if sufficient samples)
+      model_non_overlap = train(data, sample_mode=NON_OVERLAPPING)
+      metrics_non_overlap = evaluate(model_non_overlap, test_data)
+
+      return ComparisonResult(
+          overlapping=metrics_overlap,
+          non_overlapping=metrics_non_overlap,
+          recommendation=...
+      )
+  ```
+- **Acceptance:** Can train models with different sample modes and compare performance
+- **Dependencies:** 6.2, 6.3
+
 #### 6.4 Unified Data Interface
 
 - **Description:** Create unified interface that works with both Yahoo Finance and CSV files
@@ -607,11 +699,14 @@ This phase removes these limitations to support:
 
 - ⬚ CSV data loader with flexible column mapping
 - ⬚ Configurable timeframe support (1m to 1w)
-- ⬚ Dynamic window size configuration
+- ⬚ Dynamic window size configuration (user-specified, not fixed)
+- ⬚ Training sample mode selection (overlapping, strided, non-overlapping)
+- ⬚ Sample count estimation and sufficiency validation
+- ⬚ Mode comparison workflow (train both, compare performance)
 - ⬚ Unified data interface for multiple sources
 - ⬚ Asset-class presets (stocks, crypto, forex, futures)
 - ⬚ Custom data training notebook
-- ⬚ Enhanced dashboard with CSV upload
+- ⬚ Enhanced dashboard with CSV upload and training mode selection
 - ⬚ Data format documentation
 
 ### Phase 6 Verification
@@ -716,6 +811,73 @@ After training a model, it's crucial to understand its real-world performance be
 - **Acceptance:** Can run backtest on unseen data and get predictions timeline
 - **Dependencies:** 4.1
 
+#### 7.1b Randomized Period Backtesting
+
+- **Description:** Implement randomized, non-overlapping period sampling for robust model evaluation
+- **Files:**
+  - `src/backtesting/engine.py` (extend)
+  - `src/backtesting/period_sampler.py` (new)
+- **Key Classes:**
+  - `PeriodSampler` - samples non-overlapping test periods
+  - `RandomizedBacktestConfig` - configuration for randomized backtesting
+  - `RandomizedBacktestResult` - results with statistical analysis
+- **Key Functions:**
+  - `sample_periods(data, n_periods, period_length, train_end_idx, seed) -> List[Period]`
+  - `run_randomized_backtest(model, data, config) -> RandomizedBacktestResult`
+  - `calculate_period_metrics(results) -> PeriodMetrics`
+- **Configuration Options:**
+  ```python
+  RandomizedBacktestConfig(
+      n_periods=100,              # Number of test periods to sample
+      period_length=None,         # Auto: horizon + 1 (signal bar + outcome bar)
+      min_periods=50,             # Minimum periods required for valid test
+      random_seed=42,             # For reproducibility
+      benchmark_ticker=None,      # Compare against index (e.g., "SPY")
+      confidence_level=0.95,      # For confidence interval calculation
+      stratify_by_regime=False,   # Optional: ensure diverse market conditions
+  )
+  ```
+- **Period Structure:**
+  ```
+  For a daily model with horizon=5:
+
+  Period = [window_size bars for context] + [1 signal bar] + [horizon bars for outcome]
+
+  Example with window_size=256, horizon=5:
+  ├─ Bars 0-255: Historical context (input to model)
+  ├─ Bar 256: Signal bar (model predicts from here)
+  └─ Bar 261: Outcome bar (was prediction correct?)
+
+  Each sampled period is fully independent (no overlap with other periods or training data)
+  ```
+- **Output Metrics:**
+  ```python
+  RandomizedBacktestResult(
+      n_periods=100,
+      win_rate=0.58,                    # % of correct predictions
+      win_rate_ci=(0.48, 0.68),         # 95% confidence interval
+      avg_return=0.008,                 # Average return when following signals
+      avg_return_ci=(0.002, 0.014),     # 95% CI
+      benchmark_return=0.003,           # Benchmark return over same periods
+      excess_return=0.005,              # Model return - benchmark return
+      periods_by_outcome={              # Distribution of outcomes
+          'true_positive': 35,
+          'true_negative': 23,
+          'false_positive': 22,
+          'false_negative': 20,
+      },
+      return_distribution=[...],        # List of returns for each period
+      period_details=[...],             # Detailed info for each sampled period
+  )
+  ```
+- **Data Separation:**
+  - Strict separation: sampled periods must not overlap with training data
+  - `train_end_idx` parameter specifies where training data ends
+  - Periods sampled only from data after training window
+  - Gap buffer option to ensure no label leakage (gap = horizon bars)
+- **Acceptance:** Can run randomized backtest and get statistically valid performance metrics
+- **Dependencies:** 7.1
+
 #### 7.2 Performance Metrics Module
 
 - **Description:** Calculate comprehensive performance metrics from backtest results
@@ -792,6 +954,27 @@ After training a model, it's crucial to understand its real-world performance be
 - **Acceptance:** Generate comprehensive visual report of backtest
 - **Dependencies:** 7.2, 7.3
 
+#### 7.4b Randomized Period Visualization
+
+- **Description:** Create visualizations specific to randomized period backtesting
+- **Files:**
+  - `src/backtesting/plots.py` (extend)
+- **Key Plots:**
+  - **Return Distribution Histogram:** Distribution of returns across all sampled periods
+  - **Model vs Benchmark Scatter:** Each point = one period, x=benchmark return, y=model return
+  - **Win Rate with CI:** Bar chart showing win rate with error bars for confidence interval
+  - **Period Timeline:** Show sampled periods on price chart to visualize coverage
+  - **Cumulative Performance:** Simulated equity if all periods were traded sequentially
+  - **Regime Analysis:** Performance breakdown by market condition (if stratified)
+- **Key Functions:**
+  - `plot_period_returns_histogram(results, benchmark_results=None)`
+  - `plot_model_vs_benchmark_scatter(model_returns, benchmark_returns)`
+  - `plot_win_rate_ci(win_rate, ci_lower, ci_upper)`
+  - `plot_sampled_periods_timeline(periods, price_data)`
+  - `plot_period_cumulative_return(period_returns)`
+- **Acceptance:** Visual analysis of randomized period backtest results
+- **Dependencies:** 7.1b, 7.4
+
 #### 7.5 Backtest Report Generator
 
 - **Description:** Generate comprehensive HTML/PDF reports from backtest results
@@ -845,12 +1028,15 @@ After training a model, it's crucial to understand its real-world performance be
 ### Phase 7 Deliverables
 
 - ⬚ Backtesting engine with walk-forward support
-- ⬚ Comprehensive performance metrics (accuracy, trading, risk)
+- ⬚ Randomized period backtesting with statistical analysis
+- ⬚ Period sampler with configurable parameters (n_periods, period_length, seed)
+- ⬚ Benchmark comparison on same sampled periods
+- ⬚ Comprehensive performance metrics (accuracy, trading, risk, period-based)
 - ⬚ Trade simulator with realistic cost modeling
-- ⬚ Visualization suite for backtest analysis
-- ⬚ Automated report generation (HTML/PDF)
-- ⬚ Backtesting notebook
-- ⬚ Dashboard integration
+- ⬚ Visualization suite for backtest analysis (including randomized period plots)
+- ⬚ Automated report generation (HTML/PDF) with randomized period section
+- ⬚ Backtesting notebook with both chronological and randomized modes
+- ⬚ Dashboard integration with mode toggle
 
 ### Phase 7 Verification
 
@@ -1028,3 +1214,118 @@ When running backtests to evaluate model performance:
    - Retrain on periods 1-2, test on period 3
    - More realistic than single train/test split
    - Reveals model stability over time
+
+---
+
+## Randomized Period Backtesting Considerations
+
+The randomized period backtesting approach samples independent, non-overlapping test periods to provide robust performance metrics that are less biased by specific market regimes.
+
+1. **Why randomized periods?**
+   - Sequential testing on a single time period can be biased by market conditions
+   - If test period is a bull market, bullish predictions appear artificially accurate
+   - Randomized sampling across diverse periods gives more honest estimates
+   - Provides statistical confidence intervals, not just point estimates
+
+2. **Period structure:**
+   ```
+   For daily model with horizon=5:
+
+   [---256 bars context---][signal bar][---5 bars---][outcome bar]
+
+   - Context: Historical data fed to model (window_size bars)
+   - Signal bar: The bar where prediction is made
+   - Wait period: The horizon (5 bars for T+5 prediction)
+   - Outcome bar: Where we check if prediction was correct
+   ```
+
+3. **Ensuring independence:**
+   - Sampled periods must not overlap with each other
+   - Sampled periods must not overlap with training data
+   - Add gap buffer (= horizon) between training end and first test period
+   - Track which data indices are used to prevent any leakage
+
+4. **Benchmark comparison:**
+   - Use the same sampled periods for benchmark (e.g., SPY, BTC)
+   - This ensures apples-to-apples comparison
+   - Report: "Model returned X% vs benchmark Y% over same periods"
+   - Excess return = model return - benchmark return
+
+5. **Statistical validity:**
+   - Minimum ~50 periods for meaningful statistics
+   - Report confidence intervals, not just point estimates
+   - Use bootstrap sampling for robust CI calculation
+   - Consider stratified sampling by market regime if data allows
+
+6. **Interpreting results:**
+   - Win rate of 55% with tight CI is better than 60% with wide CI
+   - Small positive excess return that's consistent is valuable
+   - Large variance in period returns suggests regime sensitivity
+   - Compare against random baseline (50% win rate)
+
+---
+
+## Training Sample Mode Considerations
+
+The training sample mode determines how training samples are created from the time series data.
+
+1. **The overlap problem:**
+   - Default sliding window (stride=1) creates highly correlated samples
+   - Adjacent samples share 99.6% of their data (255/256 bars)
+   - This inflates apparent sample count and can lead to overfitting
+   - Model may memorize patterns specific to the training period
+
+2. **When to use each mode:**
+   ```
+   OVERLAPPING (stride=1):
+   ├─ When: Limited data (daily stocks, single ticker, few years)
+   ├─ Pros: Maximum sample count
+   ├─ Cons: Correlated samples, potential overfitting
+   └─ Mitigations: Sample weighting, larger val/test splits
+
+   STRIDED (stride=10-50):
+   ├─ When: Moderate data, want balance of volume and independence
+   ├─ Pros: Reduced correlation, still reasonable sample count
+   ├─ Cons: Still some overlap, not fully independent
+   └─ Use case: Daily data with multiple tickers or longer history
+
+   NON_OVERLAPPING (stride=window_size+horizon):
+   ├─ When: Abundant data (intraday, multi-year, multi-asset)
+   ├─ Pros: Truly independent samples, no overlap
+   ├─ Cons: Fewer samples, need sufficient data volume
+   └─ Use case: Minute data, or aggregated multi-ticker daily data
+   ```
+
+3. **Calculating required data:**
+   ```
+   To get N non-overlapping samples:
+   Required bars = N × (window_size + horizon)
+
+   Examples (window=256, horizon=5, min_samples=100):
+   - Need: 100 × 261 = 26,100 bars
+   - Daily data: 26,100 / 252 ≈ 104 years (single ticker) ❌
+   - Daily data: 26,100 / 252 / 50 ≈ 2 years (50 tickers) ✓
+   - Hourly data (24/7): 26,100 / 8760 ≈ 3 years ✓
+   - Minute data: 26,100 / 98280 ≈ 0.27 years (3 months) ✓
+   ```
+
+4. **Multi-asset aggregation:**
+   - Combine data from multiple tickers to increase sample count
+   - Each ticker contributes independent non-overlapping samples
+   - Useful for daily data where single-ticker volume is insufficient
+   - Ensure tickers are somewhat independent (different sectors)
+
+5. **Comparison workflow:**
+   - Train model A with overlapping samples
+   - Train model B with non-overlapping samples (if sufficient data)
+   - Evaluate both on the same held-out test set
+   - Compare: accuracy, generalization gap, overfitting indicators
+   - Non-overlapping often shows better generalization despite fewer samples
+
+6. **Recommendation by use case:**
+   ```
+   Single stock, daily, 5 years:     → OVERLAPPING (insufficient data)
+   50 stocks, daily, 5 years:        → NON_OVERLAPPING or STRIDED
+   Crypto, hourly, 2 years:          → NON_OVERLAPPING
+   Any asset, 1-minute, 6 months:    → NON_OVERLAPPING
+   ```
