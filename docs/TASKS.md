@@ -2,9 +2,9 @@
 
 ## Current Status
 
-**Phase:** 6 - Custom Data & Timeframes (PLANNING)
+**Phase:** 6 & 7 - Custom Data, Timeframes & Backtesting (PLANNING)
 **Last Updated:** 2026-01-22
-**Status:** Phases 1-5 complete. Phase 6 planned for custom data and arbitrary timeframe support.
+**Status:** Phases 1-5 complete. Phase 6 (custom data/timeframes) and Phase 7 (backtesting) planned.
 
 ---
 
@@ -69,14 +69,67 @@
 - Include example CSVs for each asset class
 - Add troubleshooting guide
 
+### Phase 7: Backtesting Framework
+
+#### ⬚ TASK-7.1: Backtesting Engine Core
+- Create `src/backtesting/engine.py`
+- Implement `BacktestEngine` class
+- Implement `BacktestConfig` for parameters
+- Implement `BacktestResult` container
+- Support chronological simulation (no look-ahead bias)
+- Add walk-forward validation option
+
+#### ⬚ TASK-7.2: Performance Metrics Module
+- Create `src/backtesting/metrics.py`
+- Prediction metrics: accuracy, precision, recall, F1, confusion matrix
+- Trading metrics: returns, Sharpe ratio, Sortino ratio, max drawdown
+- Risk metrics: volatility, VaR, Calmar ratio, win rate, profit factor
+
+#### ⬚ TASK-7.3: Trade Simulator
+- Create `src/backtesting/simulator.py`
+- Implement `TradeSimulator` class
+- Support long-only and long/short strategies
+- Configurable position sizing (fixed, percentage, Kelly)
+- Transaction cost modeling (commission, slippage)
+- Generate equity curve
+
+#### ⬚ TASK-7.4: Backtest Visualization
+- Create `src/backtesting/plots.py`
+- Equity curve and drawdown charts
+- Confusion matrix heatmap
+- Returns distribution histogram
+- Monthly/yearly returns heatmap
+- Signal timeline with price overlay
+
+#### ⬚ TASK-7.5: Backtest Report Generator
+- Create `src/backtesting/report.py`
+- Generate HTML reports with all visualizations
+- Generate PDF reports
+- Export trade log to CSV
+- Export metrics to JSON
+
+#### ⬚ TASK-7.6: Backtesting Notebook
+- Create `notebooks/05_backtesting.ipynb`
+- Complete backtesting workflow
+- Model comparison examples
+- Walk-forward validation example
+- Report generation
+
+#### ⬚ TASK-7.7: Dashboard Backtesting Tab
+- Update `app.py` with Backtesting tab
+- Model and date range selection
+- Configuration options (costs, position sizing)
+- Results display with interactive charts
+- Report download option
+
 ---
 
-## Future Enhancements (Post Phase 6)
+## Future Enhancements (Post Phase 7)
 
 - Fine-tuning model hyperparameters
-- Backtesting framework
 - Model ensemble approaches
 - Transfer learning between asset classes
+- Real-time prediction streaming
 
 
 ---

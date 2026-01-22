@@ -117,10 +117,47 @@ Predicting stock price movement direction (bullish/bearish) is valuable for iden
    - ⬚ Model selection for different configurations
    - ⬚ Acceptance: Can upload CSV and get predictions in web interface
 
+### Phase 7 Requirements (Planned)
+
+1. **Backtesting Engine** ⬚ PLANNED
+   - ⬚ Run trained model against historical unseen data
+   - ⬚ Chronological simulation (no look-ahead bias)
+   - ⬚ Walk-forward validation support
+   - ⬚ Acceptance: Can evaluate model on any historical period
+
+2. **Performance Metrics** ⬚ PLANNED
+   - ⬚ Prediction accuracy (accuracy, precision, recall, F1)
+   - ⬚ Trading metrics (returns, Sharpe ratio, max drawdown)
+   - ⬚ Risk metrics (volatility, VaR, Calmar ratio)
+   - ⬚ Acceptance: Comprehensive metrics calculated for any backtest
+
+3. **Trade Simulation** ⬚ PLANNED
+   - ⬚ Simulate trades following model signals
+   - ⬚ Configurable position sizing and costs
+   - ⬚ Equity curve generation
+   - ⬚ Acceptance: Realistic P&L simulation with transaction costs
+
+4. **Backtest Visualization** ⬚ PLANNED
+   - ⬚ Equity curve and drawdown charts
+   - ⬚ Confusion matrix and accuracy over time
+   - ⬚ Returns distribution and monthly heatmap
+   - ⬚ Acceptance: Visual analysis of backtest performance
+
+5. **Report Generation** ⬚ PLANNED
+   - ⬚ Automated HTML/PDF report generation
+   - ⬚ Executive summary with key metrics
+   - ⬚ Trade log export to CSV
+   - ⬚ Acceptance: One-click professional backtest report
+
+6. **Dashboard Integration** ⬚ PLANNED
+   - ⬚ Backtesting tab in Streamlit dashboard
+   - ⬚ Interactive configuration and results
+   - ⬚ Report download option
+   - ⬚ Acceptance: Full backtesting workflow in web interface
+
 ### Non-Goals (Explicitly Out of Scope)
 
 - **Real-time trading integration**: No broker API connections or automated trading
-- **Backtesting framework**: No historical performance simulation
 - **Alternative models**: No LSTM, transformer, or ensemble implementations (focus on CNN only)
 - **Sentiment analysis**: No news/social media data integration
 - **Options/derivatives**: Stock movement only, no options pricing
@@ -240,6 +277,16 @@ CNNStockMarket/
 │   │   ├── __init__.py
 │   │   ├── trainer.py            # Training loop
 │   │   └── metrics.py            # Accuracy, loss tracking
+│   ├── prediction/
+│   │   ├── __init__.py
+│   │   └── predictor.py          # Inference interface
+│   ├── backtesting/              # Phase 7
+│   │   ├── __init__.py
+│   │   ├── engine.py             # Backtesting engine
+│   │   ├── metrics.py            # Performance metrics
+│   │   ├── simulator.py          # Trade simulator
+│   │   ├── plots.py              # Backtest visualizations
+│   │   └── report.py             # Report generation
 │   ├── visualization/
 │   │   ├── __init__.py
 │   │   └── plots.py              # Training curves
@@ -251,9 +298,11 @@ CNNStockMarket/
 │   ├── 01_data_exploration.ipynb
 │   ├── 02_training.ipynb
 │   ├── 03_prediction.ipynb
-│   └── 04_custom_data_training.ipynb  # Phase 6
+│   ├── 04_custom_data_training.ipynb  # Phase 6
+│   └── 05_backtesting.ipynb           # Phase 7
 ├── models/                       # Saved model weights
 ├── data/                         # Cached stock data & custom CSVs
+├── reports/                      # Generated backtest reports (Phase 7)
 ├── requirements.txt
 └── README.md
 ```

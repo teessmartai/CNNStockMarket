@@ -4,9 +4,9 @@
 
 This document outlines the implementation phases for the CNN Stock Movement Predictor.
 
-**Total Phases:** 6
+**Total Phases:** 7
 **MVP Phase:** Phase 3 (working model with training visualization)
-**Status:** Phases 1-5 Complete, Phase 6 Pending
+**Status:** Phases 1-5 Complete, Phases 6-7 Pending
 
 **Completion Summary:**
 - ✅ Phase 1: Data Pipeline (COMPLETE)
@@ -15,6 +15,7 @@ This document outlines the implementation phases for the CNN Stock Movement Pred
 - ✅ Phase 4: Prediction & Inference (COMPLETE)
 - ✅ Phase 5: Web Dashboard (COMPLETE)
 - ⬚ Phase 6: Custom Data & Timeframes (PENDING)
+- ⬚ Phase 7: Backtesting Framework (PENDING)
 
 ---
 
@@ -673,6 +674,229 @@ print(f'Yahoo data: {len(df_yf)} rows')
 
 ---
 
+## Phase 7: Backtesting Framework (Enhancement) ⬚ PENDING
+
+### Objective
+
+Enable performance evaluation of trained models against historical unseen data, providing metrics to understand model effectiveness before using it for live predictions.
+
+### Prerequisites
+
+- Phase 3 complete (training pipeline)
+- Phase 4 complete (prediction service)
+- Trained model file available
+
+### Background
+
+After training a model, it's crucial to understand its real-world performance before relying on its predictions. Backtesting allows:
+- Evaluation on data the model has never seen
+- Simulation of trading performance following model signals
+- Risk assessment through drawdown and volatility metrics
+- Comparison between different models or configurations
+
+### Tasks
+
+#### 7.1 Backtesting Engine Core
+
+- **Description:** Create the core backtesting engine to run predictions on historical data
+- **Files:**
+  - `src/backtesting/engine.py`
+- **Key Classes:**
+  - `BacktestEngine` - main backtesting orchestrator
+  - `BacktestConfig` - configuration for backtest parameters
+  - `BacktestResult` - container for backtest results
+- **Key Functions:**
+  - `run_backtest(model, data, config) -> BacktestResult`
+  - `walk_forward_backtest(model, data, config) -> List[BacktestResult]`
+- **Features:**
+  - Chronological prediction simulation (no look-ahead bias)
+  - Configurable prediction frequency (every day, every N periods)
+  - Support for both single asset and portfolio backtesting
+  - Walk-forward validation option
+- **Acceptance:** Can run backtest on unseen data and get predictions timeline
+- **Dependencies:** 4.1
+
+#### 7.2 Performance Metrics Module
+
+- **Description:** Calculate comprehensive performance metrics from backtest results
+- **Files:**
+  - `src/backtesting/metrics.py`
+- **Key Metrics:**
+  - **Prediction Accuracy:**
+    - Overall accuracy (% correct predictions)
+    - Precision (true positives / predicted positives)
+    - Recall (true positives / actual positives)
+    - F1 score
+    - Confusion matrix
+  - **Trading Performance (if following signals):**
+    - Total return
+    - Annualized return
+    - Sharpe ratio
+    - Sortino ratio
+    - Maximum drawdown
+    - Win rate
+    - Profit factor
+    - Average win/loss ratio
+  - **Risk Metrics:**
+    - Volatility (daily/annualized)
+    - Value at Risk (VaR)
+    - Calmar ratio
+- **Key Functions:**
+  - `calculate_prediction_metrics(predictions, actuals) -> Dict`
+  - `calculate_trading_metrics(returns) -> Dict`
+  - `calculate_risk_metrics(returns) -> Dict`
+- **Acceptance:** All standard backtesting metrics calculated correctly
+- **Dependencies:** 7.1
+
+#### 7.3 Trade Simulator
+
+- **Description:** Simulate trades based on model signals to calculate returns
+- **Files:**
+  - `src/backtesting/simulator.py`
+- **Key Classes:**
+  - `TradeSimulator` - simulates trading based on signals
+  - `Position` - represents an open position
+  - `Trade` - represents a completed trade
+- **Key Functions:**
+  - `simulate_trades(signals, prices, config) -> List[Trade]`
+  - `calculate_equity_curve(trades, initial_capital) -> pd.Series`
+- **Features:**
+  - Long-only or long/short strategies
+  - Configurable position sizing (fixed, percentage, Kelly criterion)
+  - Transaction cost modeling (commission, slippage)
+  - Configurable confidence threshold for taking trades
+  - Hold period based on prediction horizon
+- **Acceptance:** Can simulate realistic trading with costs
+- **Dependencies:** 7.1
+
+#### 7.4 Backtest Visualization
+
+- **Description:** Create visualizations for backtest results
+- **Files:**
+  - `src/backtesting/plots.py`
+- **Key Plots:**
+  - Equity curve over time
+  - Drawdown chart
+  - Prediction accuracy over time (rolling window)
+  - Confusion matrix heatmap
+  - Returns distribution histogram
+  - Monthly/yearly returns heatmap
+  - Signal timeline with price overlay
+- **Key Functions:**
+  - `plot_equity_curve(equity_curve, benchmark=None)`
+  - `plot_drawdown(equity_curve)`
+  - `plot_confusion_matrix(predictions, actuals)`
+  - `plot_returns_distribution(returns)`
+  - `plot_monthly_returns(returns)`
+  - `plot_signal_timeline(signals, prices)`
+- **Acceptance:** Generate comprehensive visual report of backtest
+- **Dependencies:** 7.2, 7.3
+
+#### 7.5 Backtest Report Generator
+
+- **Description:** Generate comprehensive HTML/PDF reports from backtest results
+- **Files:**
+  - `src/backtesting/report.py`
+- **Key Functions:**
+  - `generate_report(backtest_result, output_path, format='html')`
+  - `export_trades_csv(trades, output_path)`
+  - `export_metrics_json(metrics, output_path)`
+- **Report Sections:**
+  - Executive summary (key metrics)
+  - Prediction performance analysis
+  - Trading performance analysis
+  - Risk analysis
+  - All visualizations
+  - Trade log
+- **Acceptance:** One-click generation of full backtest report
+- **Dependencies:** 7.4
+
+#### 7.6 Backtesting Notebook
+
+- **Description:** Jupyter notebook demonstrating backtesting workflow
+- **Files:**
+  - `notebooks/05_backtesting.ipynb`
+- **Features:**
+  - Load trained model
+  - Configure backtest parameters
+  - Run backtest on test data
+  - Analyze results with visualizations
+  - Compare multiple models
+  - Export report
+- **Acceptance:** Complete backtesting workflow in notebook
+- **Dependencies:** 7.5
+
+#### 7.7 Dashboard Backtesting Tab
+
+- **Description:** Add backtesting capabilities to Streamlit dashboard
+- **Files:**
+  - `app.py` (extend)
+- **Features:**
+  - Model selection for backtesting
+  - Date range selection for backtest period
+  - Ticker/data selection
+  - Configuration options (costs, position sizing)
+  - Results display with key metrics
+  - Interactive charts
+  - Report download option
+- **Acceptance:** Can run and view backtest from web interface
+- **Dependencies:** 7.5, 7.6
+
+### Phase 7 Deliverables
+
+- ⬚ Backtesting engine with walk-forward support
+- ⬚ Comprehensive performance metrics (accuracy, trading, risk)
+- ⬚ Trade simulator with realistic cost modeling
+- ⬚ Visualization suite for backtest analysis
+- ⬚ Automated report generation (HTML/PDF)
+- ⬚ Backtesting notebook
+- ⬚ Dashboard integration
+
+### Phase 7 Verification
+
+```bash
+# Test basic backtest
+python -c "
+from src.backtesting.engine import BacktestEngine, BacktestConfig
+from src.prediction.predictor import Predictor
+
+# Load model
+predictor = Predictor('models/best_model_t5.pt')
+
+# Configure backtest
+config = BacktestConfig(
+    start_date='2024-01-01',
+    end_date='2024-12-31',
+    initial_capital=100000,
+    commission=0.001,  # 0.1%
+    confidence_threshold=0.6
+)
+
+# Run backtest
+engine = BacktestEngine(predictor)
+result = engine.run_backtest('AAPL', config)
+
+print(f'Accuracy: {result.metrics[\"accuracy\"]:.1%}')
+print(f'Total Return: {result.metrics[\"total_return\"]:.1%}')
+print(f'Sharpe Ratio: {result.metrics[\"sharpe_ratio\"]:.2f}')
+print(f'Max Drawdown: {result.metrics[\"max_drawdown\"]:.1%}')
+"
+
+# Test report generation
+python -c "
+from src.backtesting.report import generate_report
+
+# Assuming result from previous backtest
+generate_report(result, 'reports/backtest_AAPL_2024.html', format='html')
+print('Report generated successfully')
+"
+
+# Test via notebook
+jupyter notebook notebooks/05_backtesting.ipynb
+```
+
+---
+
 ## Dependency Graph
 
 ```
@@ -681,13 +905,17 @@ Phase 1 (Data) ──→ Phase 2 (Model) ──→ Phase 3 (Training/MVP)
                                               ▼
                                        Phase 4 (Prediction)
                                               │
-                                              ├──────────────────────┐
-                                              ▼                      ▼
-                                       Phase 5 (Dashboard)    Phase 6 (Custom Data)
-                                              │                      │
-                                              └──────────┬───────────┘
-                                                         ▼
-                                              Enhanced Dashboard (6.7)
+                         ┌────────────────────┼──────────────────────┐
+                         ▼                    ▼                      ▼
+                  Phase 7 (Backtest)   Phase 5 (Dashboard)    Phase 6 (Custom Data)
+                         │                    │                      │
+                         │                    └──────────┬───────────┘
+                         │                               ▼
+                         │                    Enhanced Dashboard (6.7)
+                         │                               │
+                         └───────────────────────────────┘
+                                             ▼
+                              Dashboard with Backtesting (7.7)
 ```
 
 ---
@@ -705,6 +933,9 @@ Phase 1 (Data) ──→ Phase 2 (Model) ──→ Phase 3 (Training/MVP)
 | Timeframe support | Daily only vs configurable | Configurable | Enable intraday and multi-asset support |
 | Data interface | Direct API vs abstraction layer | Abstraction layer | Unified interface for Yahoo + CSV sources |
 | Asset presets | Single config vs presets | Presets | Sensible defaults for stocks, crypto, forex |
+| Backtesting | Custom vs existing library (backtrader) | Custom | Tighter integration, simpler for our use case |
+| Performance metrics | Basic vs comprehensive | Comprehensive | Full understanding of model performance |
+| Report format | Text vs HTML/PDF | HTML + PDF | Professional reports with visualizations |
 
 ---
 
@@ -758,3 +989,42 @@ When using custom CSV data and different timeframes:
    - Must have OHLCV columns (names can be mapped)
    - Chronological order (oldest first)
    - No duplicate timestamps
+
+---
+
+## Backtesting Considerations (Phase 7)
+
+When running backtests to evaluate model performance:
+
+1. **Avoiding look-ahead bias**:
+   - Never use future data for predictions
+   - Ensure train/test split is chronological
+   - Use walk-forward validation for robust results
+
+2. **Realistic cost modeling**:
+   - Include commission costs (typically 0.1% for stocks, varies for crypto)
+   - Account for slippage (price movement between signal and execution)
+   - Consider bid-ask spread for less liquid assets
+
+3. **Position sizing**:
+   - Fixed position size for simple comparison
+   - Percentage-based for realistic capital allocation
+   - Kelly criterion for optimal growth (advanced)
+
+4. **Interpreting metrics**:
+   - **Accuracy alone is misleading**: A 55% accuracy can be profitable with good risk management
+   - **Sharpe ratio > 1.0**: Generally considered good risk-adjusted returns
+   - **Max drawdown**: Critical for understanding worst-case scenarios
+   - **Win rate vs profit factor**: Both matter for sustainability
+
+5. **Common pitfalls**:
+   - Overfitting to backtest period (will fail on new data)
+   - Survivorship bias (only testing on stocks that still exist)
+   - Ignoring transaction costs (can turn profits into losses)
+   - Not accounting for market regime changes
+
+6. **Walk-forward validation**:
+   - Train on period 1, test on period 2
+   - Retrain on periods 1-2, test on period 3
+   - More realistic than single train/test split
+   - Reveals model stability over time
