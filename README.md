@@ -4,15 +4,15 @@ S&P 500 stock market prediction using 1D Convolutional Neural Networks (CNN). Ba
 
 ## 🎯 Project Status
 
-**Phases 1-5 Complete** | **Phases 6-7 In Planning**
+**All Phases Complete** | **Production Ready**
 
 - ✅ Phase 1: Data Pipeline (fetching, preprocessing, caching)
 - ✅ Phase 2: CNN Model Architecture (8-layer Conv1D)
 - ✅ Phase 3: Training Pipeline (metrics, visualization, checkpointing)
 - ✅ Phase 4: Prediction & Inference (single/batch predictions)
 - ✅ Phase 5: Web Dashboard (Streamlit interface)
-- ⬚ Phase 6: Custom Data & Timeframes (planned)
-- ⬚ Phase 7: Backtesting Framework (planned)
+- ✅ Phase 6: Custom Data & Timeframes (CSV loading, multi-asset support)
+- ✅ Phase 7: Backtesting Framework (performance analysis, reporting)
 
 ## 🚀 Features
 
@@ -26,19 +26,21 @@ S&P 500 stock market prediction using 1D Convolutional Neural Networks (CNN). Ba
 - **Batch Analysis**: Analyze multiple stocks and rank by confidence
 - **Multiple Horizons**: Support for T+5 and T+30 day predictions
 
-### Planned Features (Phase 6)
+### Advanced Features (Phase 6)
 - **Custom CSV Data**: Train on your own OHLCV data from any source
 - **Arbitrary Timeframes**: Support for 1m, 5m, 15m, 1h, 4h, 1d, 1w data
 - **Multi-Asset Support**: Stocks, cryptocurrencies, forex, futures, commodities
 - **Configurable Windows**: Dynamic window sizes for different use cases
 - **Asset Presets**: Pre-configured settings for different asset classes
+- **Training Sample Modes**: Overlapping, strided, or non-overlapping windows
 
-### Planned Features (Phase 7)
-- **Backtesting Engine**: Evaluate trained models on historical unseen data
-- **Performance Metrics**: Accuracy, Sharpe ratio, max drawdown, win rate
+### Backtesting Framework (Phase 7)
+- **Backtesting Engine**: Chronological and randomized period backtesting
+- **Performance Metrics**: 20+ metrics including accuracy, Sharpe ratio, max drawdown, win rate
 - **Trade Simulation**: Realistic P&L with transaction costs and slippage
-- **Walk-Forward Validation**: Robust model evaluation over multiple periods
-- **Report Generation**: Automated HTML/PDF backtest reports
+- **Statistical Analysis**: Bootstrap confidence intervals and period-based validation
+- **Visualization Suite**: 12+ chart types for comprehensive analysis
+- **Report Generation**: Automated HTML reports with embedded visualizations
 
 ## 📋 Prerequisites
 
@@ -229,27 +231,30 @@ The predictions are based on historical patterns and should NOT be used as finan
 
 ## 🤝 Contributing
 
-### Active Development (Phases 6 & 7)
-The following features are currently planned:
+### Completed Features
 
 **Phase 6 - Custom Data & Timeframes:**
-- CSV file loading for custom OHLCV data
-- Arbitrary timeframe support (1m to 1w)
-- Multi-asset configuration presets
-- Dynamic window size configuration
-- Enhanced dashboard with CSV upload
+- ✅ CSV file loading for custom OHLCV data with flexible column mapping
+- ✅ Arbitrary timeframe support (1m to 1w)
+- ✅ Multi-asset configuration presets (stocks, crypto, forex, futures)
+- ✅ Dynamic window size configuration
+- ✅ Training sample modes (overlapping, strided, non-overlapping)
+- ✅ Enhanced dashboard with CSV upload and data analysis
 
 **Phase 7 - Backtesting Framework:**
-- Backtesting engine with walk-forward validation
-- Comprehensive performance metrics
-- Trade simulation with realistic costs
-- Automated report generation (HTML/PDF)
-- Dashboard integration for backtesting
+- ✅ Backtesting engine with walk-forward and randomized period validation
+- ✅ Comprehensive performance metrics (20+ metrics)
+- ✅ Trade simulation with realistic costs and multiple position sizing strategies
+- ✅ Statistical analysis with bootstrap confidence intervals
+- ✅ Automated HTML report generation with embedded visualizations
+- ✅ Complete visualization suite (12+ chart types)
 
 ### Future Enhancements
-- Model hyperparameter tuning
+- Model hyperparameter tuning and optimization
 - Alternative architectures (LSTM, Transformers)
-- Real-time data integration
+- Real-time data integration and live predictions
+- Model ensemble approaches
+- Transfer learning between asset classes
 
 ## 📝 License
 
