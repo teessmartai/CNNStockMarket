@@ -10,6 +10,11 @@ Phase 6 Features:
 - Custom CSV data upload
 - Configurable timeframes and presets
 - Sample mode selection
+
+Phase 7 Features:
+- Backtesting framework
+- Performance metrics and visualization
+- Report generation
 """
 
 import streamlit as st
@@ -154,7 +159,7 @@ def main():
     # Navigation
     page = st.sidebar.radio(
         "Navigation",
-        ["Single Prediction", "Batch Analysis", "Top Signals", "Custom Data", "About"],
+        ["Single Prediction", "Batch Analysis", "Top Signals", "Backtesting", "Custom Data", "About"],
     )
 
     st.sidebar.markdown("---")
@@ -174,6 +179,8 @@ def main():
         batch_analysis_page(predictor, horizon)
     elif page == "Top Signals":
         top_signals_page(predictor, horizon)
+    elif page == "Backtesting":
+        backtesting_page(predictor, horizon)
     elif page == "Custom Data":
         custom_data_page(predictor, horizon)
     else:
@@ -687,6 +694,381 @@ def custom_data_page(predictor, horizon):
         )
 
 
+def backtesting_page(predictor, horizon):
+    """Backtesting page (Phase 7)."""
+    st.title("📊 Backtesting")
+    st.markdown("Evaluate model performance on historical data.")
+
+    if predictor is None:
+        st.error("No model available. Please train a model first.")
+        return
+
+    # Import backtesting modules
+    try:
+        from src.backtesting.engine import BacktestEngine, BacktestConfig
+        from src.backtesting.plots import (
+            plot_equity_curve,
+            plot_drawdown,
+            plot_confusion_matrix,
+            plot_returns_distribution,
+            create_backtest_dashboard,
+        )
+        from src.backtesting.report import generate_report, export_trades_csv, export_metrics_json
+        from src.utils.config import PROJECT_ROOT
+    except ImportError as e:
+        st.error(f"Backtesting modules not available: {e}")
+        return
+
+    # Tabs for different functions
+    tab1, tab2, tab3 = st.tabs(["Run Backtest", "Results", "Reports"])
+
+    with tab1:
+        st.markdown("### Configure Backtest")
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.markdown("#### Stock Selection")
+            tickers = get_sp500_tickers()
+            ticker = st.selectbox("Select Stock", options=tickers, index=0, key="bt_ticker")
+
+            custom_ticker = st.text_input("Or enter ticker:", "", key="bt_custom_ticker")
+            if custom_ticker:
+                ticker = custom_ticker.upper()
+
+            st.markdown("#### Date Range")
+            col_start, col_end = st.columns(2)
+            with col_start:
+                start_date = st.date_input(
+                    "Start Date",
+                    value=datetime.now() - timedelta(days=365),
+                    key="bt_start"
+                )
+            with col_end:
+                end_date = st.date_input(
+                    "End Date",
+                    value=datetime.now(),
+                    key="bt_end"
+                )
+
+        with col2:
+            st.markdown("#### Strategy Settings")
+
+            initial_capital = st.number_input(
+                "Initial Capital ($)",
+                min_value=1000,
+                max_value=10000000,
+                value=100000,
+                step=10000,
+                key="bt_capital"
+            )
+
+            commission = st.slider(
+                "Commission (%)",
+                min_value=0.0,
+                max_value=1.0,
+                value=0.1,
+                step=0.05,
+                key="bt_commission"
+            ) / 100
+
+            confidence_threshold = st.slider(
+                "Confidence Threshold (%)",
+                min_value=50,
+                max_value=90,
+                value=55,
+                step=5,
+                key="bt_confidence"
+            ) / 100
+
+            position_pct = st.slider(
+                "Position Size (% of equity)",
+                min_value=5,
+                max_value=50,
+                value=10,
+                step=5,
+                key="bt_position"
+            ) / 100
+
+            prediction_freq = st.selectbox(
+                "Prediction Frequency",
+                options=[1, 5, 10, 20],
+                index=1,
+                format_func=lambda x: f"Every {x} day(s)",
+                key="bt_freq"
+            )
+
+        # Run backtest button
+        if st.button("🚀 Run Backtest", type="primary", key="bt_run"):
+            config = BacktestConfig(
+                start_date=start_date.strftime('%Y-%m-%d'),
+                end_date=end_date.strftime('%Y-%m-%d'),
+                initial_capital=initial_capital,
+                commission=commission,
+                slippage=0.0005,
+                confidence_threshold=confidence_threshold,
+                position_sizing='percentage',
+                position_pct=position_pct,
+                allow_short=False,
+                horizon=horizon,
+                prediction_frequency=prediction_freq,
+                verbose=False,
+            )
+
+            with st.spinner(f"Running backtest for {ticker}..."):
+                try:
+                    engine = BacktestEngine(predictor=predictor)
+                    result = engine.run_backtest(ticker, config)
+
+                    # Store result in session state
+                    st.session_state['backtest_result'] = result
+                    st.session_state['backtest_ticker'] = ticker
+
+                    st.success("Backtest completed!")
+
+                    # Show summary metrics
+                    st.markdown("### Summary")
+                    col1, col2, col3, col4 = st.columns(4)
+
+                    with col1:
+                        acc = result.metrics.get('accuracy', 0)
+                        st.metric("Accuracy", f"{acc:.1%}")
+                    with col2:
+                        ret = result.metrics.get('total_return', 0)
+                        st.metric("Total Return", f"{ret:.1%}")
+                    with col3:
+                        sharpe = result.metrics.get('sharpe_ratio', 0)
+                        st.metric("Sharpe Ratio", f"{sharpe:.2f}")
+                    with col4:
+                        max_dd = result.metrics.get('max_drawdown', 0)
+                        st.metric("Max Drawdown", f"{max_dd:.1%}")
+
+                    col1, col2, col3, col4 = st.columns(4)
+
+                    with col1:
+                        win_rate = result.metrics.get('win_rate', 0)
+                        st.metric("Win Rate", f"{win_rate:.1%}")
+                    with col2:
+                        n_trades = len(result.trades)
+                        st.metric("Total Trades", n_trades)
+                    with col3:
+                        profit_factor = result.metrics.get('profit_factor', 0)
+                        st.metric("Profit Factor", f"{profit_factor:.2f}")
+                    with col4:
+                        n_preds = result.metrics.get('n_predictions', len(result.predictions))
+                        st.metric("Predictions", n_preds)
+
+                except Exception as e:
+                    st.error(f"Backtest failed: {str(e)}")
+
+    with tab2:
+        st.markdown("### Backtest Results")
+
+        if 'backtest_result' not in st.session_state:
+            st.info("Run a backtest first to see results.")
+            return
+
+        result = st.session_state['backtest_result']
+        ticker = st.session_state.get('backtest_ticker', 'Unknown')
+
+        st.markdown(f"**Results for: {ticker}** ({result.start_date} to {result.end_date})")
+
+        # Visualization options
+        viz_option = st.selectbox(
+            "Select Visualization",
+            ["Dashboard", "Equity Curve", "Drawdown", "Confusion Matrix", "Returns Distribution"],
+            key="bt_viz"
+        )
+
+        if viz_option == "Dashboard":
+            if result.equity_curve is not None and len(result.equity_curve) > 0:
+                fig = create_backtest_dashboard(result)
+                st.pyplot(fig)
+                plt.close()
+            else:
+                st.warning("Insufficient data for dashboard visualization")
+
+        elif viz_option == "Equity Curve":
+            if result.equity_curve is not None and len(result.equity_curve) > 0:
+                fig = plot_equity_curve(result.equity_curve, title=f"{ticker} - Equity Curve")
+                st.pyplot(fig)
+                plt.close()
+            else:
+                st.warning("No equity curve data available")
+
+        elif viz_option == "Drawdown":
+            if result.equity_curve is not None and len(result.equity_curve) > 0:
+                fig = plot_drawdown(result.equity_curve, title=f"{ticker} - Drawdown")
+                st.pyplot(fig)
+                plt.close()
+            else:
+                st.warning("No equity curve data available")
+
+        elif viz_option == "Confusion Matrix":
+            if result.predictions:
+                preds = [p['predicted_direction'] for p in result.predictions if p.get('actual_direction', -1) >= 0]
+                acts = [p['actual_direction'] for p in result.predictions if p.get('actual_direction', -1) >= 0]
+                if preds and acts:
+                    fig = plot_confusion_matrix(preds, acts, title=f"{ticker} - Prediction Confusion Matrix")
+                    st.pyplot(fig)
+                    plt.close()
+                else:
+                    st.warning("No prediction data available")
+            else:
+                st.warning("No predictions available")
+
+        elif viz_option == "Returns Distribution":
+            if result.returns is not None and len(result.returns) > 0:
+                fig = plot_returns_distribution(result.returns, title=f"{ticker} - Returns Distribution")
+                st.pyplot(fig)
+                plt.close()
+            else:
+                st.warning("No returns data available")
+
+        # Detailed metrics
+        st.markdown("### Detailed Metrics")
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.markdown("#### Prediction Metrics")
+            pred_metrics = {
+                'Accuracy': ('accuracy', '{:.2%}'),
+                'Precision': ('precision', '{:.2%}'),
+                'Recall': ('recall', '{:.2%}'),
+                'F1 Score': ('f1_score', '{:.3f}'),
+                'True Positives': ('true_positives', '{:d}'),
+                'True Negatives': ('true_negatives', '{:d}'),
+                'False Positives': ('false_positives', '{:d}'),
+                'False Negatives': ('false_negatives', '{:d}'),
+            }
+            for label, (key, fmt) in pred_metrics.items():
+                if key in result.metrics:
+                    val = result.metrics[key]
+                    if isinstance(val, float):
+                        st.write(f"**{label}:** {fmt.format(val)}")
+                    else:
+                        st.write(f"**{label}:** {val}")
+
+        with col2:
+            st.markdown("#### Trading Metrics")
+            trade_metrics = {
+                'Total Return': ('total_return', '{:.2%}'),
+                'Annualized Return': ('annualized_return', '{:.2%}'),
+                'Sharpe Ratio': ('sharpe_ratio', '{:.2f}'),
+                'Sortino Ratio': ('sortino_ratio', '{:.2f}'),
+                'Max Drawdown': ('max_drawdown', '{:.2%}'),
+                'Win Rate': ('win_rate', '{:.2%}'),
+                'Profit Factor': ('profit_factor', '{:.2f}'),
+                'Avg Win': ('avg_win', '{:.2%}'),
+                'Avg Loss': ('avg_loss', '{:.2%}'),
+            }
+            for label, (key, fmt) in trade_metrics.items():
+                if key in result.metrics:
+                    st.write(f"**{label}:** {fmt.format(result.metrics[key])}")
+
+        # Trade log
+        if result.trades:
+            st.markdown("### Trade Log")
+            trades_data = []
+            for i, trade in enumerate(result.trades[:20], 1):  # Show first 20
+                if isinstance(trade, dict):
+                    trades_data.append({
+                        '#': i,
+                        'Entry': str(trade.get('entry_date', 'N/A'))[:10],
+                        'Exit': str(trade.get('exit_date', 'N/A'))[:10],
+                        'Signal': trade.get('entry_signal', 'N/A'),
+                        'Return': f"{trade.get('return_pct', 0):.2%}",
+                        'Correct': '✓' if trade.get('prediction_correct') else '✗',
+                    })
+                else:
+                    trades_data.append({
+                        '#': i,
+                        'Entry': str(trade.entry_date)[:10],
+                        'Exit': str(trade.exit_date)[:10],
+                        'Signal': trade.entry_signal,
+                        'Return': f"{trade.return_pct:.2%}",
+                        'Correct': '✓' if trade.prediction_correct else '✗',
+                    })
+
+            st.dataframe(pd.DataFrame(trades_data), use_container_width=True)
+
+            if len(result.trades) > 20:
+                st.caption(f"Showing 20 of {len(result.trades)} trades")
+
+    with tab3:
+        st.markdown("### Generate Reports")
+
+        if 'backtest_result' not in st.session_state:
+            st.info("Run a backtest first to generate reports.")
+            return
+
+        result = st.session_state['backtest_result']
+        ticker = st.session_state.get('backtest_ticker', 'Unknown')
+
+        reports_dir = PROJECT_ROOT / 'reports'
+        reports_dir.mkdir(exist_ok=True)
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.markdown("#### HTML Report")
+            st.write("Generate a comprehensive HTML report with all metrics and charts.")
+
+            if st.button("Generate HTML Report", key="bt_html"):
+                with st.spinner("Generating report..."):
+                    report_path = reports_dir / f'backtest_{ticker}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.html'
+                    generate_report(result, report_path, format='html')
+                    st.success(f"Report saved to: {report_path}")
+
+                    # Read and offer download
+                    with open(report_path, 'r') as f:
+                        html_content = f.read()
+
+                    st.download_button(
+                        label="Download HTML Report",
+                        data=html_content,
+                        file_name=f"backtest_{ticker}.html",
+                        mime="text/html",
+                        key="bt_download_html"
+                    )
+
+        with col2:
+            st.markdown("#### Export Data")
+
+            if st.button("Export Trades CSV", key="bt_csv"):
+                if result.trades:
+                    csv_path = reports_dir / f'trades_{ticker}_{datetime.now().strftime("%Y%m%d")}.csv'
+                    export_trades_csv(result.trades, csv_path)
+
+                    trades_df = pd.DataFrame([
+                        t if isinstance(t, dict) else t.to_dict()
+                        for t in result.trades
+                    ])
+                    csv_data = trades_df.to_csv(index=False)
+
+                    st.download_button(
+                        label="Download Trades CSV",
+                        data=csv_data,
+                        file_name=f"trades_{ticker}.csv",
+                        mime="text/csv",
+                        key="bt_download_csv"
+                    )
+                else:
+                    st.warning("No trades to export")
+
+            if st.button("Export Metrics JSON", key="bt_json"):
+                import json
+                metrics_json = json.dumps(result.metrics, indent=2, default=str)
+                st.download_button(
+                    label="Download Metrics JSON",
+                    data=metrics_json,
+                    file_name=f"metrics_{ticker}.json",
+                    mime="application/json",
+                    key="bt_download_json"
+                )
+
+
 def about_page():
     """About page."""
     st.title("ℹ️ About")
@@ -723,6 +1105,14 @@ def about_page():
     - **Asset Class Presets**: Pre-configured settings for stocks, crypto, forex
     - **Sample Modes**: Choose between overlapping, strided, or non-overlapping samples
     - **Flexible Column Mapping**: Auto-detection of common column name variations
+
+    ### Phase 7 Features (Backtesting Framework)
+
+    - **Chronological Backtest**: Run predictions on historical data without look-ahead bias
+    - **Trade Simulation**: Simulate trades with realistic commission and slippage costs
+    - **Performance Metrics**: Accuracy, Sharpe ratio, max drawdown, win rate, profit factor
+    - **Visualization**: Equity curves, drawdown charts, confusion matrices, returns distributions
+    - **Report Generation**: Export HTML reports, trade logs (CSV), and metrics (JSON)
 
     ### Disclaimer
 
