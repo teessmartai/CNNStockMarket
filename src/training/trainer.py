@@ -70,7 +70,7 @@ class Trainer:
 
         # Learning rate scheduler (reduce on plateau)
         self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-            self.optimizer, mode="min", factor=0.5, patience=5, verbose=True
+            self.optimizer, mode="min", factor=0.5, patience=5
         )
 
         # Metrics tracker
