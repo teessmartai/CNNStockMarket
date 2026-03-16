@@ -159,6 +159,7 @@ class Trainer:
         num_epochs: int = NUM_EPOCHS,
         early_stopping_patience: int = EARLY_STOPPING_PATIENCE,
         checkpoint_interval: int = CHECKPOINT_INTERVAL,
+        start_epoch: int = 0,
     ) -> MetricsTracker:
         """
         Run the full training loop.
@@ -167,14 +168,17 @@ class Trainer:
             num_epochs: Maximum number of epochs to train
             early_stopping_patience: Stop if no improvement for N epochs
             checkpoint_interval: Save checkpoint every N epochs
+            start_epoch: Epoch to resume from (0 = fresh start)
 
         Returns:
             MetricsTracker with training history
         """
         logger.info(f"Starting training for {num_epochs} epochs on {self.device}")
         logger.info(f"Train batches: {len(self.train_loader)}, Val batches: {len(self.val_loader)}")
+        if start_epoch > 0:
+            logger.info(f"Resuming from epoch {start_epoch + 1}")
 
-        for epoch in range(num_epochs):
+        for epoch in range(start_epoch, num_epochs):
             self.current_epoch = epoch
 
             # Training phase

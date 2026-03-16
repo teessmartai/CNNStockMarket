@@ -1,52 +1,107 @@
 #!/usr/bin/env python3
 """
-train_experiment.py — Run a training experiment on a single ticker.
+train_experiment.py — Multi-stock CNN training with auto-resume.
+
+The model is UNIVERSAL: trained on many stocks simultaneously so it learns
+general price-action patterns (not memorised single-stock moves).  At
+inference time a single model runs against any ticker.
+
+Training can be interrupted and resumed at any time — checkpoints are saved
+every N epochs and on every new best-val-loss.  If a checkpoint exists in the
+model dir, training resumes from it automatically (pass --reset to force a
+fresh start).
 
 Usage:
-    python train_experiment.py                         # defaults: AAOI, window=128, horizon=5
-    python train_experiment.py --ticker AAPL           # different ticker
-    python train_experiment.py --window 256            # larger window
-    python train_experiment.py --horizon 30            # predict T+30
-    python train_experiment.py --years 3               # fewer years of data
-    python train_experiment.py --lr 5e-4 --dropout 0.3
+    # Train on a preset basket:
+    python train_experiment.py --preset tech
+    python train_experiment.py --preset sp500-sample
+    python train_experiment.py --preset finance
+
+    # Train on specific tickers:
+    python train_experiment.py --tickers AAPL MSFT NVDA AMD GOOGL
+
+    # Resume an interrupted run (auto-detected):
+    python train_experiment.py --preset tech           # just re-run same command
+
+    # Force fresh start (ignore existing checkpoint):
+    python train_experiment.py --preset tech --reset
+
+    # Tune hyperparameters:
+    python train_experiment.py --preset tech --lr 5e-4 --window 128 --horizon 5
 
 Outputs:
-    models/<ticker>_w<window>_h<horizon>/best_model.pt — best checkpoint
-    experiments/<ticker>_w<window>_h<horizon>_<timestamp>.log  — full log
+    models/<run_name>/best_model.pt         — best checkpoint (resume-safe)
+    models/<run_name>/checkpoint_epoch_N.pt — periodic saves every 5 epochs
+    models/<run_name>/final_model.pt        — last epoch checkpoint
+    experiments/<run_name>_<ts>.log         — full training log
 """
 
 import argparse
+import hashlib
 import logging
+import signal
 import sys
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
+import numpy as np
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
 
-# ── Project root on path ──────────────────────────────────────────────────────
 PROJECT_ROOT = Path(__file__).parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.data.fetcher import fetch_stock_data
-from src.data.preprocessor import prepare_data
+from src.data.fetcher import fetch_multiple_stocks, fetch_stock_data
+from src.data.preprocessor import combine_multiple_stocks, train_val_test_split
 from src.data.dataset import StockDataset
 from src.models.cnn import StockCNN
 from src.training.trainer import Trainer
-from src.utils.config import CONV_CHANNELS, KERNEL_SIZE, FC_HIDDEN, NUM_CHANNELS
+from src.utils.config import (
+    CONV_CHANNELS, KERNEL_SIZE, FC_HIDDEN, NUM_CHANNELS,
+    VAL_RATIO, TEST_RATIO,
+)
 
-# ── Experiment output dir ─────────────────────────────────────────────────────
 EXPERIMENTS_DIR = PROJECT_ROOT / "experiments"
 EXPERIMENTS_DIR.mkdir(exist_ok=True)
 
+# ── Stock presets ─────────────────────────────────────────────────────────────
+PRESETS: dict[str, list[str]] = {
+    "tech": [
+        "AAPL", "MSFT", "NVDA", "AMD", "GOOGL", "META", "AMZN",
+        "INTC", "QCOM", "AMAT", "LRCX", "KLAC", "MRVL", "AVGO",
+        "TXN", "MU", "AAOI", "SMCI", "CRWD", "PANW",
+    ],
+    "finance": [
+        "JPM", "GS", "BAC", "MS", "WFC", "C", "BLK", "AXP",
+        "SCHW", "USB", "PNC", "TFC", "COF", "DFS", "SYF",
+    ],
+    "sp500-sample": [
+        # Tech
+        "AAPL", "MSFT", "NVDA", "GOOGL", "META", "AMZN",
+        # Finance
+        "JPM", "GS", "BAC", "BLK",
+        # Healthcare
+        "JNJ", "UNH", "PFE", "ABBV", "MRK",
+        # Consumer
+        "TSLA", "HD", "MCD", "SBUX", "NKE",
+        # Energy
+        "XOM", "CVX", "COP", "SLB",
+        # Industrials
+        "CAT", "BA", "GE", "HON", "MMM",
+        # Utilities / REIT
+        "NEE", "AMT", "PLD",
+    ],
+    "single": [],   # populated from --tickers
+}
 
-def setup_logging(log_path: Path):
+
+# ── Logging ───────────────────────────────────────────────────────────────────
+def setup_logging(log_path: Path) -> logging.Logger:
     fmt = "%(asctime)s  %(levelname)-8s  %(message)s"
     logging.basicConfig(
-        level=logging.INFO,
-        format=fmt,
+        level=logging.INFO, format=fmt,
         handlers=[
             logging.StreamHandler(sys.stdout),
             logging.FileHandler(log_path),
@@ -55,41 +110,97 @@ def setup_logging(log_path: Path):
     return logging.getLogger(__name__)
 
 
-def parse_args():
-    p = argparse.ArgumentParser(description="Train CNN on a single stock ticker")
-    p.add_argument("--ticker",        default="AAOI",  help="Stock ticker  (default: AAOI)")
-    p.add_argument("--window",        type=int,   default=128,   help="Window size in days  (default: 128)")
-    p.add_argument("--horizon",       type=int,   default=5,     help="Prediction horizon in days  (default: 5)")
-    p.add_argument("--years",         type=float, default=5.0,   help="Years of history to fetch  (default: 5)")
-    p.add_argument("--epochs",        type=int,   default=100,   help="Max epochs  (default: 100)")
-    p.add_argument("--patience",      type=int,   default=10,    help="Early-stopping patience  (default: 10)")
-    p.add_argument("--lr",            type=float, default=1e-3,  help="Learning rate  (default: 1e-3)")
-    p.add_argument("--weight-decay",  type=float, default=1e-5,  help="Weight decay  (default: 1e-5)")
-    p.add_argument("--dropout",       type=float, default=0.4,   help="Dropout  (default: 0.4)")
-    p.add_argument("--batch",         type=int,   default=128,   help="Batch size  (default: 128)")
+# ── Args ──────────────────────────────────────────────────────────────────────
+def parse_args() -> argparse.Namespace:
+    p = argparse.ArgumentParser(
+        description="Multi-stock CNN training with auto-resume",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=__doc__,
+    )
+    # Stock selection
+    stock = p.add_mutually_exclusive_group(required=True)
+    stock.add_argument("--preset",  choices=list(PRESETS), help="Use a predefined stock basket")
+    stock.add_argument("--tickers", nargs="+",             help="Explicit list of tickers")
+
+    # Data
+    p.add_argument("--window",   type=int,   default=128,  help="Window size in trading days (default: 128)")
+    p.add_argument("--horizon",  type=int,   default=5,    help="Prediction horizon in days (default: 5)")
+    p.add_argument("--years",    type=float, default=5.0,  help="Years of history per stock (default: 5)")
+    p.add_argument("--stride",   type=int,   default=1,    help="Window stride — 1=overlapping (default: 1)")
+
+    # Training
+    p.add_argument("--epochs",   type=int,   default=100,  help="Max epochs (default: 100)")
+    p.add_argument("--patience", type=int,   default=15,   help="Early-stopping patience (default: 15)")
+    p.add_argument("--ckpt-every", type=int, default=5,    help="Save checkpoint every N epochs (default: 5)")
+    p.add_argument("--batch",    type=int,   default=256,  help="Batch size (default: 256)")
+
+    # Hyperparameters
+    p.add_argument("--lr",           type=float, default=1e-3,  help="Learning rate (default: 1e-3)")
+    p.add_argument("--weight-decay", type=float, default=1e-5,  help="Weight decay (default: 1e-5)")
+    p.add_argument("--dropout",      type=float, default=0.4,   help="Dropout (default: 0.4)")
+
+    # Control
+    p.add_argument("--reset", action="store_true", help="Ignore existing checkpoint, start fresh")
+    p.add_argument("--run-name", default=None, help="Override auto-generated run name")
+
     return p.parse_args()
 
 
+# ── Run name ──────────────────────────────────────────────────────────────────
+def make_run_name(tickers: list[str], window: int, horizon: int, preset: str | None) -> str:
+    if preset and preset != "single":
+        return f"multi_{preset}_w{window}_h{horizon}"
+    # For custom ticker lists: use sorted hash to get stable name
+    tag = "_".join(sorted(tickers)[:4])
+    if len(tickers) > 4:
+        h = hashlib.md5("".join(sorted(tickers)).encode()).hexdigest()[:6]
+        tag += f"_+{len(tickers)-4}_{h}"
+    return f"multi_{tag}_w{window}_h{horizon}"
+
+
+# ── Graceful interrupt ────────────────────────────────────────────────────────
+_interrupted = False
+
+def _handle_sigterm(signum, frame):
+    global _interrupted
+    print("\n[SIGTERM received] Finishing current epoch then saving checkpoint...")
+    _interrupted = True
+
+signal.signal(signal.SIGTERM, _handle_sigterm)
+signal.signal(signal.SIGINT,  _handle_sigterm)
+
+
+# ── Main ──────────────────────────────────────────────────────────────────────
 def main():
     args = parse_args()
 
-    tag       = f"{args.ticker}_w{args.window}_h{args.horizon}"
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_path  = EXPERIMENTS_DIR / f"{tag}_{timestamp}.log"
+    # Resolve tickers
+    if args.preset:
+        tickers = PRESETS[args.preset]
+        if not tickers:
+            print("--preset single requires --tickers too (use --tickers instead)")
+            sys.exit(1)
+    else:
+        tickers = [t.upper() for t in args.tickers]
 
-    log = setup_logging(log_path)
+    run_name = args.run_name or make_run_name(tickers, args.window, args.horizon, args.preset)
+    ckpt_dir = PROJECT_ROOT / "models" / run_name
+    ckpt_dir.mkdir(parents=True, exist_ok=True)
 
-    log.info("=" * 60)
-    log.info(f"  CNN Stock Experiment: {tag}")
-    log.info("=" * 60)
-    log.info(f"  Ticker:       {args.ticker}")
-    log.info(f"  Window:       {args.window} days")
-    log.info(f"  Horizon:      T+{args.horizon} days")
-    log.info(f"  Data:         {args.years} years")
-    log.info(f"  LR:           {args.lr}   WD: {args.weight_decay}")
-    log.info(f"  Dropout:      {args.dropout}   Batch: {args.batch}")
-    log.info(f"  Max epochs:   {args.epochs}  (patience={args.patience})")
-    log.info(f"  Log:          {log_path}")
+    ts       = datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_path = EXPERIMENTS_DIR / f"{run_name}_{ts}.log"
+    log      = setup_logging(log_path)
+
+    log.info("=" * 65)
+    log.info(f"  Multi-Stock CNN Training — {run_name}")
+    log.info("=" * 65)
+    log.info(f"  Tickers ({len(tickers)}): {', '.join(tickers)}")
+    log.info(f"  Window: {args.window}d   Horizon: T+{args.horizon}d   Stride: {args.stride}")
+    log.info(f"  Data: {args.years} years per stock")
+    log.info(f"  LR: {args.lr}   WD: {args.weight_decay}   Dropout: {args.dropout}")
+    log.info(f"  Batch: {args.batch}   Epochs: {args.epochs}   Patience: {args.patience}")
+    log.info(f"  Checkpoint dir: {ckpt_dir}")
+    log.info(f"  Log: {log_path}")
     log.info("")
 
     device = torch.device("cpu")
@@ -98,42 +209,62 @@ def main():
     end_date   = datetime.today().strftime("%Y-%m-%d")
     start_date = (datetime.today() - timedelta(days=int(args.years * 365.25))).strftime("%Y-%m-%d")
 
-    log.info(f"Fetching {args.ticker}  {start_date} → {end_date} ...")
-    df = fetch_stock_data(args.ticker, start_date, end_date)
+    log.info(f"Fetching {len(tickers)} stocks  {start_date} → {end_date}...")
+    stock_data = fetch_multiple_stocks(tickers, start_date, end_date, use_cache=True)
 
-    if df.empty:
-        log.error(f"No data for {args.ticker}. Check the ticker symbol.")
+    if not stock_data:
+        log.error("No data fetched for any ticker. Exiting.")
         sys.exit(1)
 
-    log.info(f"  {len(df)} trading days of OHLCV data")
+    log.info(f"  Successfully fetched {len(stock_data)}/{len(tickers)} stocks")
+    if len(stock_data) < len(tickers):
+        skipped = set(tickers) - set(stock_data.keys())
+        log.warning(f"  Skipped (no data): {', '.join(skipped)}")
 
-    # ── 2. Preprocess + windows + split ───────────────────────────────────────
-    log.info(f"Building windows (size={args.window}, horizon={args.horizon}, overlapping) ...")
-    X_train, y_train, X_val, y_val, X_test, y_test = prepare_data(
-        df,
+    # ── 2. Build combined dataset ─────────────────────────────────────────────
+    log.info(f"\nBuilding windows (size={args.window}, horizon={args.horizon}, stride={args.stride})...")
+    X_all, y_all = combine_multiple_stocks(
+        stock_data,
         window_size = args.window,
         horizon     = args.horizon,
-        stride      = 1,           # overlapping windows
+        stride      = args.stride,
     )
 
-    if len(X_train) == 0:
-        log.error("No training samples — use more data (--years) or a smaller window (--window).")
+    # Per-stock breakdown
+    for ticker, df in stock_data.items():
+        from src.data.preprocessor import create_sliding_windows
+        try:
+            X_t, y_t = create_sliding_windows(df, args.window, args.horizon, args.stride)
+            log.info(f"    {ticker:8s}: {len(X_t):>5} windows")
+        except Exception:
+            pass
+
+    n_total = len(X_all)
+    log.info(f"\n  Total samples: {n_total:,}")
+    log.info(f"  Label balance: {y_all.mean():.1%} bullish  /  {1-y_all.mean():.1%} bearish")
+
+    if n_total < 200:
+        log.error(f"Only {n_total} samples — too few. Add more stocks or years.")
         sys.exit(1)
 
-    bullish_pct = y_train.mean() * 100
-    log.info(f"  Train: {len(X_train)}  Val: {len(X_val)}  Test: {len(X_test)}")
-    log.info(f"  Label balance (train): {bullish_pct:.1f}% bullish")
+    # ── 3. Train / val / test split ───────────────────────────────────────────
+    X_train, y_train, X_val, y_val, X_test, y_test = train_val_test_split(
+        X_all, y_all, val_ratio=VAL_RATIO, test_ratio=TEST_RATIO
+    )
+    log.info(f"  Train: {len(X_train):,}  Val: {len(X_val):,}  Test: {len(X_test):,}")
 
-    # ── 3. DataLoaders ────────────────────────────────────────────────────────
-    train_ds = StockDataset(X_train, y_train)
-    val_ds   = StockDataset(X_val,   y_val)
-    test_ds  = StockDataset(X_test,  y_test)
+    dataset     = StockDataset(torch.tensor(X_train, dtype=torch.float32),
+                               torch.tensor(y_train, dtype=torch.long))
+    val_dataset = StockDataset(torch.tensor(X_val,   dtype=torch.float32),
+                               torch.tensor(y_val,   dtype=torch.long))
+    test_dataset= StockDataset(torch.tensor(X_test,  dtype=torch.float32),
+                               torch.tensor(y_test,  dtype=torch.long))
 
-    train_loader = DataLoader(train_ds, batch_size=args.batch, shuffle=True,  num_workers=0)
-    val_loader   = DataLoader(val_ds,   batch_size=args.batch, shuffle=False, num_workers=0)
-    test_loader  = DataLoader(test_ds,  batch_size=args.batch, shuffle=False, num_workers=0)
+    train_loader = DataLoader(dataset,      batch_size=args.batch, shuffle=True,  num_workers=0)
+    val_loader   = DataLoader(val_dataset,  batch_size=args.batch, shuffle=False, num_workers=0)
+    test_loader  = DataLoader(test_dataset, batch_size=args.batch, shuffle=False, num_workers=0)
 
-    # ── 4. Model ──────────────────────────────────────────────────────────────
+    # ── 4. Model + trainer ────────────────────────────────────────────────────
     model = StockCNN(
         window_size   = args.window,
         num_channels  = NUM_CHANNELS,
@@ -142,55 +273,84 @@ def main():
         fc_hidden     = FC_HIDDEN,
         dropout       = args.dropout,
     )
-    log.info(f"  Model: {model.count_parameters():,} parameters")
-
-    # ── 5. Train ──────────────────────────────────────────────────────────────
-    checkpoint_dir = PROJECT_ROOT / "models" / tag
-    checkpoint_dir.mkdir(parents=True, exist_ok=True)
+    log.info(f"\n  Model: {model.count_parameters():,} parameters")
 
     trainer = Trainer(
         model          = model,
         train_loader   = train_loader,
         val_loader     = val_loader,
-        learning_rate  = args.weight_decay,
+        learning_rate  = args.lr,
         weight_decay   = args.weight_decay,
         device         = device,
-        checkpoint_dir = checkpoint_dir,
+        checkpoint_dir = ckpt_dir,
     )
-    # Fix: set LR correctly (Trainer takes lr separately)
-    for g in trainer.optimizer.param_groups:
-        g["lr"] = args.lr
 
-    log.info("\nStarting training ...\n")
+    # ── 5. Resume from checkpoint if available ────────────────────────────────
+    start_epoch = 0
+    resume_ckpt = ckpt_dir / "best_model.pt"
+
+    # Also check for latest periodic checkpoint (may be further along than best)
+    periodic = sorted(ckpt_dir.glob("checkpoint_epoch_*.pt"))
+    if periodic:
+        last_periodic = periodic[-1]
+        best_epoch    = torch.load(resume_ckpt,    map_location="cpu").get("epoch", -1) if resume_ckpt.exists() else -1
+        periodic_epoch= torch.load(last_periodic,  map_location="cpu").get("epoch", -1)
+        resume_ckpt   = last_periodic if periodic_epoch > best_epoch else resume_ckpt
+
+    if not args.reset and resume_ckpt.exists():
+        log.info(f"\nResuming from checkpoint: {resume_ckpt.name}")
+        start_epoch = trainer.load_checkpoint(resume_ckpt) 
+        log.info(f"  Resuming from epoch {start_epoch + 1}  "
+                 f"(best val loss so far: {trainer.best_val_loss:.4f})")
+    elif args.reset:
+        log.info("\n--reset flag set: starting fresh (ignoring any existing checkpoints)")
+    else:
+        log.info("\nNo checkpoint found — starting fresh")
+
+    # ── 6. Train ──────────────────────────────────────────────────────────────
+    log.info(f"\nStarting training from epoch {start_epoch + 1} / {args.epochs}...\n")
     t0 = time.time()
 
-    metrics = trainer.train(
-        num_epochs              = args.epochs,
-        early_stopping_patience = args.patience,
-    )
+    # Patch the training loop to honour SIGTERM: save on interrupt
+    # We call train() which internally loops epochs; on SIGTERM we save
+    try:
+        metrics = trainer.train(
+            num_epochs              = args.epochs,
+            early_stopping_patience = args.patience,
+            checkpoint_interval     = args.ckpt_every,
+            start_epoch             = start_epoch,
+        )
+    except KeyboardInterrupt:
+        log.info("\nInterrupted. Saving emergency checkpoint...")
+        trainer.save_checkpoint("interrupted.pt", extra_config={
+            "tickers": tickers, "window": args.window,
+            "horizon": args.horizon, "run_name": run_name,
+        })
+        log.info(f"  Saved to {ckpt_dir}/interrupted.pt")
+        log.info("  Re-run the same command to resume.")
+        sys.exit(0)
 
     elapsed = time.time() - t0
-    log.info(f"\nTraining finished in {elapsed / 60:.1f} min")
+    log.info(f"\nTraining finished in {elapsed/60:.1f} min")
 
-    # ── 6. Test evaluation ────────────────────────────────────────────────────
-    # Load best model for test evaluation
-    best_ckpt = checkpoint_dir / "best_model.pt"
+    # ── 7. Final test evaluation ──────────────────────────────────────────────
+    log.info("\nEvaluating on held-out test set...")
+    best_ckpt = ckpt_dir / "best_model.pt"
     if best_ckpt.exists():
         ckpt = torch.load(best_ckpt, map_location=device)
         model.load_state_dict(ckpt["model_state_dict"])
-        log.info("Loaded best checkpoint for test evaluation")
 
     model.eval()
-    criterion = nn.CrossEntropyLoss()
+    criterion    = nn.CrossEntropyLoss()
     test_correct = test_total = 0
     test_loss_sum = 0.0
 
     with torch.no_grad():
         for x, y in test_loader:
-            x, y   = x.to(device), y.to(device)
-            out    = model(x)
-            loss   = criterion(out, y)
-            preds  = out.argmax(dim=1)
+            x, y  = x.to(device), y.to(device)
+            out   = model(x)
+            loss  = criterion(out, y)
+            preds = out.argmax(dim=1)
             test_correct  += (preds == y).sum().item()
             test_loss_sum += loss.item() * len(y)
             test_total    += len(y)
@@ -198,27 +358,27 @@ def main():
     test_acc  = test_correct / test_total
     test_loss = test_loss_sum / test_total
 
-    # Pull best val accuracy from metrics history
-    val_acc_history = metrics.history.get("val_accuracy", [])
-    best_val_acc    = max(val_acc_history) if val_acc_history else 0.0
-    epochs_run      = len(metrics.history.get("train_loss", []))
+    val_history = metrics.history.get("val_accuracy", [])
+    best_val    = max(val_history) if val_history else 0.0
+    epochs_run  = len(metrics.history.get("train_loss", []))
 
-    # ── 7. Summary ────────────────────────────────────────────────────────────
-    log.info("\n" + "=" * 60)
+    # ── 8. Summary ────────────────────────────────────────────────────────────
+    log.info("\n" + "=" * 65)
     log.info("  RESULTS")
-    log.info("=" * 60)
-    log.info(f"  Ticker:        {args.ticker}")
+    log.info("=" * 65)
+    log.info(f"  Stocks trained on: {len(stock_data)} ({', '.join(list(stock_data.keys())[:5])}{'...' if len(stock_data)>5 else ''})")
     log.info(f"  Window / Horizon:  {args.window}d / T+{args.horizon}d")
-    log.info(f"  Training data: {args.years}y  ({len(df)} trading days)")
-    log.info(f"  Samples:       {len(X_train)} train / {len(X_val)} val / {len(X_test)} test")
-    log.info(f"  Epochs run:    {epochs_run}")
-    log.info(f"  Best val acc:  {best_val_acc:.1%}")
-    log.info(f"  Test acc:      {test_acc:.1%}")
-    log.info(f"  Test loss:     {test_loss:.4f}")
-    log.info(f"  Runtime:       {elapsed / 60:.1f} min")
-    log.info(f"  Model saved:   {best_ckpt}")
-    log.info(f"  Log:           {log_path}")
-    log.info("=" * 60)
+    log.info(f"  Total samples:     {n_total:,}  ({len(X_train):,} train)")
+    log.info(f"  Epochs run:        {epochs_run + start_epoch}")
+    log.info(f"  Best val acc:      {best_val:.1%}")
+    log.info(f"  Test accuracy:     {test_acc:.1%}")
+    log.info(f"  Test loss:         {test_loss:.4f}")
+    log.info(f"  Runtime:           {elapsed/60:.1f} min")
+    log.info(f"  Model:             {best_ckpt}")
+    log.info(f"  Log:               {log_path}")
+    log.info("=" * 65)
+    log.info("\nTo run backtests against any ticker with this model:")
+    log.info(f"  python backtest_stoploss.py --ticker AAOI --model {best_ckpt} --window {args.window}")
 
 
 if __name__ == "__main__":
