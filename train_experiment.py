@@ -67,34 +67,137 @@ EXPERIMENTS_DIR = PROJECT_ROOT / "experiments"
 EXPERIMENTS_DIR.mkdir(exist_ok=True)
 
 # ── Stock presets ─────────────────────────────────────────────────────────────
-PRESETS: dict[str, list[str]] = {
+
+# S&P 500 fallback list — used when live fetch fails.
+# Covers all 11 GICS sectors, ~490 of the 503 constituents as of early 2026.
+_SP500_FALLBACK = [
+    # Information Technology
+    "AAPL","MSFT","NVDA","AVGO","ORCL","CRM","AMD","ACN","ADBE","CSCO",
+    "INTC","QCOM","TXN","AMAT","LRCX","KLAC","MRVL","MU","CDNS","SNPS",
+    "APH","GLW","TEL","STX","WDC","HPQ","HPE","IBM","CTSH","CDW",
+    "ANET","KEYS","FSLR","ENPH","NOW","PANW","CRWD","FTNT","ZS","ADSK",
+    "EPAM","GDDY","GEN","AKAM","VRSN","TDY","JNPR","NTAP","ZBRA","TRMB",
+    # Communication Services
+    "GOOGL","GOOG","META","NFLX","CMCSA","DIS","CHTR","T","VZ","TMUS",
+    "EA","TTWO","WBD","LYV","OMC","IPG","NWS","NWSA","FOXA","FOX",
+    # Consumer Discretionary
+    "AMZN","TSLA","HD","MCD","NKE","LOW","TJX","SBUX","BKNG","ORLY",
+    "AZO","EBAY","CMG","DHI","LEN","PHM","CCL","RCL","HLT","MAR",
+    "DKNG","EXPE","ULTA","DPZ","YUM","QSR","BBY","ROST","APTV","BWA",
+    "F","GM","HAS","MHK","LEA","NVR","TOL","KMX","AN","GPC",
+    # Consumer Staples
+    "WMT","COST","PG","KO","PEP","PM","MO","MDLZ","CL","KMB",
+    "GIS","K","CPB","HRL","MKC","SJM","CAG","ADM","BG","STZ",
+    "EL","CHD","CLX","COTY","HSY","MNST","KHC","TSN","WBA","DG","DLTR",
+    # Health Care
+    "UNH","JNJ","LLY","ABBV","MRK","TMO","ABT","DHR","BMY","MDT",
+    "EW","SYK","BSX","BDX","BAX","IQV","ZBH","HOLX","ISRG","RMD",
+    "MTD","COO","CRL","TECH","DGX","LH","PKI","VRTX","REGN","BIIB",
+    "AMGN","GILD","MRNA","ILMN","A","CI","CVS","ELV","CNC","HUM",
+    "MOH","CAH","COR","MCK","DVA","DRI","HCA",
+    # Financials
+    "BRK-B","JPM","BAC","WFC","GS","MS","C","AXP","BLK","SCHW",
+    "CME","ICE","SPGI","MCO","V","MA","PYPL","FI","FIS","GPN",
+    "CBOE","BX","APO","KKR","ARES","AMP","BEN","IVZ","TROW","STT",
+    "BK","TFC","USB","PNC","COF","DFS","SYF","AIG","MET","PRU",
+    "AFL","ALL","CB","TRV","PGR","HIG","AJG","AON","MMC","WTW",
+    "BR","CPAY","NDAQ","MKTX","MDB","FLT","WEX","CINF","EG","RE",
+    # Energy
+    "XOM","CVX","COP","EOG","SLB","PXD","MPC","VLO","PSX","HES",
+    "OXY","DVN","FANG","APA","HAL","BKR","CTRA","EQT","OKE","WMB",
+    "KMI","TRGP","LNG","ET","EPD",
+    # Industrials
+    "CAT","DE","GE","HON","MMM","RTX","LMT","NOC","GD","BA",
+    "ITW","EMR","ETN","PH","ROK","AME","DOV","IR","XYL","IEX",
+    "ROP","FTV","CARR","OTIS","TT","JCI","CSGP","CSX","UNP","NSC",
+    "FDX","UPS","GPN","EFX","VRSK","CTAS","ADP","PAYX","BR","LDOS",
+    "LII","MAS","SNA","TDG","HWM","SPX","AXON","CPRT","DAL","UAL",
+    "AAL","LUV","EXPD","JBHT","ODFL","CHRW","WSM","URI","BLDR",
+    # Materials
+    "LIN","APD","SHW","ECL","DOW","DD","PPG","IFF","LYB","CF",
+    "MOS","NUE","STLD","FCX","NEM","AEM","ALB","CTVA","PKG","IP",
+    "WRK","SEE","AVY","SON","AMCR","VMC","MLM","CRH","FMC","RPM",
+    # Utilities
+    "NEE","DUK","SO","D","AEP","EXC","SRE","PEG","ED","XEL",
+    "WEC","ES","ETR","FE","DTE","CNP","CMS","LNT","ATO","EVRG",
+    "AEE","CEG","EIX","PPL","NI","AWK","PNW",
+    # Real Estate
+    "AMT","PLD","EQIX","CCI","SPG","PSA","EQR","AVB","DLR","ESS",
+    "ARE","CPT","MAA","UDR","BXP","CBRE","VTR","WELL","VICI","O",
+    "SBAC","IRM","WY","EGP","FR","NNN","ADC","GLPI","LAMR",
+]
+
+# Large-cap stable: low beta, dividend payers, consistent fundamentals.
+# These move less than the market — ideal for testing lower-drawdown strategies.
+_LARGECAP_STABLE = [
+    # Consumer Staples (the most defensive sector)
+    "KO","PEP","PG","CL","KMB","GIS","K","CPB","HRL","MKC","HSY","CLX",
+    # Healthcare (steady demand, pricing power)
+    "JNJ","ABT","MDT","BMY","MRK","SYK","BDX","BAX","EW",
+    # Utilities (regulated, dividend-focused)
+    "NEE","SO","DUK","AEP","D","ED","XEL","WEC","ES","AWK","FE","DTE",
+    # Financials (large established, consistent)
+    "BRK-B","JPM","V","MA","AON","MMC","AXP",
+    # Industrials (blue-chip, 50+ year history)
+    "MMM","HON","EMR","ITW","CAT","GE","DE",
+    # Energy majors (dividend paying, stable)
+    "XOM","CVX",
+    # Materials (essential, pricing power)
+    "APD","ECL","SHW","LIN",
+    # Telecom
+    "VZ","T",
+]
+
+def _fetch_sp500_live() -> list[str]:
+    """
+    Fetch current S&P 500 tickers from GitHub datasets repo.
+    Falls back to hardcoded list if unavailable.
+    """
+    try:
+        import urllib.request, csv, io
+        url  = "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+        with urllib.request.urlopen(url, timeout=10) as resp:
+            text = resp.read().decode()
+        reader  = csv.DictReader(io.StringIO(text))
+        tickers = [row["Symbol"].replace(".", "-") for row in reader]
+        print(f"  [sp500] Fetched {len(tickers)} live tickers from GitHub datasets")
+        return tickers
+    except Exception as e:
+        print(f"  [sp500] Live fetch failed ({e}); using hardcoded fallback ({len(_SP500_FALLBACK)} tickers)")
+        return _SP500_FALLBACK
+
+PRESETS: dict[str, list[str] | str] = {
     "tech": [
-        "AAPL", "MSFT", "NVDA", "AMD", "GOOGL", "META", "AMZN",
-        "INTC", "QCOM", "AMAT", "LRCX", "KLAC", "MRVL", "AVGO",
-        "TXN", "MU", "AAOI", "SMCI", "CRWD", "PANW",
+        "AAPL","MSFT","NVDA","AMD","GOOGL","META","AMZN","INTC","QCOM",
+        "AMAT","LRCX","KLAC","MRVL","AVGO","TXN","MU","AAOI","SMCI",
+        "CRWD","PANW","NOW","ADBE","CRM","ADSK","CDNS","SNPS","ANET",
     ],
     "finance": [
-        "JPM", "GS", "BAC", "MS", "WFC", "C", "BLK", "AXP",
-        "SCHW", "USB", "PNC", "TFC", "COF", "DFS", "SYF",
+        "JPM","GS","BAC","MS","WFC","C","BLK","AXP","SCHW","USB",
+        "PNC","TFC","COF","DFS","SYF","V","MA","CME","ICE","SPGI",
     ],
-    "sp500-sample": [
-        # Tech
-        "AAPL", "MSFT", "NVDA", "GOOGL", "META", "AMZN",
-        # Finance
-        "JPM", "GS", "BAC", "BLK",
-        # Healthcare
-        "JNJ", "UNH", "PFE", "ABBV", "MRK",
-        # Consumer
-        "TSLA", "HD", "MCD", "SBUX", "NKE",
-        # Energy
-        "XOM", "CVX", "COP", "SLB",
-        # Industrials
-        "CAT", "BA", "GE", "HON", "MMM",
-        # Utilities / REIT
-        "NEE", "AMT", "PLD",
+    "largecap-stable": _LARGECAP_STABLE,
+    "sp500":           "dynamic",     # resolved at runtime via _fetch_sp500_live()
+    "sp500-sample": [                 # kept for quick iteration / testing
+        "AAPL","MSFT","NVDA","GOOGL","META","AMZN",
+        "JPM","GS","BAC","BLK",
+        "JNJ","UNH","PFE","ABBV","MRK",
+        "TSLA","HD","MCD","SBUX","NKE",
+        "XOM","CVX","COP","SLB",
+        "CAT","BA","GE","HON","MMM",
+        "NEE","AMT","PLD",
     ],
-    "single": [],   # populated from --tickers
+    "single": [],
 }
+
+def resolve_tickers(preset: str | None, tickers: list[str] | None) -> list[str]:
+    """Return the final ticker list given CLI args."""
+    if tickers:
+        return [t.upper() for t in tickers]
+    val = PRESETS[preset]
+    if val == "dynamic":
+        return _fetch_sp500_live()
+    return list(val)
 
 
 # ── Logging ───────────────────────────────────────────────────────────────────
@@ -119,7 +222,9 @@ def parse_args() -> argparse.Namespace:
     )
     # Stock selection
     stock = p.add_mutually_exclusive_group(required=True)
-    stock.add_argument("--preset",  choices=list(PRESETS), help="Use a predefined stock basket")
+    stock.add_argument("--preset",
+                       choices=["tech","finance","largecap-stable","sp500","sp500-sample"],
+                       help="Use a predefined stock basket (sp500 fetches live list ~503 stocks)")
     stock.add_argument("--tickers", nargs="+",             help="Explicit list of tickers")
 
     # Data
@@ -175,13 +280,10 @@ def main():
     args = parse_args()
 
     # Resolve tickers
-    if args.preset:
-        tickers = PRESETS[args.preset]
-        if not tickers:
-            print("--preset single requires --tickers too (use --tickers instead)")
-            sys.exit(1)
-    else:
-        tickers = [t.upper() for t in args.tickers]
+    tickers = resolve_tickers(args.preset, args.tickers)
+    if not tickers:
+        print("No tickers resolved. Use --tickers or a valid --preset.")
+        sys.exit(1)
 
     run_name = args.run_name or make_run_name(tickers, args.window, args.horizon, args.preset)
     ckpt_dir = PROJECT_ROOT / "models" / run_name
