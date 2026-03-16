@@ -401,7 +401,19 @@ def main():
 
     if not args.reset and resume_ckpt.exists():
         log.info(f"\nResuming from checkpoint: {resume_ckpt.name}")
-        start_epoch = trainer.load_checkpoint(resume_ckpt) 
+        start_epoch = trainer.load_checkpoint(resume_ckpt)
+
+        # Guard: if checkpoint has a corrupt/zero best_val_loss, reset it so the
+        # first real epoch is always eligible to save.  A val_loss of 0.0 means
+        # no real epoch has ever been saved (e.g. checkpoint was written on init
+        # before any training), and keeping it would prevent any future saves.
+        if trainer.best_val_loss <= 0.0 or not (0.0 < trainer.best_val_loss < 100.0):
+            log.warning(
+                f"  Checkpoint best_val_loss={trainer.best_val_loss:.4f} looks corrupt — "
+                "resetting to inf so first real epoch can save."
+            )
+            trainer.best_val_loss = float("inf")
+
         log.info(f"  Resuming from epoch {start_epoch + 1}  "
                  f"(best val loss so far: {trainer.best_val_loss:.4f})")
     elif args.reset:
