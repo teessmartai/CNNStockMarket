@@ -240,7 +240,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--batch",    type=int,   default=256,  help="Batch size (default: 256)")
 
     # Hyperparameters
-    p.add_argument("--lr",           type=float, default=1e-3,  help="Learning rate (default: 1e-3)")
+    p.add_argument("--lr",           type=float, default=1e-4,  help="Learning rate (default: 1e-4)")
     p.add_argument("--weight-decay", type=float, default=1e-5,  help="Weight decay (default: 1e-5)")
     p.add_argument("--dropout",      type=float, default=0.4,   help="Dropout (default: 0.4)")
 

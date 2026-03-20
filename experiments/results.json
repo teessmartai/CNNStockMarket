@@ -4,11 +4,11 @@
     "timestamp": "2026-03-20T18:16:31Z",
     "kaggle_kernel_version": 11,
     "device": "Tesla T4",
-    "hypothesis": "Baseline run — establish GPU training pipeline",
+    "hypothesis": "Baseline run \u2014 establish GPU training pipeline",
     "changes_from_previous": "GPU support added (was hardcoded CPU)",
     "config": {
       "lr": 0.001,
-      "weight_decay": 1e-5,
+      "weight_decay": 1e-05,
       "dropout": 0.4,
       "batch_size": 256,
       "optimizer": "Adam",
@@ -30,6 +30,70 @@
       "early_stopped": true
     },
     "verdict": "kept",
-    "notes": "Model peaked at ~epoch 2, early stopping at epoch 17. LR likely too high — overshoots and can't recover. Generalization gap: val 54.1% vs test 51.7% = 2.4%. This is the baseline to beat."
+    "notes": "Model peaked at ~epoch 2, early stopping at epoch 17. LR likely too high \u2014 overshoots and can't recover. Generalization gap: val 54.1% vs test 51.7% = 2.4%. This is the baseline to beat."
+  },
+  {
+    "run_id": "run_002_lower_lr_1e4",
+    "timestamp": "2026-03-20T22:29:49.740205+00:00",
+    "kaggle_kernel_version": null,
+    "device": "Tesla P100-PCIE-16GB",
+    "hypothesis": "Lower LR from 1e-3 to 1e-4",
+    "changes_from_previous": "train_experiment.py: default lr changed from 1e-3 to 1e-4",
+    "config": {
+      "lr": 0.001,
+      "weight_decay": 1e-05,
+      "dropout": 0.4,
+      "batch_size": 256,
+      "optimizer": "Adam",
+      "scheduler": null,
+      "window": 128,
+      "horizon": 5,
+      "years": 5,
+      "preset": "largecap-stable",
+      "epochs_max": 100,
+      "patience": 15
+    },
+    "results": {
+      "best_val_acc": 0.541,
+      "test_acc": 0.541,
+      "test_loss": 0.6897,
+      "epochs_run": 20,
+      "runtime_min": 19.4,
+      "early_stopped": true
+    },
+    "verdict": "pending",
+    "notes": ""
+  },
+  {
+    "run_id": "run_002_lower_lr_1e4",
+    "timestamp": "2026-03-20T22:54:20.554293+00:00",
+    "kaggle_kernel_version": null,
+    "device": "Tesla P100-PCIE-16GB",
+    "hypothesis": "Lower LR from 1e-3 to 1e-4 \u2014 fix epoch-2 peak and overfitting",
+    "changes_from_previous": "train_experiment.py: default lr 1e-3 \u2192 1e-4",
+    "config": {
+      "lr": 0.001,
+      "weight_decay": 1e-05,
+      "dropout": 0.4,
+      "batch_size": 256,
+      "optimizer": "Adam",
+      "scheduler": null,
+      "window": 128,
+      "horizon": 5,
+      "years": 5,
+      "preset": "largecap-stable",
+      "epochs_max": 100,
+      "patience": 15
+    },
+    "results": {
+      "best_val_acc": 0.541,
+      "test_acc": 0.541,
+      "test_loss": 0.6897,
+      "epochs_run": 20,
+      "runtime_min": 19.4,
+      "early_stopped": true
+    },
+    "verdict": "kept",
+    "notes": "Generalization gap closed completely. val_acc=test_acc=54.1%. test_loss improved 0.6923\u21920.6897. Longer training (20 epochs vs 17). Clear win."
   }
 ]
