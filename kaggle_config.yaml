@@ -1,0 +1,9 @@
+# kaggle-runner config — https://github.com/teessmartai/kaggle-runner
+train_cmd: "python train_experiment.py --preset largecap-stable --window 128 --horizon 5 --years 5"
+requirements:
+  - yfinance
+  - scikit-learn
+  - seaborn
+  - tqdm
+checkpoint_dir: "models/multi_largecap-stable_w128_h5"
+checkpoint_dataset: "tassistant/cnn-stock-checkpoints"
