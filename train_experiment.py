@@ -305,7 +305,18 @@ def main():
     log.info(f"  Log: {log_path}")
     log.info("")
 
-    device = torch.device("cpu")
+    # ── Device selection ──────────────────────────────────────────────────────
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+        gpu_name = torch.cuda.get_device_name(0)
+        log.info(f"  Device: GPU — {gpu_name} ({torch.cuda.device_count()} device(s))")
+    elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+        device = torch.device("mps")
+        log.info("  Device: Apple MPS (Metal Performance Shaders)")
+    else:
+        device = torch.device("cpu")
+        log.info("  Device: CPU")
+    log.info("")
 
     # ── 1. Fetch data ─────────────────────────────────────────────────────────
     end_date   = datetime.today().strftime("%Y-%m-%d")
@@ -362,9 +373,10 @@ def main():
     test_dataset= StockDataset(torch.tensor(X_test,  dtype=torch.float32),
                                torch.tensor(y_test,  dtype=torch.long))
 
-    train_loader = DataLoader(dataset,      batch_size=args.batch, shuffle=True,  num_workers=0)
-    val_loader   = DataLoader(val_dataset,  batch_size=args.batch, shuffle=False, num_workers=0)
-    test_loader  = DataLoader(test_dataset, batch_size=args.batch, shuffle=False, num_workers=0)
+    pin = device.type == "cuda"
+    train_loader = DataLoader(dataset,      batch_size=args.batch, shuffle=True,  num_workers=0, pin_memory=pin)
+    val_loader   = DataLoader(val_dataset,  batch_size=args.batch, shuffle=False, num_workers=0, pin_memory=pin)
+    test_loader  = DataLoader(test_dataset, batch_size=args.batch, shuffle=False, num_workers=0, pin_memory=pin)
 
     # ── 4. Model + trainer ────────────────────────────────────────────────────
     model = StockCNN(
