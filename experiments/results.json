@@ -1,0 +1,35 @@
+[
+  {
+    "run_id": "run_001_baseline_gpu",
+    "timestamp": "2026-03-20T18:16:31Z",
+    "kaggle_kernel_version": 11,
+    "device": "Tesla T4",
+    "hypothesis": "Baseline run — establish GPU training pipeline",
+    "changes_from_previous": "GPU support added (was hardcoded CPU)",
+    "config": {
+      "lr": 0.001,
+      "weight_decay": 1e-5,
+      "dropout": 0.4,
+      "batch_size": 256,
+      "optimizer": "Adam",
+      "scheduler": null,
+      "window": 128,
+      "horizon": 5,
+      "years": 5,
+      "preset": "largecap-stable",
+      "epochs_max": 100,
+      "patience": 15
+    },
+    "results": {
+      "epochs_run": 17,
+      "best_epoch": 2,
+      "best_val_acc": 0.541,
+      "test_acc": 0.517,
+      "test_loss": 0.6923,
+      "runtime_min": 42.4,
+      "early_stopped": true
+    },
+    "verdict": "kept",
+    "notes": "Model peaked at ~epoch 2, early stopping at epoch 17. LR likely too high — overshoots and can't recover. Generalization gap: val 54.1% vs test 51.7% = 2.4%. This is the baseline to beat."
+  }
+]
