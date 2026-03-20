@@ -243,6 +243,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--lr",           type=float, default=1e-4,  help="Learning rate (default: 1e-4)")
     p.add_argument("--weight-decay", type=float, default=1e-5,  help="Weight decay (default: 1e-5)")
     p.add_argument("--dropout",      type=float, default=0.4,   help="Dropout (default: 0.4)")
+    p.add_argument("--scheduler",    type=str,   default="plateau",
+                   choices=["plateau", "cosine", "none"],
+                   help="LR scheduler: plateau (default), cosine, or none")
 
     # Control
     p.add_argument("--reset", action="store_true", help="Ignore existing checkpoint, start fresh")
@@ -299,7 +302,7 @@ def main():
     log.info(f"  Tickers ({len(tickers)}): {', '.join(tickers)}")
     log.info(f"  Window: {args.window}d   Horizon: T+{args.horizon}d   Stride: {args.stride}")
     log.info(f"  Data: {args.years} years per stock")
-    log.info(f"  LR: {args.lr}   WD: {args.weight_decay}   Dropout: {args.dropout}")
+    log.info(f"  LR: {args.lr}   WD: {args.weight_decay}   Dropout: {args.dropout}   Scheduler: {args.scheduler}")
     log.info(f"  Batch: {args.batch}   Epochs: {args.epochs}   Patience: {args.patience}")
     log.info(f"  Checkpoint dir: {ckpt_dir}")
     log.info(f"  Log: {log_path}")
@@ -389,6 +392,7 @@ def main():
     )
     log.info(f"\n  Model: {model.count_parameters():,} parameters")
 
+    log.info(f"  Scheduler: {args.scheduler}")
     trainer = Trainer(
         model          = model,
         train_loader   = train_loader,
@@ -397,6 +401,8 @@ def main():
         weight_decay   = args.weight_decay,
         device         = device,
         checkpoint_dir = ckpt_dir,
+        scheduler      = args.scheduler,
+        num_epochs     = args.epochs,
     )
 
     # ── 5. Resume from checkpoint if available ────────────────────────────────
