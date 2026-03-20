@@ -246,6 +246,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--scheduler",    type=str,   default="plateau",
                    choices=["plateau", "cosine", "none"],
                    help="LR scheduler: plateau (default), cosine, or none")
+    p.add_argument("--optimizer",    type=str,   default="adam",
+                   choices=["adam", "adamw"],
+                   help="Optimizer: adam (default) or adamw")
+    p.add_argument("--norm",         type=str,   default="minmax",
+                   choices=["minmax", "logreturns"],
+                   help="Input normalization: minmax per-window (default) or logreturns")
 
     # Control
     p.add_argument("--reset", action="store_true", help="Ignore existing checkpoint, start fresh")
@@ -302,7 +308,8 @@ def main():
     log.info(f"  Tickers ({len(tickers)}): {', '.join(tickers)}")
     log.info(f"  Window: {args.window}d   Horizon: T+{args.horizon}d   Stride: {args.stride}")
     log.info(f"  Data: {args.years} years per stock")
-    log.info(f"  LR: {args.lr}   WD: {args.weight_decay}   Dropout: {args.dropout}   Scheduler: {args.scheduler}")
+    log.info(f"  LR: {args.lr}   WD: {args.weight_decay}   Dropout: {args.dropout}")
+    log.info(f"  Scheduler: {args.scheduler}   Optimizer: {args.optimizer}   Norm: {args.norm}")
     log.info(f"  Batch: {args.batch}   Epochs: {args.epochs}   Patience: {args.patience}")
     log.info(f"  Checkpoint dir: {ckpt_dir}")
     log.info(f"  Log: {log_path}")
@@ -338,12 +345,13 @@ def main():
         log.warning(f"  Skipped (no data): {', '.join(skipped)}")
 
     # ── 2. Build combined dataset ─────────────────────────────────────────────
-    log.info(f"\nBuilding windows (size={args.window}, horizon={args.horizon}, stride={args.stride})...")
+    log.info(f"\nBuilding windows (size={args.window}, horizon={args.horizon}, stride={args.stride}, norm={args.norm})...")
     X_all, y_all = combine_multiple_stocks(
         stock_data,
-        window_size = args.window,
-        horizon     = args.horizon,
-        stride      = args.stride,
+        window_size   = args.window,
+        horizon       = args.horizon,
+        stride        = args.stride,
+        normalization = args.norm,
     )
 
     # Per-stock breakdown
@@ -392,7 +400,7 @@ def main():
     )
     log.info(f"\n  Model: {model.count_parameters():,} parameters")
 
-    log.info(f"  Scheduler: {args.scheduler}")
+    log.info(f"  Scheduler: {args.scheduler}   Optimizer: {args.optimizer}   Norm: {args.norm}")
     trainer = Trainer(
         model          = model,
         train_loader   = train_loader,
@@ -403,6 +411,7 @@ def main():
         checkpoint_dir = ckpt_dir,
         scheduler      = args.scheduler,
         num_epochs     = args.epochs,
+        optimizer_type = args.optimizer,
     )
 
     # ── 5. Resume from checkpoint if available ────────────────────────────────

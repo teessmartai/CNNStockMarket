@@ -20,6 +20,40 @@ logger = logging.getLogger(__name__)
 STANDARD_COLUMNS = ["Open", "High", "Low", "Close", "Volume"]
 
 
+def to_log_returns(df: pd.DataFrame) -> tuple:
+    """
+    Convert OHLCV DataFrame to log returns for use as model features.
+
+    Price columns (OHLC): log(price_t / price_{t-1})
+    Volume: log(vol_t / vol_{t-1}), clamped to avoid -inf
+
+    Returns:
+        (features_df, original_close) where original_close is the
+        raw Close series aligned to features_df (used for labels).
+    """
+    original_close = df["Close"].copy()
+
+    df_lr = pd.DataFrame(index=df.index)
+    for col in ["Open", "High", "Low", "Close"]:
+        if col in df.columns:
+            df_lr[col] = np.log(df[col] / df[col].shift(1))
+    if "Volume" in df.columns:
+        vol = df["Volume"].replace(0, np.nan)
+        df_lr["Volume"] = np.log(vol / vol.shift(1))
+
+    # Drop first row (NaN from shift)
+    df_lr = df_lr.dropna()
+    original_close = original_close.loc[df_lr.index]
+
+    # Z-score across the full series for training stability
+    for col in df_lr.columns:
+        std = df_lr[col].std()
+        if std > 0:
+            df_lr[col] = (df_lr[col] - df_lr[col].mean()) / std
+
+    return df_lr, original_close
+
+
 def normalize(df: pd.DataFrame, method: str = "minmax") -> pd.DataFrame:
     """
     Normalize stock data using min-max scaling per feature.
@@ -86,8 +120,10 @@ def create_sliding_windows(
     window_size: int = 256,
     horizon: int = 5,
     normalize_windows: bool = True,
+    normalization: str = "minmax",
     stride: int = 1,
     columns: Optional[List[str]] = None,
+    _label_close: Optional[pd.Series] = None,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
     Create sliding windows from stock data for model training.
@@ -133,8 +169,11 @@ def create_sliding_windows(
     # Get OHLCV values
     data = df[available_columns].values
 
-    # Create labels for the entire series
-    labels = create_labels(df, horizon)
+    # Labels always from original close prices (not returns)
+    label_df = df.copy()
+    if _label_close is not None:
+        label_df["Close"] = _label_close.values
+    labels = create_labels(label_df, horizon)
 
     # Calculate number of valid windows with stride
     total_range = len(df) - window_size - horizon + 1
@@ -154,7 +193,7 @@ def create_sliding_windows(
     for i in window_indices:
         window = data[i : i + window_size].copy()
 
-        if normalize_windows:
+        if normalize_windows and normalization == "minmax":
             # Min-max normalize each window independently
             for col_idx in range(window.shape[1]):
                 col_data = window[:, col_idx]
@@ -164,6 +203,7 @@ def create_sliding_windows(
                     window[:, col_idx] = (col_data - min_val) / (max_val - min_val)
                 else:
                     window[:, col_idx] = 0.0
+        # logreturns: already normalized globally before windowing — no per-window step
 
         windows.append(window)
         # Label at the end of the window
@@ -307,6 +347,7 @@ def combine_multiple_stocks(
     horizon: int = 5,
     stride: int = 1,
     columns: Optional[List[str]] = None,
+    normalization: str = "minmax",
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
     Combine windows from multiple stocks into a single dataset.
@@ -317,6 +358,7 @@ def combine_multiple_stocks(
         horizon: Prediction horizon
         stride: Step size between windows (1=overlapping)
         columns: List of column names to use (default: OHLCV)
+        normalization: "minmax" (per-window) or "logreturns" (global z-score of returns)
 
     Returns:
         Combined (X, y) arrays from all stocks
@@ -326,7 +368,16 @@ def combine_multiple_stocks(
 
     for ticker, df in stock_data.items():
         try:
-            X, y = create_sliding_windows(df, window_size, horizon, stride=stride, columns=columns)
+            label_close = None
+            feat_df = df
+            if normalization == "logreturns":
+                feat_df, label_close = to_log_returns(df)
+            X, y = create_sliding_windows(
+                feat_df, window_size, horizon,
+                normalization=normalization,
+                stride=stride, columns=columns,
+                _label_close=label_close,
+            )
             all_X.append(X)
             all_y.append(y)
             logger.debug(f"{ticker}: {len(X)} windows")

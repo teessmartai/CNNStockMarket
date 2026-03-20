@@ -65,9 +65,15 @@ class Trainer:
 
         # Loss function and optimizer
         self.criterion = nn.CrossEntropyLoss()
-        self.optimizer = torch.optim.Adam(
-            model.parameters(), lr=learning_rate, weight_decay=weight_decay
-        )
+        optimizer_type = kwargs.get("optimizer_type", "adam")
+        if optimizer_type == "adamw":
+            self.optimizer = torch.optim.AdamW(
+                model.parameters(), lr=learning_rate, weight_decay=weight_decay
+            )
+        else:
+            self.optimizer = torch.optim.Adam(
+                model.parameters(), lr=learning_rate, weight_decay=weight_decay
+            )
 
         # Learning rate scheduler
         scheduler_type = kwargs.get("scheduler", "plateau")
