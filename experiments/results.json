@@ -550,5 +550,19 @@
     },
     "verdict": "discarded",
     "notes": "test_acc 54.7% \u2264 no improvement \u274c vs best 64.4%"
+  },
+  {
+    "run_id": "run_p2_004_5yr_stride5_shuffle",
+    "timestamp": "2026-03-21T22:37:09.062561+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Reproduce accidental v31: 5yr data, stride=5, shuffle \u2014 confirmed best so far at 64.4%",
+    "changes_from_previous": "--years 5 --stride 5 --shuffle-split",
+    "config": {
+      "cmd_args": "--years 5 --stride 5 --shuffle-split"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
