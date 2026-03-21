@@ -21,12 +21,12 @@
     "id": "run_008_residual_low_dropout",
     "hypothesis": "Residual + dropout 0.2 \u2014 BN already regularizes, reduce dropout to compensate",
     "cmd_args": "--residual --dropout 0.2",
-    "status": "running"
+    "status": "discarded"
   },
   {
     "id": "run_009_no_batchnorm",
     "hypothesis": "Disable BatchNorm \u2014 test if BN is actually helping (also tests fixed BN ordering)",
     "cmd_args": "--no-batchnorm",
-    "status": "pending"
+    "status": "running"
   }
 ]

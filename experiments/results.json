@@ -234,6 +234,20 @@
       "cmd_args": "--residual --dropout 0.2"
     },
     "results": {},
+    "verdict": "discarded",
+    "notes": "kernel error \u2014 no output collected"
+  },
+  {
+    "run_id": "run_009_no_batchnorm",
+    "timestamp": "2026-03-21T03:23:02.861184+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Disable BatchNorm \u2014 test if BN is actually helping (also tests fixed BN ordering)",
+    "changes_from_previous": "--no-batchnorm",
+    "config": {
+      "cmd_args": "--no-batchnorm"
+    },
+    "results": {},
     "verdict": "pending",
     "notes": ""
   }
