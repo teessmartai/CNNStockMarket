@@ -5,11 +5,5 @@
     "version": 25,
     "started_at": "2026-03-21T15:10:24.779096+00:00"
   },
-  "b": {
-    "slot": "b",
-    "run_id": "run_009_no_batchnorm",
-    "cmd_args": "--norm logreturns --no-batchnorm",
-    "version": 24,
-    "started_at": "2026-03-21T14:46:00Z"
-  }
+  "b": null
 }
