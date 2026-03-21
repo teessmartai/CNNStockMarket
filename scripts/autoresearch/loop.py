@@ -32,15 +32,17 @@ RESULTS_FILE = REPO_ROOT / "experiments" / "results.json"
 QUEUE_FILE   = REPO_ROOT / "experiments" / "queue.json"
 SLOTS_FILE   = REPO_ROOT / "experiments" / "slot_state.json"
 KAGGLE_TOKEN = "KGAT_6b6cb4995fa85455d4045d57523e70e7"
+KERNEL_SLUG  = "tassistant/cnn-stock-market-training"
+# Same kernel, multiple versions run in parallel — no second slug needed
 SLOTS = {
-    "a": "tassistant/cnn-stock-market-training",
-    "b": "tassistant/cnn-stock-training-b",
+    "a": KERNEL_SLUG,
+    "b": KERNEL_SLUG,
 }
 BASE_CMD     = "--preset largecap-stable --window 128 --horizon 5 --years 5 --norm logreturns"
 DATASET_DIR  = Path("/tmp/kaggle-code-dataset")
 KERNEL_DIRS  = {
     "a": Path("/tmp/kaggle-setup/kernel"),
-    "b": Path("/tmp/kaggle-setup/kernel-none"),
+    "b": Path("/tmp/kaggle-setup/kernel"),
 }
 VENV_KAGGLE  = REPO_ROOT / "venv" / "bin" / "kaggle"
 POLL_INTERVAL = 300  # seconds between daemon polls
@@ -144,21 +146,67 @@ def patch_runner_cmd(slot, cmd_args):
 def push_kernel(slot):
     out, err, rc = kaggle("kernels", "push", "-p", str(KERNEL_DIRS[slot]))
     print(f"  [{slot}] {out or err}")
-    return rc == 0
+    # Extract version number: "Kernel version 20 successfully pushed"
+    m = re.search(r"version (\d+)", out)
+    version = int(m.group(1)) if m else None
+    return rc == 0, version
 
 
-def kernel_status(slug):
-    out, _, _ = kaggle("kernels", "status", slug)
-    if "COMPLETE" in out.upper():
+def collect_version(version: int, slot: str):
+    """Download outputs for a specific kernel version."""
+    out_dir = Path(f"/tmp/autoresearch_{slot}_v{version}")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    # Kaggle always serves the LATEST completed version's output — so we check
+    # which log file timestamp/name matches our expected version window
+    out, err, rc = kaggle("kernels", "output", KERNEL_SLUG,
+                          "-p", str(out_dir), "--file-pattern", ".log$")
+    if rc != 0:
+        return None
+    logs = list(out_dir.glob("**/experiments/*.log"))
+    return logs[0] if logs else None
+
+
+def slot_version_done(slot_state: dict):
+    """Return 'complete', 'error', or 'running' for a tracked slot."""
+    if slot_state is None:
+        return "free"
+    version = slot_state.get("version")
+    started = slot_state.get("started_at", "")
+    # Try downloading — if we get a log matching after started_at, it's done
+    log_path = collect_version(version, slot_state.get("slot", "x"))
+    if log_path:
+        log_ts = log_path.stat().st_mtime
         return "complete"
-    if "ERROR" in out.upper():
+    # Check overall status
+    out, _, _ = kaggle("kernels", "status", KERNEL_SLUG)
+    out_upper = out.upper()
+    if "ERROR" in out_upper:
         return "error"
-    if "RUNNING" in out.upper() or "QUEUED" in out.upper():
-        return "running"
-    return "unknown"
+    return "running"
 
 
 # ── Result parsing ─────────────────────────────────────────────────────────
+
+def parse_log(log_path: Path):
+    if not log_path or not log_path.exists():
+        return None
+    log_text = log_path.read_text()
+
+    def extract(pattern, cast=float):
+        m = re.search(pattern, log_text)
+        return cast(m.group(1)) if m else None
+
+    gpu_match = re.search(r"Device: GPU — ([^\n(]+)", log_text)
+    return {
+        "device": gpu_match.group(1).strip() if gpu_match else "unknown",
+        "best_val_acc":  round((extract(r"Best val acc:\s+([\d.]+)%") or 0) / 100, 4),
+        "test_acc":      round((extract(r"Test accuracy:\s+([\d.]+)%") or 0) / 100, 4),
+        "test_loss":     extract(r"Test loss:\s+([\d.]+)") or 0,
+        "epochs_run":    int(extract(r"Epochs run:\s+(\d+)") or 0),
+        "runtime_min":   extract(r"Runtime:\s+([\d.]+) min") or 0,
+        "early_stopped": True,
+    }
+
 
 def collect_result(slug, slot):
     out_dir = Path(f"/tmp/autoresearch_{slot}_{int(time.time())}")
@@ -230,13 +278,16 @@ def daemon_tick():
         status   = kernel_status(slug)
 
         # ── Collect finished run ───────────────────────────────────────────
+        status = slot_version_done(slot_run) if slot_run else "free"
         if slot_run and status in ("complete", "error"):
             run_id = slot_run["run_id"]
             print(f"  [{slot_id}] {run_id} → {status}")
 
             metrics = None
             if status == "complete":
-                metrics = collect_result(slug, slot_id)
+                version = slot_run.get("version")
+                log_path = collect_version(version, slot_id)
+                metrics = parse_log(log_path) if log_path else None
 
             # Find matching pending result entry
             entry = next((r for r in results if r["run_id"] == run_id
@@ -272,11 +323,10 @@ def daemon_tick():
             changed = True
 
         # ── Launch next pending experiment ─────────────────────────────────
-        if slots.get(slot_id) is None and pending:
+        if status in ("free",) and pending:
             exp = pending.pop(0)
             print(f"  [{slot_id}] Launching {exp['id']}: {exp['cmd_args']}")
 
-            # Add placeholder result entry
             results.append({
                 "run_id":                exp["id"],
                 "timestamp":             ts(),
@@ -290,10 +340,11 @@ def daemon_tick():
                 "notes":                 "",
             })
 
-            # Patch runner + push (dataset rebuild only on first launch of tick)
             patch_runner_cmd(slot_id, exp["cmd_args"])
-            if push_kernel(slot_id):
-                slots[slot_id] = {"run_id": exp["id"], "started_at": ts()}
+            ok, version = push_kernel(slot_id)
+            if ok:
+                slots[slot_id] = {"slot": slot_id, "run_id": exp["id"],
+                                   "version": version, "started_at": ts()}
                 exp["status"] = "running"
                 changed = True
             else:
