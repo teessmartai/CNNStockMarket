@@ -33,13 +33,13 @@
     "id": "run_012_lr5e5",
     "hypothesis": "Lower LR (5e-5) \u2014 log returns are smaller magnitude, may need gentler updates",
     "cmd_args": "--norm logreturns --lr 5e-5",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_013_window256",
     "hypothesis": "Larger window (256 vs 128) \u2014 more temporal context per sample",
     "cmd_args": "--norm logreturns --window 256",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_014_clipgrad",

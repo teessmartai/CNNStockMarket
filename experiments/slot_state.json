@@ -1,4 +1,14 @@
 {
-  "a": null,
-  "b": null
+  "a": {
+    "slot": "a",
+    "run_id": "run_012_lr5e5",
+    "version": 27,
+    "started_at": "2026-03-21T15:35:39.804133+00:00"
+  },
+  "b": {
+    "slot": "b",
+    "run_id": "run_013_window256",
+    "version": 28,
+    "started_at": "2026-03-21T15:35:41.677143+00:00"
+  }
 }
