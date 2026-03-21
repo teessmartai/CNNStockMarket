@@ -264,5 +264,19 @@
     },
     "verdict": "discarded",
     "notes": "4.2pp generalization gap (val 57.9% vs test 53.7%). Residual adds overfitting on this dataset size. Logreturns baseline (no residual) stays."
+  },
+  {
+    "run_id": "run_010_residual_low_dropout",
+    "timestamp": "2026-03-21T15:10:22.789935+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Residual + dropout 0.2 on logreturns baseline",
+    "changes_from_previous": "--norm logreturns --residual --dropout 0.2",
+    "config": {
+      "cmd_args": "--norm logreturns --residual --dropout 0.2"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]

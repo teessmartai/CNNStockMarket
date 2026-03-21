@@ -21,7 +21,7 @@
     "id": "run_010_residual_low_dropout",
     "hypothesis": "Residual + dropout 0.2 on logreturns baseline",
     "cmd_args": "--norm logreturns --residual --dropout 0.2",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_011_years7",
