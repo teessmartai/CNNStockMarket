@@ -213,15 +213,22 @@
     "run_id": "run_007_residual",
     "timestamp": "2026-03-21T03:17:56.509614+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Residual skip connections \u2014 improve gradient flow through 8 conv layers",
     "changes_from_previous": "--residual",
     "config": {
       "cmd_args": "--residual"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "best_val_acc": 0.557,
+      "test_acc": 0.496,
+      "test_loss": 0.6959,
+      "epochs_run": 17,
+      "runtime_min": 18.6,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 49.6% \u2264 no improvement \u274c vs best 54.1%"
   },
   {
     "run_id": "run_008_residual_low_dropout",

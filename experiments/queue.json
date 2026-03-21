@@ -15,7 +15,7 @@
     "id": "run_007_residual",
     "hypothesis": "Residual skip connections \u2014 improve gradient flow through 8 conv layers",
     "cmd_args": "--residual",
-    "status": "running"
+    "status": "discarded"
   },
   {
     "id": "run_008_residual_low_dropout",
