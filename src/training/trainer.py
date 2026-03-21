@@ -89,6 +89,9 @@ class Trainer:
                 self.optimizer, mode="min", factor=0.5, patience=5
             )
 
+        # Gradient clipping (0 = disabled)
+        self.clip_grad = float(kwargs.get("clip_grad", 0.0))
+
         # Metrics tracker
         self.metrics = MetricsTracker()
 
@@ -119,6 +122,8 @@ class Trainer:
 
             # Backward pass
             loss.backward()
+            if self.clip_grad > 0:
+                torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.clip_grad)
             self.optimizer.step()
 
             # Compute metrics

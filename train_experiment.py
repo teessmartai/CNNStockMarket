@@ -256,6 +256,8 @@ def parse_args() -> argparse.Namespace:
                    help="Use BatchNorm1d after each conv layer (default: on)")
     p.add_argument("--residual",     action="store_true", default=False,
                    help="Add residual skip connections between conv layers")
+    p.add_argument("--clip-grad",    type=float, default=0.0,
+                   help="Gradient clipping max norm (0 = disabled, e.g. 1.0)")
 
     # Control
     p.add_argument("--reset", action="store_true", help="Ignore existing checkpoint, start fresh")
@@ -405,7 +407,7 @@ def main():
         use_residual  = args.residual,
     )
     log.info(f"\n  Model: {model.count_parameters():,} parameters")
-    log.info(f"  BatchNorm: {args.batchnorm}   Residual: {args.residual}")
+    log.info(f"  BatchNorm: {args.batchnorm}   Residual: {args.residual}   ClipGrad: {args.clip_grad or 'off'}")
     log.info(f"  Scheduler: {args.scheduler}   Optimizer: {args.optimizer}   Norm: {args.norm}")
     trainer = Trainer(
         model          = model,
@@ -418,6 +420,7 @@ def main():
         scheduler      = args.scheduler,
         num_epochs     = args.epochs,
         optimizer_type = args.optimizer,
+        clip_grad      = args.clip_grad,
     )
 
     # ── 5. Resume from checkpoint if available ────────────────────────────────

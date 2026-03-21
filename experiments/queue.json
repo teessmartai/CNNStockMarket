@@ -22,5 +22,29 @@
     "hypothesis": "Residual + dropout 0.2 on logreturns baseline",
     "cmd_args": "--norm logreturns --residual --dropout 0.2",
     "status": "pending"
+  },
+  {
+    "id": "run_011_years7",
+    "hypothesis": "More training data (7yr vs 5yr) \u2014 ~85K windows vs 60K",
+    "cmd_args": "--norm logreturns --years 7",
+    "status": "pending"
+  },
+  {
+    "id": "run_012_lr5e5",
+    "hypothesis": "Lower LR (5e-5) \u2014 log returns are smaller magnitude, may need gentler updates",
+    "cmd_args": "--norm logreturns --lr 5e-5",
+    "status": "pending"
+  },
+  {
+    "id": "run_013_window256",
+    "hypothesis": "Larger window (256 vs 128) \u2014 more temporal context per sample",
+    "cmd_args": "--norm logreturns --window 256",
+    "status": "pending"
+  },
+  {
+    "id": "run_014_clipgrad",
+    "hypothesis": "Gradient clipping (max norm 1.0) \u2014 stabilize training",
+    "cmd_args": "--norm logreturns --clip-grad 1.0",
+    "status": "pending"
   }
 ]
