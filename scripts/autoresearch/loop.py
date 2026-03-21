@@ -152,34 +152,53 @@ def push_kernel(slot):
     return rc == 0, version
 
 
-def collect_version(version: int, slot: str):
-    """Download outputs for a specific kernel version."""
-    out_dir = Path(f"/tmp/autoresearch_{slot}_v{version}")
+def download_latest_log(tag: str):
+    """Download the latest completed version's experiment log. Returns path or None."""
+    out_dir = Path(f"/tmp/autoresearch_latest_{tag}")
     out_dir.mkdir(parents=True, exist_ok=True)
-    # Kaggle always serves the LATEST completed version's output — so we check
-    # which log file timestamp/name matches our expected version window
     out, err, rc = kaggle("kernels", "output", KERNEL_SLUG,
-                          "-p", str(out_dir), "--file-pattern", ".log$")
+                          "-p", str(out_dir), "--file-pattern", ".log$", "-o")
     if rc != 0:
         return None
     logs = list(out_dir.glob("**/experiments/*.log"))
     return logs[0] if logs else None
 
 
+def log_matches_slot(log_path: Path, slot_state: dict) -> bool:
+    """Check if a log file's config matches the experiment launched in this slot."""
+    if not log_path or not slot_state:
+        return False
+    cmd_args = slot_state.get("cmd_args", "")
+    text = log_path.read_text()
+    # Each flag leaves a trace in the log — check key flags
+    checks = {
+        "--optimizer adamw": "Optimizer: adamw" in text,
+        "--residual":        "Residual: True" in text,
+        "--no-batchnorm":    "BatchNorm: False" in text,
+        "--norm logreturns": "Norm: logreturns" in text,
+        "--norm minmax":     "Norm: minmax" in text,
+    }
+    for flag, present in checks.items():
+        if flag in cmd_args and not present:
+            return False
+        if flag not in cmd_args and present and flag in ("--optimizer adamw", "--residual", "--no-batchnorm"):
+            return False
+    return True
+
+
 def slot_version_done(slot_state: dict):
     """Return 'complete', 'error', or 'running' for a tracked slot."""
     if slot_state is None:
         return "free"
-    version = slot_state.get("version")
-    started = slot_state.get("started_at", "")
-    # Try downloading — if we get a log matching after started_at, it's done
-    log_path = collect_version(version, slot_state.get("slot", "x"))
-    if log_path:
-        log_ts = log_path.stat().st_mtime
-        return "complete"
-    # Check overall status
+    # Kaggle API can't fetch by version — poll overall status
     out, _, _ = kaggle("kernels", "status", KERNEL_SLUG)
     out_upper = out.upper()
+    # If there's a completed version, try downloading and matching
+    if "COMPLETE" in out_upper or "ERROR" not in out_upper:
+        tag = str(slot_state.get("version", "x"))
+        log = download_latest_log(tag)
+        if log and log_matches_slot(log, slot_state):
+            return "complete"
     if "ERROR" in out_upper:
         return "error"
     return "running"
