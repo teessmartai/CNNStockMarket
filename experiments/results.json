@@ -148,5 +148,34 @@
     },
     "verdict": "discarded",
     "notes": "val improved to 55.5% but test dropped to 52.0% \u2014 overfitting without scheduler. Plateau is essential for generalization."
+  },
+  {
+    "run_id": "run_005_logreturns",
+    "timestamp": "2026-03-21T11:56:16Z",
+    "kaggle_kernel_version": 17,
+    "device": "Tesla P100-PCIE-16GB",
+    "hypothesis": "Log-return normalization \u2014 removes price scale/trend bias, makes features stationary",
+    "changes_from_previous": "--norm logreturns",
+    "config": {
+      "lr": 0.0001,
+      "weight_decay": 1e-05,
+      "dropout": 0.4,
+      "batch_size": 256,
+      "optimizer": "adam",
+      "scheduler": "plateau",
+      "norm": "logreturns",
+      "window": 128,
+      "horizon": 5
+    },
+    "results": {
+      "epochs_run": 27,
+      "best_val_acc": 0.585,
+      "test_acc": 0.574,
+      "test_loss": 0.7221,
+      "runtime_min": 26.2,
+      "early_stopped": true
+    },
+    "verdict": "kept",
+    "notes": "HUGE jump: test 54.1% \u2192 57.4% (+3.3pp). New baseline. Log returns make features stationary \u2014 biggest single improvement so far."
   }
 ]
