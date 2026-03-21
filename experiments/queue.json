@@ -51,13 +51,13 @@
     "id": "run_p2_001_20yr_stride5_shuffle",
     "hypothesis": "Phase 2 baseline: 20yr data, stride=5 (non-overlapping labels), random split",
     "cmd_args": "--norm logreturns --years 20 --stride 5 --shuffle-split",
-    "status": "running"
+    "status": "discarded"
   },
   {
     "id": "run_p2_002_20yr_stride1_shuffle",
     "hypothesis": "20yr data stride=1 shuffled \u2014 max data volume (265K windows)",
     "cmd_args": "--norm logreturns --years 20 --stride 1 --shuffle-split",
-    "status": "running"
+    "status": "discarded"
   },
   {
     "id": "run_p2_003_20yr_stride5_chronological",
