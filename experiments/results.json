@@ -499,15 +499,22 @@
     "run_id": "run_p2_001_20yr_stride5_shuffle",
     "timestamp": "2026-03-21T19:11:04.389437+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Phase 2 baseline: 20yr data, stride=5 (non-overlapping labels), random split",
     "changes_from_previous": "--norm logreturns --years 20 --stride 5 --shuffle-split",
     "config": {
       "cmd_args": "--norm logreturns --years 20 --stride 5 --shuffle-split"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "best_val_acc": 0.578,
+      "test_acc": 0.554,
+      "test_loss": 0.6873,
+      "epochs_run": 16,
+      "runtime_min": 13.2,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 55.4% \u2264 no improvement \u274c vs best 64.4%"
   },
   {
     "run_id": "run_p2_002_20yr_stride1_shuffle",
