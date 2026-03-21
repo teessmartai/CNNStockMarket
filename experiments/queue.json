@@ -69,7 +69,7 @@
     "id": "run_p2_004_5yr_stride5_shuffle",
     "hypothesis": "Reproduce accidental v31: 5yr data, stride=5, shuffle \u2014 confirmed best so far at 64.4%",
     "cmd_args": "--years 5 --stride 5 --shuffle-split",
-    "status": "running"
+    "status": "discarded"
   },
   {
     "id": "run_p2_005_3yr_stride5_shuffle",

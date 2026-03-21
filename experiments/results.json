@@ -555,14 +555,21 @@
     "run_id": "run_p2_004_5yr_stride5_shuffle",
     "timestamp": "2026-03-21T22:37:09.062561+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Reproduce accidental v31: 5yr data, stride=5, shuffle \u2014 confirmed best so far at 64.4%",
     "changes_from_previous": "--years 5 --stride 5 --shuffle-split",
     "config": {
       "cmd_args": "--years 5 --stride 5 --shuffle-split"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "best_val_acc": 0.602,
+      "test_acc": 0.554,
+      "test_loss": 0.6855,
+      "epochs_run": 18,
+      "runtime_min": 14.8,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 55.4% \u2264 no improvement \u274c vs best 64.4%"
   }
 ]
