@@ -152,8 +152,39 @@ def push_kernel(slot):
     return rc == 0, version
 
 
+def download_log_for_version(version: int) -> Optional[Path]:
+    """Download experiment_result.log for a specific kernel version via kagglehub."""
+    import os as _os
+    env = _os.environ.copy()
+    env["KAGGLE_API_TOKEN"] = KAGGLE_TOKEN
+    out_dir = Path(f"/tmp/autoresearch_v{version}")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    dest = out_dir / "experiment_result.log"
+    if dest.exists():
+        return dest  # cached
+
+    result = subprocess.run(
+        [str(VENV_KAGGLE.parent / "python3"), "-c",
+         f"""
+import os, kagglehub
+os.environ['KAGGLE_API_TOKEN'] = '{KAGGLE_TOKEN}'
+path = kagglehub.notebook_output_download(
+    '{KERNEL_SLUG}/versions/{version}',
+    path='experiment_result.log',
+    output_dir='{out_dir}',
+    force_download=True
+)
+print('OK:', path)
+"""],
+        capture_output=True, text=True, env=env
+    )
+    if "OK:" in result.stdout and dest.exists():
+        return dest
+    return None
+
+
 def download_latest_log(tag: str):
-    """Download the latest completed version's experiment log. Returns path or None."""
+    """Fallback: download latest completed version's log via kaggle CLI."""
     out_dir = Path(f"/tmp/autoresearch_latest_{tag}")
     out_dir.mkdir(parents=True, exist_ok=True)
     out, err, rc = kaggle("kernels", "output", KERNEL_SLUG,
@@ -190,16 +221,18 @@ def slot_version_done(slot_state: dict):
     """Return 'complete', 'error', or 'running' for a tracked slot."""
     if slot_state is None:
         return "free"
-    # Kaggle API can't fetch by version — poll overall status
+    version = slot_state.get("version")
+    if not version:
+        return "running"
+
+    # Try version-specific download via kagglehub — only succeeds when complete
+    log = download_log_for_version(version)
+    if log:
+        return "complete"
+
+    # Fall back to overall status to detect errors
     out, _, _ = kaggle("kernels", "status", KERNEL_SLUG)
-    out_upper = out.upper()
-    # If there's a completed version, try downloading and matching
-    if "COMPLETE" in out_upper or "ERROR" not in out_upper:
-        tag = str(slot_state.get("version", "x"))
-        log = download_latest_log(tag)
-        if log and log_matches_slot(log, slot_state):
-            return "complete"
-    if "ERROR" in out_upper:
+    if "ERROR" in out.upper():
         return "error"
     return "running"
 
@@ -305,7 +338,7 @@ def daemon_tick():
             metrics = None
             if status == "complete":
                 version = slot_run.get("version")
-                log_path = collect_version(version, slot_id)
+                log_path = download_log_for_version(version)
                 metrics = parse_log(log_path) if log_path else None
 
             # Find matching pending result entry
