@@ -431,5 +431,33 @@
     },
     "verdict": "kept",
     "notes": "MASSIVE jump: +7pp over Phase 1 best (57.4%). WARNING: only 12K windows (expected 53K) \u2014 data dir had 5yr+20yr duplicates, runner overwrote 20yr with 5yr. True 20yr result likely even higher. Shuffle+stride=5 is clearly the key improvement."
+  },
+  {
+    "run_id": "run_p2_001_20yr_stride5_shuffle",
+    "timestamp": "2026-03-21T17:38:40.710590+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Phase 2 baseline: 20yr data, stride=5 (non-overlapping labels), random split",
+    "changes_from_previous": "--norm logreturns --years 20 --stride 5 --shuffle-split",
+    "config": {
+      "cmd_args": "--norm logreturns --years 20 --stride 5 --shuffle-split"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
+  },
+  {
+    "run_id": "run_p2_002_20yr_stride1_shuffle",
+    "timestamp": "2026-03-21T17:38:42.577679+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "20yr data stride=1 shuffled \u2014 max data volume (265K windows)",
+    "changes_from_previous": "--norm logreturns --years 20 --stride 1 --shuffle-split",
+    "config": {
+      "cmd_args": "--norm logreturns --years 20 --stride 1 --shuffle-split"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
