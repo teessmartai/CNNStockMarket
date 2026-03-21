@@ -25,6 +25,7 @@ import sys
 import time
 import zipfile
 from datetime import datetime, timezone
+from typing import Optional
 from pathlib import Path
 
 REPO_ROOT    = Path(__file__).parent.parent.parent.resolve()
