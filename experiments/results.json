@@ -341,5 +341,35 @@
     "results": {},
     "verdict": "pending",
     "notes": ""
+  },
+  {
+    "run_id": "run_009_no_batchnorm",
+    "timestamp": "2026-03-21T14:50:49Z",
+    "kaggle_kernel_version": 24,
+    "device": "Tesla P100-PCIE-16GB",
+    "hypothesis": "Disable BatchNorm \u2014 is BN helping on logreturns baseline?",
+    "changes_from_previous": "--no-batchnorm (on logreturns baseline)",
+    "config": {
+      "lr": 0.0001,
+      "weight_decay": 1e-05,
+      "dropout": 0.4,
+      "batch_size": 256,
+      "optimizer": "adam",
+      "scheduler": "plateau",
+      "norm": "logreturns",
+      "batchnorm": false,
+      "window": 128,
+      "horizon": 5
+    },
+    "results": {
+      "epochs_run": 22,
+      "best_val_acc": 0.554,
+      "test_acc": 0.547,
+      "test_loss": 0.6886,
+      "runtime_min": 20.6,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test 54.7% < logreturns baseline 57.4%. BN is helping. Tiny val/test gap (0.7pp) \u2014 no overfitting without BN, but lower ceiling."
   }
 ]

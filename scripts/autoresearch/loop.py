@@ -341,9 +341,23 @@ def daemon_tick():
                 log_path = download_log_for_version(version)
                 metrics = parse_log(log_path) if log_path else None
 
-            # Find matching pending result entry
+            # Find matching pending result entry (or create if manually seeded)
             entry = next((r for r in results if r["run_id"] == run_id
                           and r.get("verdict") == "pending"), None)
+            if entry is None and metrics:
+                entry = {
+                    "run_id":                run_id,
+                    "timestamp":             slot_run.get("started_at", ts()),
+                    "kaggle_kernel_version": slot_run.get("version"),
+                    "device":                metrics.pop("device", "unknown"),
+                    "hypothesis":            slot_run.get("run_id", ""),
+                    "changes_from_previous": slot_run.get("cmd_args", ""),
+                    "config":                {"cmd_args": slot_run.get("cmd_args", "")},
+                    "results":               {},
+                    "verdict":               "pending",
+                    "notes":                 "",
+                }
+                results.append(entry)
 
             if entry and metrics:
                 entry["results"] = metrics
