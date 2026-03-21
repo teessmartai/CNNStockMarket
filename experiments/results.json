@@ -311,15 +311,22 @@
     "run_id": "run_012_lr5e5",
     "timestamp": "2026-03-21T15:35:37.940262+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Lower LR (5e-5) \u2014 log returns are smaller magnitude, may need gentler updates",
     "changes_from_previous": "--norm logreturns --lr 5e-5",
     "config": {
       "cmd_args": "--norm logreturns --lr 5e-5"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "best_val_acc": 0.592,
+      "test_acc": 0.569,
+      "test_loss": 0.7263,
+      "epochs_run": 23,
+      "runtime_min": 22.2,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 56.9% \u2264 no improvement \u274c vs best 57.4%"
   },
   {
     "run_id": "run_013_window256",

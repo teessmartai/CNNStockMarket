@@ -33,7 +33,7 @@
     "id": "run_012_lr5e5",
     "hypothesis": "Lower LR (5e-5) \u2014 log returns are smaller magnitude, may need gentler updates",
     "cmd_args": "--norm logreturns --lr 5e-5",
-    "status": "running"
+    "status": "discarded"
   },
   {
     "id": "run_013_window256",
