@@ -613,5 +613,19 @@
     },
     "verdict": "discarded",
     "notes": "test_acc 55.4% \u2264 no improvement \u274c vs best 64.4%"
+  },
+  {
+    "run_id": "run_p2_007_5yr_stride5_shuffle_dropout02",
+    "timestamp": "2026-03-21T23:52:51.268968+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "With stride=5 shuffle, fewer windows (~12K). Try lower dropout (0.2) \u2014 less regularization needed.",
+    "changes_from_previous": "--years 5 --stride 5 --shuffle-split --dropout 0.2",
+    "config": {
+      "cmd_args": "--years 5 --stride 5 --shuffle-split --dropout 0.2"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
