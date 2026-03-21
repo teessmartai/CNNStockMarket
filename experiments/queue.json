@@ -39,12 +39,12 @@
     "id": "run_013_window256",
     "hypothesis": "Larger window (256 vs 128) \u2014 more temporal context per sample",
     "cmd_args": "--norm logreturns --window 256",
-    "status": "running"
+    "status": "discarded"
   },
   {
     "id": "run_014_clipgrad",
     "hypothesis": "Gradient clipping (max norm 1.0) \u2014 stabilize training",
     "cmd_args": "--norm logreturns --clip-grad 1.0",
-    "status": "running"
+    "status": "discarded"
   }
 ]

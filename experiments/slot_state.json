@@ -1,14 +1,4 @@
 {
-  "a": {
-    "slot": "a",
-    "run_id": "run_014_clipgrad",
-    "version": 29,
-    "started_at": "2026-03-21T16:05:56.874809+00:00"
-  },
-  "b": {
-    "slot": "b",
-    "run_id": "run_013_window256",
-    "version": 28,
-    "started_at": "2026-03-21T15:35:41.677143+00:00"
-  }
+  "a": null,
+  "b": null
 }

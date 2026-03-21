@@ -332,15 +332,22 @@
     "run_id": "run_013_window256",
     "timestamp": "2026-03-21T15:35:39.804169+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Larger window (256 vs 128) \u2014 more temporal context per sample",
     "changes_from_previous": "--norm logreturns --window 256",
     "config": {
       "cmd_args": "--norm logreturns --window 256"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "best_val_acc": 0.57,
+      "test_acc": 0.465,
+      "test_loss": 0.7122,
+      "epochs_run": 16,
+      "runtime_min": 47.0,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 46.5% \u2264 no improvement \u274c vs best 57.4%"
   },
   {
     "run_id": "run_009_no_batchnorm",
@@ -376,14 +383,21 @@
     "run_id": "run_014_clipgrad",
     "timestamp": "2026-03-21T16:05:54.926047+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Gradient clipping (max norm 1.0) \u2014 stabilize training",
     "changes_from_previous": "--norm logreturns --clip-grad 1.0",
     "config": {
       "cmd_args": "--norm logreturns --clip-grad 1.0"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "best_val_acc": 0.59,
+      "test_acc": 0.526,
+      "test_loss": 0.7094,
+      "epochs_run": 16,
+      "runtime_min": 15.4,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 52.6% \u2264 no improvement \u274c vs best 57.4%"
   }
 ]
