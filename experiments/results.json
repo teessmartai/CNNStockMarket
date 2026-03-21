@@ -248,7 +248,7 @@
       "cmd_args": "--no-batchnorm"
     },
     "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "verdict": "discarded",
+    "notes": "kernel error \u2014 no output collected"
   }
 ]

@@ -27,6 +27,6 @@
     "id": "run_009_no_batchnorm",
     "hypothesis": "Disable BatchNorm \u2014 test if BN is actually helping (also tests fixed BN ordering)",
     "cmd_args": "--no-batchnorm",
-    "status": "running"
+    "status": "discarded"
   }
 ]

@@ -3,8 +3,5 @@
     "run_id": "run_007_residual",
     "started_at": "2026-03-21T03:17:58.338351+00:00"
   },
-  "b": {
-    "run_id": "run_009_no_batchnorm",
-    "started_at": "2026-03-21T03:23:04.611967+00:00"
-  }
+  "b": null
 }
