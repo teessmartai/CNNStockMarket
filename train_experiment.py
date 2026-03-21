@@ -252,6 +252,10 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--norm",         type=str,   default="minmax",
                    choices=["minmax", "logreturns"],
                    help="Input normalization: minmax per-window (default) or logreturns")
+    p.add_argument("--batchnorm",    action=argparse.BooleanOptionalAction, default=True,
+                   help="Use BatchNorm1d after each conv layer (default: on)")
+    p.add_argument("--residual",     action="store_true", default=False,
+                   help="Add residual skip connections between conv layers")
 
     # Control
     p.add_argument("--reset", action="store_true", help="Ignore existing checkpoint, start fresh")
@@ -397,9 +401,11 @@ def main():
         kernel_size   = KERNEL_SIZE,
         fc_hidden     = FC_HIDDEN,
         dropout       = args.dropout,
+        use_batchnorm = args.batchnorm,
+        use_residual  = args.residual,
     )
     log.info(f"\n  Model: {model.count_parameters():,} parameters")
-
+    log.info(f"  BatchNorm: {args.batchnorm}   Residual: {args.residual}")
     log.info(f"  Scheduler: {args.scheduler}   Optimizer: {args.optimizer}   Norm: {args.norm}")
     trainer = Trainer(
         model          = model,
