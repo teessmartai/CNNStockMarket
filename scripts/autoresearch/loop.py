@@ -328,7 +328,6 @@ def daemon_tick():
 
     for slot_id, slug in SLOTS.items():
         slot_run = slots.get(slot_id)
-        status   = kernel_status(slug)
 
         # ── Collect finished run ───────────────────────────────────────────
         status = slot_version_done(slot_run) if slot_run else "free"
@@ -465,9 +464,9 @@ def cmd_status(args):
     print(f"\n  Active slots:")
     for sid, slug in SLOTS.items():
         state = slots.get(sid)
-        status = kernel_status(slug)
+        status = slot_version_done(state) if state else "free"
         run = state["run_id"] if state else "—"
-        print(f"    [{sid}] {slug:45s}  {status:10s}  {run}")
+        print(f"    [{sid}] v{state.get('version','?') if state else '-':3}  {status:10s}  {run}")
 
     print(f"\n  Recent results:")
     for r in results[-6:]:
