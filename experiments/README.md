@@ -41,3 +41,28 @@ python scripts/autoresearch/loop.py collect
 # Discard last change (revert train_experiment.py to last kept commit)
 python scripts/autoresearch/loop.py revert
 ```
+
+## Adding to the Queue
+
+```bash
+# Add via CLI
+python scripts/autoresearch/loop.py add run_010_my_idea \
+  --cmd-args "--lr 5e-5 --residual" \
+  --hypothesis "Lower LR with residual connections"
+
+# Or edit experiments/queue.json directly and commit
+```
+
+## Daemon
+
+```bash
+python scripts/autoresearch/loop.py daemon
+```
+
+The daemon polls every 5 minutes. It:
+1. Collects results from any finished slots
+2. Auto-keeps if test_acc improves, auto-discards otherwise
+3. Launches the next pending experiment from the queue
+4. Commits everything to git after each tick
+
+Add new entries to `queue.json` at any time — picked up on the next tick.

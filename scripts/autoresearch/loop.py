@@ -3,17 +3,16 @@
 AutoResearch loop for CNNStockMarket.
 
 Commands:
-  status   — show current best, history, and pending change
-  run      — push current train_experiment.py to Kaggle and start a run
-  collect  — download latest kernel output, parse result, update results.json
-  revert   — undo last change (restore train_experiment.py to last kept commit)
+  status          — show queue, slots, and current best
+  run             — manually push current train_experiment.py to Kaggle
+  collect         — download latest kernel output, parse, update results.json
+  keep / revert   — mark last pending result as kept or discarded
+  daemon          — poll both GPU slots, auto-launch from queue, auto-collect
 
-Typical workflow:
-  1. AI agent reads program.md + results.json, edits train_experiment.py
-  2. python loop.py run --hypothesis "Lower LR to 5e-4 — fix epoch-2 peak"
-  3. Wait ~20 min
-  4. python loop.py collect --run-id run_002_lower_lr
-  5. Review: if good, python loop.py keep; if bad, python loop.py revert
+Queue:
+  Edit experiments/queue.json to add experiments.
+  The daemon picks them up automatically.
+  Format: {"id": "run_NNN_desc", "hypothesis": "...", "cmd_args": "...", "status": "pending"}
 """
 
 import argparse
@@ -24,17 +23,30 @@ import shutil
 import subprocess
 import sys
 import time
+import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT    = Path(__file__).parent.parent.parent.resolve()
 RESULTS_FILE = REPO_ROOT / "experiments" / "results.json"
+QUEUE_FILE   = REPO_ROOT / "experiments" / "queue.json"
+SLOTS_FILE   = REPO_ROOT / "experiments" / "slot_state.json"
 KAGGLE_TOKEN = "KGAT_6b6cb4995fa85455d4045d57523e70e7"
-KERNEL_SLUG  = "tassistant/cnn-stock-market-training"
+SLOTS = {
+    "a": "tassistant/cnn-stock-market-training",
+    "b": "tassistant/cnn-stock-training-b",
+}
+BASE_CMD     = "--preset largecap-stable --window 128 --horizon 5 --years 5"
 DATASET_DIR  = Path("/tmp/kaggle-code-dataset")
-KERNEL_DIR   = Path("/tmp/kaggle-setup/kernel")
+KERNEL_DIRS  = {
+    "a": Path("/tmp/kaggle-setup/kernel"),
+    "b": Path("/tmp/kaggle-setup/kernel-none"),
+}
 VENV_KAGGLE  = REPO_ROOT / "venv" / "bin" / "kaggle"
+POLL_INTERVAL = 300  # seconds between daemon polls
 
+
+# ── Helpers ────────────────────────────────────────────────────────────────
 
 def kaggle(*args):
     env = os.environ.copy()
@@ -46,21 +58,6 @@ def kaggle(*args):
     return result.stdout.strip(), result.stderr.strip(), result.returncode
 
 
-def load_results():
-    if RESULTS_FILE.exists():
-        return json.loads(RESULTS_FILE.read_text())
-    return []
-
-
-def save_results(results):
-    RESULTS_FILE.write_text(json.dumps(results, indent=2) + "\n")
-
-
-def next_run_id(results):
-    n = len(results) + 1
-    return f"run_{n:03d}"
-
-
 def git(*args, cwd=None):
     result = subprocess.run(
         ["git"] + list(args),
@@ -70,270 +67,374 @@ def git(*args, cwd=None):
     return result.stdout.strip(), result.stderr.strip(), result.returncode
 
 
-def rebuild_dataset():
-    """Rebuild the Kaggle code dataset from current repo state."""
-    import zipfile
+def load_json(path, default):
+    return json.loads(path.read_text()) if path.exists() else default
 
+
+def save_json(path, data):
+    path.write_text(json.dumps(data, indent=2) + "\n")
+
+
+def ts():
+    return datetime.now(timezone.utc).isoformat()
+
+
+def current_best_test_acc():
+    results = load_json(RESULTS_FILE, [])
+    kept = [r for r in results if r.get("verdict") == "kept"]
+    if not kept:
+        return 0.0
+    return max(r["results"].get("test_acc", 0) for r in kept)
+
+
+def next_run_number():
+    results = load_json(RESULTS_FILE, [])
+    queue   = load_json(QUEUE_FILE, [])
+    return len(results) + 1
+
+
+# ── Dataset / kernel push ─────────────────────────────────────────────────
+
+def rebuild_dataset(message="autoresearch update"):
     if DATASET_DIR.exists():
         shutil.rmtree(DATASET_DIR)
     DATASET_DIR.mkdir(parents=True)
 
-    # Copy files
     for name in ["train_experiment.py", "backtest_stoploss.py", "kaggle_config.yaml"]:
         src = REPO_ROOT / name
         if src.exists():
             shutil.copy2(src, DATASET_DIR / name)
 
-    # Zip src/ and data/
     for folder in ["src", "data"]:
         src_dir = REPO_ROOT / folder
         if src_dir.exists():
-            zip_path = DATASET_DIR / f"{folder}.zip"
-            with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
+            zp = DATASET_DIR / f"{folder}.zip"
+            with zipfile.ZipFile(zp, "w", zipfile.ZIP_DEFLATED) as zf:
                 for f in src_dir.rglob("*"):
                     if "__pycache__" not in str(f) and f.suffix != ".pyc":
                         zf.write(f, f.relative_to(REPO_ROOT / folder))
 
-    # Metadata
-    meta = {
+    save_json(DATASET_DIR / "dataset-metadata.json", {
         "title": "CNN Stock Market Code and Data",
         "id": "tassistant/cnn-stock-code",
         "licenses": [{"name": "other"}]
-    }
-    (DATASET_DIR / "dataset-metadata.json").write_text(json.dumps(meta, indent=2))
+    })
 
-    print("Uploading dataset to Kaggle...")
     out, err, rc = kaggle("datasets", "version", "-p", str(DATASET_DIR),
-                          "--dir-mode", "zip", "-m",
-                          f"autoresearch update {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M')}")
-    print(out or err)
+                          "--dir-mode", "zip", "-m", message)
+    if rc != 0:
+        print(f"  Dataset upload error: {err}")
     return rc == 0
 
 
-def push_kernel():
-    """Push kernel to Kaggle."""
-    out, err, rc = kaggle("kernels", "push", "-p", str(KERNEL_DIR))
-    print(out or err)
+def patch_runner_cmd(slot, cmd_args):
+    """Inject cmd_args into the runner_launcher.py for the given slot."""
+    runner = KERNEL_DIRS[slot] / "runner_launcher.py"
+    text = runner.read_text()
+    new_cmd = f"python train_experiment.py {BASE_CMD} {cmd_args}".strip()
+    # Replace the train command line
+    text = re.sub(
+        r'python train_experiment\.py [^\n"]+',
+        new_cmd,
+        text
+    )
+    runner.write_text(text)
+
+
+def push_kernel(slot):
+    out, err, rc = kaggle("kernels", "push", "-p", str(KERNEL_DIRS[slot]))
+    print(f"  [{slot}] {out or err}")
     return rc == 0
 
 
-def parse_log(log_text):
-    """Extract key metrics from experiment log."""
-    result = {}
-    m = re.search(r"Best val acc:\s+([\d.]+)%", log_text)
-    if m:
-        result["best_val_acc"] = round(float(m.group(1)) / 100, 4)
-    m = re.search(r"Test accuracy:\s+([\d.]+)%", log_text)
-    if m:
-        result["test_acc"] = round(float(m.group(1)) / 100, 4)
-    m = re.search(r"Test loss:\s+([\d.]+)", log_text)
-    if m:
-        result["test_loss"] = float(m.group(1))
-    m = re.search(r"Epochs run:\s+(\d+)", log_text)
-    if m:
-        result["epochs_run"] = int(m.group(1))
-    m = re.search(r"Runtime:\s+([\d.]+) min", log_text)
-    if m:
-        result["runtime_min"] = float(m.group(1))
-    result["early_stopped"] = "early stop" in log_text.lower() or result.get("epochs_run", 100) < 100
-    return result
+def kernel_status(slug):
+    out, _, _ = kaggle("kernels", "status", slug)
+    if "COMPLETE" in out.upper():
+        return "complete"
+    if "ERROR" in out.upper():
+        return "error"
+    if "RUNNING" in out.upper() or "QUEUED" in out.upper():
+        return "running"
+    return "unknown"
 
 
-# ── Commands ───────────────────────────────────────────────────────────────
+# ── Result parsing ─────────────────────────────────────────────────────────
+
+def collect_result(slug, slot):
+    out_dir = Path(f"/tmp/autoresearch_{slot}_{int(time.time())}")
+    out_dir.mkdir(parents=True)
+
+    out, err, rc = kaggle("kernels", "output", slug,
+                          "-p", str(out_dir), "--file-pattern", ".log$")
+    if rc != 0:
+        print(f"  Output download error: {err}")
+        return None
+
+    log_files = list(out_dir.glob("**/experiments/*.log"))
+    if not log_files:
+        return None
+
+    log_text = log_files[0].read_text()
+
+    def extract(pattern, cast=float):
+        m = re.search(pattern, log_text)
+        return cast(m.group(1)) if m else None
+
+    gpu_match = re.search(r"Device: GPU — ([^\n(]+)", log_text)
+    return {
+        "device": gpu_match.group(1).strip() if gpu_match else "unknown",
+        "best_val_acc":  round((extract(r"Best val acc:\s+([\d.]+)%") or 0) / 100, 4),
+        "test_acc":      round((extract(r"Test accuracy:\s+([\d.]+)%") or 0) / 100, 4),
+        "test_loss":     extract(r"Test loss:\s+([\d.]+)") or 0,
+        "epochs_run":    int(extract(r"Epochs run:\s+(\d+)") or 0),
+        "runtime_min":   extract(r"Runtime:\s+([\d.]+) min") or 0,
+        "early_stopped": True,
+    }
+
+
+# ── Slot state ─────────────────────────────────────────────────────────────
+
+def load_slots():
+    return load_json(SLOTS_FILE, {"a": None, "b": None})
+
+
+def save_slots(slots):
+    save_json(SLOTS_FILE, slots)
+
+
+def commit_results(message):
+    git("add",
+        "experiments/results.json",
+        "experiments/queue.json",
+        "experiments/slot_state.json",
+        "train_experiment.py",
+        "src/training/trainer.py",
+        "src/models/cnn.py")
+    git("commit", "-m", message)
+    git("push", "origin", "main")
+
+
+# ── Daemon ─────────────────────────────────────────────────────────────────
+
+def daemon_tick():
+    slots     = load_slots()
+    queue     = load_json(QUEUE_FILE, [])
+    results   = load_json(RESULTS_FILE, [])
+    best_test = current_best_test_acc()
+
+    pending   = [e for e in queue if e["status"] == "pending"]
+    changed   = False
+
+    for slot_id, slug in SLOTS.items():
+        slot_run = slots.get(slot_id)
+        status   = kernel_status(slug)
+
+        # ── Collect finished run ───────────────────────────────────────────
+        if slot_run and status in ("complete", "error"):
+            run_id = slot_run["run_id"]
+            print(f"  [{slot_id}] {run_id} → {status}")
+
+            metrics = None
+            if status == "complete":
+                metrics = collect_result(slug, slot_id)
+
+            # Find matching pending result entry
+            entry = next((r for r in results if r["run_id"] == run_id
+                          and r.get("verdict") == "pending"), None)
+
+            if entry and metrics:
+                entry["results"] = metrics
+                entry["device"]  = metrics.pop("device", "unknown")
+                improved = metrics.get("test_acc", 0) > best_test
+                entry["verdict"] = "kept" if improved else "discarded"
+                entry["notes"]   = (
+                    f"test_acc {metrics.get('test_acc',0)*100:.1f}% "
+                    f"{'> IMPROVED ✅' if improved else '≤ no improvement ❌'} "
+                    f"vs best {best_test*100:.1f}%"
+                )
+                if improved:
+                    best_test = metrics["test_acc"]
+                print(f"    val={entry['results']['best_val_acc']*100:.1f}%  "
+                      f"test={entry['results']['test_acc']*100:.1f}%  "
+                      f"→ {entry['verdict']}")
+            elif entry:
+                entry["verdict"] = "discarded"
+                entry["notes"]   = f"kernel {status} — no output collected"
+                print(f"    No metrics collected ({status})")
+
+            # Mark queue entry done
+            for qe in queue:
+                if qe["id"] == run_id:
+                    qe["status"] = entry["verdict"] if entry else "error"
+                    break
+
+            slots[slot_id] = None
+            changed = True
+
+        # ── Launch next pending experiment ─────────────────────────────────
+        if slots.get(slot_id) is None and pending:
+            exp = pending.pop(0)
+            print(f"  [{slot_id}] Launching {exp['id']}: {exp['cmd_args']}")
+
+            # Add placeholder result entry
+            results.append({
+                "run_id":                exp["id"],
+                "timestamp":             ts(),
+                "kaggle_kernel_version": None,
+                "device":                "pending",
+                "hypothesis":            exp["hypothesis"],
+                "changes_from_previous": exp["cmd_args"],
+                "config":                {"cmd_args": exp["cmd_args"]},
+                "results":               {},
+                "verdict":               "pending",
+                "notes":                 "",
+            })
+
+            # Patch runner + push (dataset rebuild only on first launch of tick)
+            patch_runner_cmd(slot_id, exp["cmd_args"])
+            if push_kernel(slot_id):
+                slots[slot_id] = {"run_id": exp["id"], "started_at": ts()}
+                exp["status"] = "running"
+                changed = True
+            else:
+                results.pop()
+                print(f"    Push failed — will retry next tick")
+
+    if changed:
+        save_json(RESULTS_FILE, results)
+        save_json(QUEUE_FILE, queue)
+        save_slots(slots)
+        commit_results("autoresearch: daemon tick")
+        print("  Committed results + queue state")
+
+
+def cmd_daemon(args):
+    print(f"\n🔄 AutoResearch daemon started (poll every {POLL_INTERVAL//60} min)")
+    print(f"   Queue: {QUEUE_FILE}")
+    print(f"   Add experiments to queue.json at any time — picked up next tick\n")
+
+    # Rebuild dataset once at start
+    print("Rebuilding dataset...")
+    rebuild_dataset()
+
+    while True:
+        print(f"\n[{datetime.now().strftime('%H:%M:%S')}] Tick")
+        try:
+            daemon_tick()
+        except Exception as e:
+            print(f"  ERROR in tick: {e}")
+            import traceback; traceback.print_exc()
+
+        queue = load_json(QUEUE_FILE, [])
+        slots = load_slots()
+        running = [s for s in slots.values() if s is not None]
+        pending = [e for e in queue if e["status"] == "pending"]
+
+        if not running and not pending:
+            print("\n✅ Queue empty and no runs active — daemon done.")
+            break
+
+        print(f"  Running: {len(running)} | Pending: {len(pending)}")
+        time.sleep(POLL_INTERVAL)
+
+
+# ── Other commands ─────────────────────────────────────────────────────────
 
 def cmd_status(args):
-    results = load_results()
-    if not results:
-        print("No runs yet.")
-        return
+    results = load_json(RESULTS_FILE, [])
+    queue   = load_json(QUEUE_FILE, [])
+    slots   = load_slots()
 
     kept = [r for r in results if r.get("verdict") == "kept"]
-    best = max(kept, key=lambda r: r["results"]["test_acc"]) if kept else None
+    best = max(kept, key=lambda r: r["results"].get("test_acc", 0)) if kept else None
 
-    print(f"\n{'='*60}")
-    print(f"  AutoResearch Status — {len(results)} runs, {len(kept)} kept")
-    print(f"{'='*60}")
+    print(f"\n{'='*65}")
+    print(f"  AutoResearch — {len(results)} runs  |  {len(kept)} kept")
+    print(f"{'='*65}")
+
     if best:
-        print(f"\n  🏆 Best so far:  {best['run_id']}")
-        print(f"     val_acc:  {best['results']['best_val_acc']*100:.1f}%")
-        print(f"     test_acc: {best['results']['test_acc']*100:.1f}%")
-        print(f"     config:   lr={best['config']['lr']}, dropout={best['config']['dropout']}, "
-              f"batch={best['config']['batch_size']}, scheduler={best['config']['scheduler']}")
+        print(f"\n  🏆 Best: {best['run_id']}")
+        print(f"     val={best['results']['best_val_acc']*100:.1f}%  "
+              f"test={best['results']['test_acc']*100:.1f}%  "
+              f"cfg: {best['config'].get('cmd_args', 'baseline')}")
 
-    print(f"\n  Recent runs:")
-    for r in results[-5:]:
-        verdict_icon = "✅" if r.get("verdict") == "kept" else "❌"
-        print(f"  {verdict_icon} {r['run_id']:30s}  "
-              f"val={r['results']['best_val_acc']*100:.1f}%  "
-              f"test={r['results']['test_acc']*100:.1f}%  "
-              f"({r['results'].get('runtime_min', '?')} min)")
+    print(f"\n  Active slots:")
+    for sid, slug in SLOTS.items():
+        state = slots.get(sid)
+        status = kernel_status(slug)
+        run = state["run_id"] if state else "—"
+        print(f"    [{sid}] {slug:45s}  {status:10s}  {run}")
+
+    print(f"\n  Recent results:")
+    for r in results[-6:]:
+        icon = "✅" if r.get("verdict") == "kept" else ("⏳" if r.get("verdict") == "pending" else "❌")
+        ta = r["results"].get("test_acc", 0)
+        va = r["results"].get("best_val_acc", 0)
+        print(f"  {icon} {r['run_id']:35s}  val={va*100:.1f}%  test={ta*100:.1f}%")
+
+    pending = [e for e in queue if e["status"] == "pending"]
+    print(f"\n  Queue ({len(pending)} pending):")
+    for e in queue:
+        icon = {"pending": "⏳", "running": "🔄", "kept": "✅", "discarded": "❌", "error": "💥"}.get(e["status"], "?")
+        print(f"  {icon} {e['id']:35s}  {e['cmd_args']}")
     print()
 
 
 def cmd_run(args):
-    hypothesis = args.hypothesis or "no hypothesis provided"
-    print(f"\n── AutoResearch Run ──")
-    print(f"Hypothesis: {hypothesis}")
-
-    # Rebuild dataset with current code
-    if not rebuild_dataset():
-        print("Dataset upload failed. Aborting.")
-        sys.exit(1)
-
-    # Push kernel
-    time.sleep(5)  # Let dataset processing start
-    if not push_kernel():
-        print("Kernel push failed. Aborting.")
-        sys.exit(1)
-
-    print(f"\nKernel running. Check: https://www.kaggle.com/code/{KERNEL_SLUG}")
-    print(f"Run 'python loop.py collect --run-id <id> --hypothesis \"{hypothesis}\"' when done.")
+    hypothesis = args.hypothesis or "manual run"
+    print(f"Rebuilding dataset...")
+    rebuild_dataset()
+    slot = args.slot or "a"
+    if args.cmd_args:
+        patch_runner_cmd(slot, args.cmd_args)
+    push_kernel(slot)
+    print(f"Kernel pushed to slot {slot}.")
 
 
-def cmd_collect(args):
-    run_id = args.run_id or f"{next_run_id(load_results())}_unknown"
-    hypothesis = args.hypothesis or "no hypothesis"
-
-    print("Waiting for kernel to complete...")
-    env = os.environ.copy()
-    env["KAGGLE_API_TOKEN"] = KAGGLE_TOKEN
-
-    for attempt in range(60):  # up to 60 min
-        out, _, _ = kaggle("kernels", "status", KERNEL_SLUG)
-        print(f"  [{attempt+1}] {out}")
-        if "COMPLETE" in out.upper():
-            break
-        if "ERROR" in out.upper():
-            print("Kernel errored.")
-            break
-        time.sleep(60)
-
-    # Download output
-    out_dir = Path(f"/tmp/autoresearch_collect_{int(time.time())}")
-    out_dir.mkdir(parents=True)
-    kaggle("kernels", "output", KERNEL_SLUG, "-p", str(out_dir))
-
-    # Find experiment log
-    log_files = list(out_dir.glob("**/experiments/*.log"))
-    if not log_files:
-        print("No experiment log found in output.")
-        sys.exit(1)
-
-    log_text = log_files[0].read_text()
-    metrics = parse_log(log_text)
-    print(f"\n── Results ──")
-    print(f"  val_acc:  {metrics.get('best_val_acc', 0)*100:.1f}%")
-    print(f"  test_acc: {metrics.get('test_acc', 0)*100:.1f}%")
-    print(f"  epochs:   {metrics.get('epochs_run', '?')}")
-    print(f"  runtime:  {metrics.get('runtime_min', '?')} min")
-
-    # Get kernel version
-    out, _, _ = kaggle("kernels", "list", "--mine")
-    kv_match = re.search(r"version[^\d]*(\d+)", out, re.IGNORECASE)
-    kernel_version = int(kv_match.group(1)) if kv_match else None
-
-    # Get GPU name from log
-    gpu_match = re.search(r"Device: GPU — ([^\n(]+)", log_text)
-    device = gpu_match.group(1).strip() if gpu_match else "unknown"
-
-    # Get config from log
-    def log_val(key, pattern, cast=str):
-        m = re.search(pattern, log_text)
-        return cast(m.group(1)) if m else None
-
-    # Build entry
-    results = load_results()
-    prev = next((r for r in reversed(results) if r.get("verdict") == "kept"), None)
-
+def cmd_add(args):
+    queue = load_json(QUEUE_FILE, [])
     entry = {
-        "run_id": run_id,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "kaggle_kernel_version": kernel_version,
-        "device": device,
-        "hypothesis": hypothesis,
-        "changes_from_previous": args.changes or "see git diff",
-        "config": prev["config"].copy() if prev else {},
-        "results": metrics,
-        "verdict": "pending",
-        "notes": args.notes or ""
+        "id":         args.id,
+        "hypothesis": args.hypothesis or "",
+        "cmd_args":   args.cmd_args,
+        "status":     "pending",
     }
-
-    results.append(entry)
-    save_results(results)
-    print(f"\nResult saved as '{run_id}' (verdict: pending)")
-    print(f"Run 'python loop.py keep' or 'python loop.py revert'")
-
-
-def cmd_keep(args):
-    results = load_results()
-    pending = [r for r in results if r.get("verdict") == "pending"]
-    if not pending:
-        print("No pending result to keep.")
-        return
-    entry = pending[-1]
-    entry["verdict"] = "kept"
-    save_results(results)
-
-    # Commit results.json + train_experiment.py
-    git("add", "experiments/results.json", "train_experiment.py",
-        "src/training/trainer.py")
-    msg = f"autoresearch: keep {entry['run_id']} — val={entry['results']['best_val_acc']*100:.1f}% test={entry['results']['test_acc']*100:.1f}%"
-    git("commit", "-m", msg)
+    queue.append(entry)
+    save_json(QUEUE_FILE, queue)
+    git("add", "experiments/queue.json")
+    git("commit", "-m", f"autoresearch: queue {args.id}")
     git("push", "origin", "main")
-    print(f"✅ Kept {entry['run_id']} and pushed to main.")
-
-
-def cmd_revert(args):
-    results = load_results()
-    pending = [r for r in results if r.get("verdict") == "pending"]
-    if not pending:
-        print("No pending result to revert.")
-        return
-    entry = pending[-1]
-    entry["verdict"] = "discarded"
-    save_results(results)
-
-    # Reset train_experiment.py to last commit
-    git("checkout", "HEAD", "--", "train_experiment.py", "src/training/trainer.py")
-    git("add", "experiments/results.json")
-    git("commit", "-m", f"autoresearch: discard {entry['run_id']} — val={entry['results']['best_val_acc']*100:.1f}% test={entry['results']['test_acc']*100:.1f}%")
-    git("push", "origin", "main")
-    print(f"❌ Discarded {entry['run_id']}, train_experiment.py reverted.")
+    print(f"Added {args.id} to queue.")
 
 
 # ── Main ───────────────────────────────────────────────────────────────────
 
 def main():
-    parser = argparse.ArgumentParser(description="AutoResearch loop for CNNStockMarket")
-    sub = parser.add_subparsers(dest="command")
+    p = argparse.ArgumentParser(description="AutoResearch loop")
+    sub = p.add_subparsers(dest="command")
 
     sub.add_parser("status")
 
-    p_run = sub.add_parser("run")
-    p_run.add_argument("--hypothesis", "-H", type=str, help="What are we testing?")
+    d = sub.add_parser("daemon", help="Poll slots and auto-launch from queue")
+    d.add_argument("--once", action="store_true", help="Run one tick then exit")
 
-    p_collect = sub.add_parser("collect")
-    p_collect.add_argument("--run-id", type=str)
-    p_collect.add_argument("--hypothesis", "-H", type=str)
-    p_collect.add_argument("--changes", type=str)
-    p_collect.add_argument("--notes", type=str)
+    r = sub.add_parser("run")
+    r.add_argument("--hypothesis", "-H")
+    r.add_argument("--cmd-args",   type=str, default="")
+    r.add_argument("--slot",       choices=["a", "b"], default="a")
 
-    sub.add_parser("keep")
-    sub.add_parser("revert")
+    a = sub.add_parser("add", help="Add experiment to queue")
+    a.add_argument("id")
+    a.add_argument("--cmd-args",   required=True)
+    a.add_argument("--hypothesis", "-H", default="")
 
-    args = parser.parse_args()
-    if args.command == "status":
-        cmd_status(args)
-    elif args.command == "run":
-        cmd_run(args)
-    elif args.command == "collect":
-        cmd_collect(args)
-    elif args.command == "keep":
-        cmd_keep(args)
-    elif args.command == "revert":
-        cmd_revert(args)
-    else:
-        parser.print_help()
+    args = p.parse_args()
+    {
+        "status":  cmd_status,
+        "daemon":  cmd_daemon,
+        "run":     cmd_run,
+        "add":     cmd_add,
+    }.get(args.command, lambda a: p.print_help())(args)
 
 
 if __name__ == "__main__":
