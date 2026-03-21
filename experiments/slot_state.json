@@ -1,11 +1,5 @@
 {
-  "a": {
-    "slot": "a",
-    "run_id": "run_008_adamw_logreturns",
-    "cmd_args": "--norm logreturns --optimizer adamw",
-    "version": 23,
-    "started_at": "2026-03-21T14:43:00Z"
-  },
+  "a": null,
   "b": {
     "slot": "b",
     "run_id": "run_009_no_batchnorm",

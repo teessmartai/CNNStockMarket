@@ -9,7 +9,7 @@
     "id": "run_008_adamw_logreturns",
     "hypothesis": "AdamW on logreturns baseline \u2014 prior test was on minmax",
     "cmd_args": "--norm logreturns --optimizer adamw",
-    "status": "running"
+    "status": "error"
   },
   {
     "id": "run_009_no_batchnorm",
