@@ -21,13 +21,13 @@
     "id": "run_010_residual_low_dropout",
     "hypothesis": "Residual + dropout 0.2 on logreturns baseline",
     "cmd_args": "--norm logreturns --residual --dropout 0.2",
-    "status": "running"
+    "status": "discarded"
   },
   {
     "id": "run_011_years7",
     "hypothesis": "More training data (7yr vs 5yr) \u2014 ~85K windows vs 60K",
     "cmd_args": "--norm logreturns --years 7",
-    "status": "running"
+    "status": "discarded"
   },
   {
     "id": "run_012_lr5e5",

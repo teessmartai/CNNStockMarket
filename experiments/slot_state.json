@@ -1,14 +1,4 @@
 {
-  "a": {
-    "slot": "a",
-    "run_id": "run_010_residual_low_dropout",
-    "version": 25,
-    "started_at": "2026-03-21T15:10:24.779096+00:00"
-  },
-  "b": {
-    "slot": "b",
-    "run_id": "run_011_years7",
-    "version": 26,
-    "started_at": "2026-03-21T15:20:32.530054+00:00"
-  }
+  "a": null,
+  "b": null
 }

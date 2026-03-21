@@ -269,28 +269,42 @@
     "run_id": "run_010_residual_low_dropout",
     "timestamp": "2026-03-21T15:10:22.789935+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Residual + dropout 0.2 on logreturns baseline",
     "changes_from_previous": "--norm logreturns --residual --dropout 0.2",
     "config": {
       "cmd_args": "--norm logreturns --residual --dropout 0.2"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "best_val_acc": 0.585,
+      "test_acc": 0.535,
+      "test_loss": 0.6942,
+      "epochs_run": 16,
+      "runtime_min": 17.5,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 53.5% \u2264 no improvement \u274c vs best 57.4%"
   },
   {
     "run_id": "run_011_years7",
     "timestamp": "2026-03-21T15:20:30.597230+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "More training data (7yr vs 5yr) \u2014 ~85K windows vs 60K",
     "changes_from_previous": "--norm logreturns --years 7",
     "config": {
       "cmd_args": "--norm logreturns --years 7"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "best_val_acc": 0.0,
+      "test_acc": 0.0,
+      "test_loss": 0,
+      "epochs_run": 0,
+      "runtime_min": 0,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 0.0% \u2264 no improvement \u274c vs best 57.4%"
   }
 ]
