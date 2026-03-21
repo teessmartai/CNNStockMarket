@@ -75,7 +75,7 @@
     "id": "run_p2_005_3yr_stride5_shuffle",
     "hypothesis": "Recency hypothesis: 3yr (2023-2026) post-rate-hike regime only. Tighter distribution may help.",
     "cmd_args": "--years 3 --stride 5 --shuffle-split",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_p2_006_10yr_stride5_shuffle",
