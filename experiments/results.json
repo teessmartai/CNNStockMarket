@@ -152,5 +152,33 @@
     "results": {},
     "verdict": "discarded",
     "notes": "INFRA ERROR: new kernel slug did not mount cnn-stock-code dataset. Re-run needed."
+  },
+  {
+    "run_id": "run_004_scheduler_none",
+    "timestamp": "2026-03-21T02:50:06Z",
+    "kaggle_kernel_version": 14,
+    "device": "Tesla P100-PCIE-16GB",
+    "hypothesis": "No LR scheduler \u2014 is ReduceLROnPlateau helping?",
+    "changes_from_previous": "--scheduler none",
+    "config": {
+      "lr": 0.0001,
+      "weight_decay": 1e-05,
+      "dropout": 0.4,
+      "batch_size": 256,
+      "optimizer": "adam",
+      "scheduler": "none",
+      "window": 128,
+      "horizon": 5
+    },
+    "results": {
+      "epochs_run": 16,
+      "best_val_acc": 0.555,
+      "test_acc": 0.52,
+      "test_loss": 0.6948,
+      "runtime_min": 15.4,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "val improved to 55.5% but test dropped to 52.0% \u2014 overfitting without scheduler. Plateau is essential for generalization."
   }
 ]
