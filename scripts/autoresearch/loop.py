@@ -135,10 +135,10 @@ def patch_runner_cmd(slot, cmd_args):
     runner = KERNEL_DIRS[slot] / "runner_launcher.py"
     text = runner.read_text()
     new_cmd = f"python train_experiment.py {BASE_CMD} {cmd_args}".strip()
-    # Replace the train command line
+    # Replace the _train_cmd = "..." line cleanly (avoids duplicate flags)
     text = re.sub(
-        r'python train_experiment\.py [^\n"]+',
-        new_cmd,
+        r'_train_cmd = "python train_experiment\.py[^"]*"',
+        f'_train_cmd = "{new_cmd}"',
         text
     )
     runner.write_text(text)
