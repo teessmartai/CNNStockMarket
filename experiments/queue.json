@@ -3,7 +3,7 @@
     "id": "run_007_residual",
     "hypothesis": "Residual skip connections on top of logreturns baseline",
     "cmd_args": "--norm logreturns --residual",
-    "status": "pending"
+    "status": "discarded"
   },
   {
     "id": "run_008_adamw_logreturns",

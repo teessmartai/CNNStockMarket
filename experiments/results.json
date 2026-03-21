@@ -233,5 +233,36 @@
     },
     "verdict": "discarded",
     "notes": "AdamW hurts generalization even with logreturns. val=58.3% but test=51.8% (6.5% gap). Adam stays."
+  },
+  {
+    "run_id": "run_007_residual",
+    "timestamp": "2026-03-21T14:19:13Z",
+    "kaggle_kernel_version": 22,
+    "device": "Tesla P100-PCIE-16GB",
+    "hypothesis": "Residual skip connections on logreturns baseline",
+    "changes_from_previous": "--residual (on top of logreturns baseline)",
+    "config": {
+      "lr": 0.0001,
+      "weight_decay": 1e-05,
+      "dropout": 0.4,
+      "batch_size": 256,
+      "optimizer": "adam",
+      "scheduler": "plateau",
+      "norm": "logreturns",
+      "residual": true,
+      "batchnorm": true,
+      "window": 128,
+      "horizon": 5
+    },
+    "results": {
+      "epochs_run": 18,
+      "best_val_acc": 0.579,
+      "test_acc": 0.537,
+      "test_loss": 0.7139,
+      "runtime_min": 19.7,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "4.2pp generalization gap (val 57.9% vs test 53.7%). Residual adds overfitting on this dataset size. Logreturns baseline (no residual) stays."
   }
 ]
