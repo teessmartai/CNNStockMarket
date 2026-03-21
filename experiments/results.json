@@ -180,5 +180,33 @@
     },
     "verdict": "discarded",
     "notes": "val improved to 55.5% but test dropped to 52.0% \u2014 overfitting without scheduler. Plateau is essential for generalization."
+  },
+  {
+    "run_id": "run_005_logreturns",
+    "timestamp": "2026-03-21T03:12:48.774219+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Log-return normalization instead of per-window min-max \u2014 removes price scale/trend bias, makes features stationary",
+    "changes_from_previous": "--norm logreturns",
+    "config": {
+      "cmd_args": "--norm logreturns"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
+  },
+  {
+    "run_id": "run_006_adamw",
+    "timestamp": "2026-03-21T03:12:51.139424+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "AdamW optimizer \u2014 decoupled weight decay (mathematically correct L2 vs Adam)",
+    "changes_from_previous": "--optimizer adamw",
+    "config": {
+      "cmd_args": "--optimizer adamw"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]

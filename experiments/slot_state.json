@@ -1,4 +1,10 @@
 {
-  "a": null,
-  "b": null
+  "a": {
+    "run_id": "run_005_logreturns",
+    "started_at": "2026-03-21T03:12:50.618806+00:00"
+  },
+  "b": {
+    "run_id": "run_006_adamw",
+    "started_at": "2026-03-21T03:12:52.735814+00:00"
+  }
 }
