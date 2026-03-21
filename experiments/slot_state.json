@@ -1,10 +1,4 @@
 {
-  "a": {
-    "slot": "a",
-    "run_id": "run_p2_001_20yr_stride5_shuffle",
-    "cmd_args": "--norm logreturns --years 20 --stride 5 --shuffle-split",
-    "version": 31,
-    "started_at": "2026-03-21T16:47:00Z"
-  },
+  "a": null,
   "b": null
 }
