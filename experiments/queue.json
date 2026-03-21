@@ -27,7 +27,7 @@
     "id": "run_011_years7",
     "hypothesis": "More training data (7yr vs 5yr) \u2014 ~85K windows vs 60K",
     "cmd_args": "--norm logreturns --years 7",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_012_lr5e5",

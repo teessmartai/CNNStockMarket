@@ -278,5 +278,19 @@
     "results": {},
     "verdict": "pending",
     "notes": ""
+  },
+  {
+    "run_id": "run_011_years7",
+    "timestamp": "2026-03-21T15:20:30.597230+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "More training data (7yr vs 5yr) \u2014 ~85K windows vs 60K",
+    "changes_from_previous": "--norm logreturns --years 7",
+    "config": {
+      "cmd_args": "--norm logreturns --years 7"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
