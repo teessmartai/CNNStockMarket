@@ -63,6 +63,6 @@
     "id": "run_p2_003_20yr_stride5_chronological",
     "hypothesis": "20yr data stride=5 chronological \u2014 compare vs shuffle to quantify regime bias",
     "cmd_args": "--norm logreturns --years 20 --stride 5",
-    "status": "running"
+    "status": "discarded"
   }
 ]
