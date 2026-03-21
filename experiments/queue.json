@@ -64,5 +64,35 @@
     "hypothesis": "20yr data stride=5 chronological \u2014 compare vs shuffle to quantify regime bias",
     "cmd_args": "--norm logreturns --years 20 --stride 5",
     "status": "discarded"
+  },
+  {
+    "id": "run_p2_004_5yr_stride5_shuffle",
+    "hypothesis": "Reproduce accidental v31: 5yr data, stride=5, shuffle \u2014 confirmed best so far at 64.4%",
+    "cmd_args": "--years 5 --stride 5 --shuffle-split",
+    "status": "pending"
+  },
+  {
+    "id": "run_p2_005_3yr_stride5_shuffle",
+    "hypothesis": "Recency hypothesis: 3yr (2023-2026) post-rate-hike regime only. Tighter distribution may help.",
+    "cmd_args": "--years 3 --stride 5 --shuffle-split",
+    "status": "pending"
+  },
+  {
+    "id": "run_p2_006_10yr_stride5_shuffle",
+    "hypothesis": "Mid-range data: 10yr. Find the sweet spot between recency and data volume.",
+    "cmd_args": "--years 10 --stride 5 --shuffle-split",
+    "status": "pending"
+  },
+  {
+    "id": "run_p2_007_5yr_stride5_shuffle_dropout02",
+    "hypothesis": "With stride=5 shuffle, fewer windows (~12K). Try lower dropout (0.2) \u2014 less regularization needed.",
+    "cmd_args": "--years 5 --stride 5 --shuffle-split --dropout 0.2",
+    "status": "pending"
+  },
+  {
+    "id": "run_p2_008_5yr_stride5_shuffle_window64",
+    "hypothesis": "Shorter window (64 days) with stride=5 shuffle. May capture shorter-term patterns better.",
+    "cmd_args": "--years 5 --stride 5 --shuffle-split --window 64",
+    "status": "pending"
   }
 ]
