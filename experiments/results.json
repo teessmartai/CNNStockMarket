@@ -206,5 +206,32 @@
     },
     "verdict": "discarded",
     "notes": "Worse than minmax baseline. NOTE: tested against old baseline (minmax), not logreturns. Should retest as --norm logreturns --optimizer adamw."
+  },
+  {
+    "run_id": "run_008_adamw_logreturns",
+    "timestamp": "2026-03-21T13:33:01Z",
+    "kaggle_kernel_version": 20,
+    "device": "Tesla P100-PCIE-16GB",
+    "hypothesis": "AdamW on logreturns baseline",
+    "changes_from_previous": "--norm logreturns --optimizer adamw",
+    "config": {
+      "lr": 0.0001,
+      "wd": 1e-05,
+      "dropout": 0.4,
+      "batch": 256,
+      "optimizer": "adamw",
+      "scheduler": "plateau",
+      "norm": "logreturns"
+    },
+    "results": {
+      "epochs_run": 16,
+      "best_val_acc": 0.583,
+      "test_acc": 0.518,
+      "test_loss": null,
+      "runtime_min": 15.5,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "AdamW hurts generalization even with logreturns. val=58.3% but test=51.8% (6.5% gap). Adam stays."
   }
 ]
