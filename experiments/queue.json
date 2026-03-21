@@ -81,7 +81,7 @@
     "id": "run_p2_006_10yr_stride5_shuffle",
     "hypothesis": "Mid-range data: 10yr. Find the sweet spot between recency and data volume.",
     "cmd_args": "--years 10 --stride 5 --shuffle-split",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_p2_007_5yr_stride5_shuffle_dropout02",

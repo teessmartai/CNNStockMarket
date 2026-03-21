@@ -592,5 +592,19 @@
     },
     "verdict": "discarded",
     "notes": "test_acc 55.4% \u2264 no improvement \u274c vs best 64.4%"
+  },
+  {
+    "run_id": "run_p2_006_10yr_stride5_shuffle",
+    "timestamp": "2026-03-21T23:27:37.222391+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Mid-range data: 10yr. Find the sweet spot between recency and data volume.",
+    "changes_from_previous": "--years 10 --stride 5 --shuffle-split",
+    "config": {
+      "cmd_args": "--years 10 --stride 5 --shuffle-split"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
