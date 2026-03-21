@@ -192,8 +192,8 @@
       "cmd_args": "--norm logreturns"
     },
     "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "verdict": "discarded",
+    "notes": "kernel error \u2014 no output collected"
   },
   {
     "run_id": "run_006_adamw",
@@ -204,6 +204,34 @@
     "changes_from_previous": "--optimizer adamw",
     "config": {
       "cmd_args": "--optimizer adamw"
+    },
+    "results": {},
+    "verdict": "discarded",
+    "notes": "kernel error \u2014 no output collected"
+  },
+  {
+    "run_id": "run_007_residual",
+    "timestamp": "2026-03-21T03:17:56.509614+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Residual skip connections \u2014 improve gradient flow through 8 conv layers",
+    "changes_from_previous": "--residual",
+    "config": {
+      "cmd_args": "--residual"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
+  },
+  {
+    "run_id": "run_008_residual_low_dropout",
+    "timestamp": "2026-03-21T03:17:58.869419+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Residual + dropout 0.2 \u2014 BN already regularizes, reduce dropout to compensate",
+    "changes_from_previous": "--residual --dropout 0.2",
+    "config": {
+      "cmd_args": "--residual --dropout 0.2"
     },
     "results": {},
     "verdict": "pending",

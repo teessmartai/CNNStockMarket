@@ -1,10 +1,10 @@
 {
   "a": {
-    "run_id": "run_005_logreturns",
-    "started_at": "2026-03-21T03:12:50.618806+00:00"
+    "run_id": "run_007_residual",
+    "started_at": "2026-03-21T03:17:58.338351+00:00"
   },
   "b": {
-    "run_id": "run_006_adamw",
-    "started_at": "2026-03-21T03:12:52.735814+00:00"
+    "run_id": "run_008_residual_low_dropout",
+    "started_at": "2026-03-21T03:18:00.760872+00:00"
   }
 }

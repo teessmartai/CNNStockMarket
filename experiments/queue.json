@@ -3,25 +3,25 @@
     "id": "run_005_logreturns",
     "hypothesis": "Log-return normalization instead of per-window min-max \u2014 removes price scale/trend bias, makes features stationary",
     "cmd_args": "--norm logreturns",
-    "status": "running"
+    "status": "discarded"
   },
   {
     "id": "run_006_adamw",
     "hypothesis": "AdamW optimizer \u2014 decoupled weight decay (mathematically correct L2 vs Adam)",
     "cmd_args": "--optimizer adamw",
-    "status": "running"
+    "status": "discarded"
   },
   {
     "id": "run_007_residual",
     "hypothesis": "Residual skip connections \u2014 improve gradient flow through 8 conv layers",
     "cmd_args": "--residual",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_008_residual_low_dropout",
     "hypothesis": "Residual + dropout 0.2 \u2014 BN already regularizes, reduce dropout to compensate",
     "cmd_args": "--residual --dropout 0.2",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_009_no_batchnorm",
