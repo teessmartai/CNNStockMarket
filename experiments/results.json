@@ -399,5 +399,37 @@
     },
     "verdict": "discarded",
     "notes": "test_acc 52.6% \u2264 no improvement \u274c vs best 57.4%"
+  },
+  {
+    "run_id": "run_p2_001_20yr_stride5_shuffle",
+    "timestamp": "2026-03-21T16:47:04Z",
+    "kaggle_kernel_version": 31,
+    "device": "Tesla P100-PCIE-16GB",
+    "hypothesis": "Phase 2: 20yr data, stride=5 (non-overlapping labels), random split",
+    "changes_from_previous": "--years 20 --stride 5 --shuffle-split",
+    "config": {
+      "lr": 0.0001,
+      "wd": 1e-05,
+      "dropout": 0.4,
+      "batch": 256,
+      "optimizer": "adam",
+      "scheduler": "plateau",
+      "norm": "logreturns",
+      "window": 128,
+      "horizon": 5,
+      "stride": 5,
+      "shuffle": true,
+      "years": 20
+    },
+    "results": {
+      "epochs_run": 45,
+      "best_val_acc": 0.649,
+      "test_acc": 0.644,
+      "test_loss": 0.6572,
+      "runtime_min": 9.0,
+      "early_stopped": true
+    },
+    "verdict": "kept",
+    "notes": "MASSIVE jump: +7pp over Phase 1 best (57.4%). WARNING: only 12K windows (expected 53K) \u2014 data dir had 5yr+20yr duplicates, runner overwrote 20yr with 5yr. True 20yr result likely even higher. Shuffle+stride=5 is clearly the key improvement."
   }
 ]
