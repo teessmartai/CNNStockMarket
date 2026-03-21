@@ -95,5 +95,62 @@
     },
     "verdict": "kept",
     "notes": "Generalization gap closed completely. val_acc=test_acc=54.1%. test_loss improved 0.6923\u21920.6897. Longer training (20 epochs vs 17). Clear win."
+  },
+  {
+    "run_id": "run_003_scheduler_cosine",
+    "timestamp": "2026-03-20T23:07:06Z",
+    "kaggle_kernel_version": 13,
+    "device": "Tesla P100-PCIE-16GB",
+    "hypothesis": "CosineAnnealingLR vs baseline plateau \u2014 does cosine decay help past 54%?",
+    "changes_from_previous": "train_experiment.py: --scheduler cosine (CosineAnnealingLR T_max=100 eta_min=1e-6)",
+    "config": {
+      "lr": 0.0001,
+      "weight_decay": 1e-05,
+      "dropout": 0.4,
+      "batch_size": 256,
+      "optimizer": "adam",
+      "scheduler": "cosine",
+      "window": 128,
+      "horizon": 5,
+      "years": 5,
+      "preset": "largecap-stable",
+      "epochs_max": 100,
+      "patience": 15
+    },
+    "results": {
+      "epochs_run": 18,
+      "best_val_acc": 0.531,
+      "test_acc": 0.52,
+      "test_loss": 0.6968,
+      "runtime_min": 17.4,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "Cosine decay hurts \u2014 decays LR too aggressively before model has converged. Plateau default is better."
+  },
+  {
+    "run_id": "run_004_scheduler_none_attempt1",
+    "timestamp": "2026-03-20T23:03:00Z",
+    "kaggle_kernel_version": 1,
+    "device": "unknown",
+    "hypothesis": "No scheduler vs baseline plateau \u2014 is plateau even helping?",
+    "changes_from_previous": "runner: --scheduler none; new kernel slug cnn-stock-training-b",
+    "config": {
+      "lr": 0.0001,
+      "weight_decay": 1e-05,
+      "dropout": 0.4,
+      "batch_size": 256,
+      "optimizer": "adam",
+      "scheduler": "none",
+      "window": 128,
+      "horizon": 5,
+      "years": 5,
+      "preset": "largecap-stable",
+      "epochs_max": 100,
+      "patience": 15
+    },
+    "results": {},
+    "verdict": "discarded",
+    "notes": "INFRA ERROR: new kernel slug did not mount cnn-stock-code dataset. Re-run needed."
   }
 ]
