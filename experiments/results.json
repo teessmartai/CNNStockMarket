@@ -473,5 +473,19 @@
     },
     "verdict": "discarded",
     "notes": "test_acc 0.0% \u2264 no improvement \u274c vs best 64.4%"
+  },
+  {
+    "run_id": "run_p2_003_20yr_stride5_chronological",
+    "timestamp": "2026-03-21T17:53:49.828148+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "20yr data stride=5 chronological \u2014 compare vs shuffle to quantify regime bias",
+    "changes_from_previous": "--norm logreturns --years 20 --stride 5",
+    "config": {
+      "cmd_args": "--norm logreturns --years 20 --stride 5"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]

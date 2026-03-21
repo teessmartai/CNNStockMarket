@@ -1,4 +1,9 @@
 {
-  "a": null,
+  "a": {
+    "slot": "a",
+    "run_id": "run_p2_003_20yr_stride5_chronological",
+    "version": 34,
+    "started_at": "2026-03-21T17:53:51.703142+00:00"
+  },
   "b": null
 }
