@@ -36,7 +36,7 @@ SLOTS = {
     "a": "tassistant/cnn-stock-market-training",
     "b": "tassistant/cnn-stock-training-b",
 }
-BASE_CMD     = "--preset largecap-stable --window 128 --horizon 5 --years 5"
+BASE_CMD     = "--preset largecap-stable --window 128 --horizon 5 --years 5 --norm logreturns"
 DATASET_DIR  = Path("/tmp/kaggle-code-dataset")
 KERNEL_DIRS  = {
     "a": Path("/tmp/kaggle-setup/kernel"),

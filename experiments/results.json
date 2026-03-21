@@ -177,5 +177,34 @@
     },
     "verdict": "kept",
     "notes": "HUGE jump: test 54.1% \u2192 57.4% (+3.3pp). New baseline. Log returns make features stationary \u2014 biggest single improvement so far."
+  },
+  {
+    "run_id": "run_006_adamw",
+    "timestamp": "2026-03-21T12:49:21Z",
+    "kaggle_kernel_version": 18,
+    "device": "Tesla P100-PCIE-16GB",
+    "hypothesis": "AdamW optimizer \u2014 decoupled weight decay vs Adam",
+    "changes_from_previous": "--optimizer adamw (tested on minmax baseline, not logreturns)",
+    "config": {
+      "lr": 0.0001,
+      "weight_decay": 1e-05,
+      "dropout": 0.4,
+      "batch_size": 256,
+      "optimizer": "adamw",
+      "scheduler": "plateau",
+      "norm": "minmax",
+      "window": 128,
+      "horizon": 5
+    },
+    "results": {
+      "epochs_run": 19,
+      "best_val_acc": 0.555,
+      "test_acc": 0.514,
+      "test_loss": 0.7043,
+      "runtime_min": 18.4,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "Worse than minmax baseline. NOTE: tested against old baseline (minmax), not logreturns. Should retest as --norm logreturns --optimizer adamw."
   }
 ]
