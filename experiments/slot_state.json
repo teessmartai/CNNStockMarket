@@ -6,11 +6,5 @@
     "version": 31,
     "started_at": "2026-03-21T16:47:00Z"
   },
-  "b": {
-    "slot": "b",
-    "run_id": "run_p2_accidental_v30",
-    "cmd_args": "",
-    "version": 30,
-    "started_at": "2026-03-21T16:44:00Z"
-  }
+  "b": null
 }
