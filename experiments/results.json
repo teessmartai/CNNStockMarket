@@ -371,5 +371,19 @@
     },
     "verdict": "discarded",
     "notes": "test 54.7% < logreturns baseline 57.4%. BN is helping. Tiny val/test gap (0.7pp) \u2014 no overfitting without BN, but lower ceiling."
+  },
+  {
+    "run_id": "run_014_clipgrad",
+    "timestamp": "2026-03-21T16:05:54.926047+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Gradient clipping (max norm 1.0) \u2014 stabilize training",
+    "changes_from_previous": "--norm logreturns --clip-grad 1.0",
+    "config": {
+      "cmd_args": "--norm logreturns --clip-grad 1.0"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]

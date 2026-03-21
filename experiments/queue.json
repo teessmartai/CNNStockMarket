@@ -45,6 +45,6 @@
     "id": "run_014_clipgrad",
     "hypothesis": "Gradient clipping (max norm 1.0) \u2014 stabilize training",
     "cmd_args": "--norm logreturns --clip-grad 1.0",
-    "status": "pending"
+    "status": "running"
   }
 ]
