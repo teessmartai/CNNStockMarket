@@ -494,5 +494,33 @@
     },
     "verdict": "discarded",
     "notes": "test_acc 0.0% \u2264 no improvement \u274c vs best 64.4%"
+  },
+  {
+    "run_id": "run_p2_001_20yr_stride5_shuffle",
+    "timestamp": "2026-03-21T19:11:04.389437+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Phase 2 baseline: 20yr data, stride=5 (non-overlapping labels), random split",
+    "changes_from_previous": "--norm logreturns --years 20 --stride 5 --shuffle-split",
+    "config": {
+      "cmd_args": "--norm logreturns --years 20 --stride 5 --shuffle-split"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
+  },
+  {
+    "run_id": "run_p2_002_20yr_stride1_shuffle",
+    "timestamp": "2026-03-21T19:11:06.435304+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "20yr data stride=1 shuffled \u2014 max data volume (265K windows)",
+    "changes_from_previous": "--norm logreturns --years 20 --stride 1 --shuffle-split",
+    "config": {
+      "cmd_args": "--norm logreturns --years 20 --stride 1 --shuffle-split"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
