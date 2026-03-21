@@ -275,37 +275,44 @@ def train_val_test_split(
     y: np.ndarray,
     val_ratio: float = 0.15,
     test_ratio: float = 0.15,
+    shuffle: bool = False,
+    seed: int = 42,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
-    Split data chronologically into train, validation, and test sets.
+    Split data into train, validation, and test sets.
 
-    IMPORTANT: Does NOT shuffle to maintain temporal order and avoid look-ahead bias.
+    By default splits chronologically (no shuffle) to maintain temporal order.
+    With shuffle=True, randomly assigns windows to splits — useful when stride >= horizon
+    guarantees non-overlapping prediction targets, removing chronological regime bias.
 
     Args:
         X: Feature array of shape [N, window_size, features]
         y: Label array of shape [N,]
         val_ratio: Fraction of data for validation (default: 0.15)
         test_ratio: Fraction of data for testing (default: 0.15)
+        shuffle: If True, randomly shuffle before splitting (requires stride >= horizon)
+        seed: Random seed for reproducibility when shuffle=True
 
     Returns:
         Tuple of (X_train, y_train, X_val, y_val, X_test, y_test)
     """
     n_samples = len(X)
 
+    if shuffle:
+        rng = np.random.default_rng(seed)
+        idx = rng.permutation(n_samples)
+        X, y = X[idx], y[idx]
+
     train_end = int(n_samples * (1 - val_ratio - test_ratio))
-    val_end = int(n_samples * (1 - test_ratio))
+    val_end   = int(n_samples * (1 - test_ratio))
 
-    X_train = X[:train_end]
-    y_train = y[:train_end]
+    X_train, y_train = X[:train_end], y[:train_end]
+    X_val,   y_val   = X[train_end:val_end], y[train_end:val_end]
+    X_test,  y_test  = X[val_end:], y[val_end:]
 
-    X_val = X[train_end:val_end]
-    y_val = y[train_end:val_end]
-
-    X_test = X[val_end:]
-    y_test = y[val_end:]
-
+    mode = "shuffled" if shuffle else "chronological"
     logger.info(
-        f"Split: train={len(X_train)}, val={len(X_val)}, test={len(X_test)}"
+        f"Split ({mode}): train={len(X_train)}, val={len(X_val)}, test={len(X_test)}"
     )
 
     return X_train, y_train, X_val, y_val, X_test, y_test

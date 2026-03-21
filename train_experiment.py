@@ -258,6 +258,10 @@ def parse_args() -> argparse.Namespace:
                    help="Add residual skip connections between conv layers")
     p.add_argument("--clip-grad",    type=float, default=0.0,
                    help="Gradient clipping max norm (0 = disabled, e.g. 1.0)")
+    p.add_argument("--shuffle-split", action="store_true", default=False,
+                   help="Randomly shuffle windows before train/val/test split (use with stride>=horizon)")
+    p.add_argument("--seed",         type=int,   default=42,
+                   help="Random seed for shuffle-split reproducibility (default: 42)")
 
     # Control
     p.add_argument("--reset", action="store_true", help="Ignore existing checkpoint, start fresh")
@@ -379,9 +383,11 @@ def main():
 
     # ── 3. Train / val / test split ───────────────────────────────────────────
     X_train, y_train, X_val, y_val, X_test, y_test = train_val_test_split(
-        X_all, y_all, val_ratio=VAL_RATIO, test_ratio=TEST_RATIO
+        X_all, y_all, val_ratio=VAL_RATIO, test_ratio=TEST_RATIO,
+        shuffle=args.shuffle_split, seed=args.seed,
     )
-    log.info(f"  Train: {len(X_train):,}  Val: {len(X_val):,}  Test: {len(X_test):,}")
+    split_mode = f"shuffled (seed={args.seed})" if args.shuffle_split else "chronological"
+    log.info(f"  Train: {len(X_train):,}  Val: {len(X_val):,}  Test: {len(X_test):,}  [{split_mode}]")
 
     dataset     = StockDataset(torch.tensor(X_train, dtype=torch.float32),
                                torch.tensor(y_train, dtype=torch.long))
