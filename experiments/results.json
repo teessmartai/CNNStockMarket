@@ -34,38 +34,6 @@
   },
   {
     "run_id": "run_002_lower_lr_1e4",
-    "timestamp": "2026-03-20T22:29:49.740205+00:00",
-    "kaggle_kernel_version": null,
-    "device": "Tesla P100-PCIE-16GB",
-    "hypothesis": "Lower LR from 1e-3 to 1e-4",
-    "changes_from_previous": "train_experiment.py: default lr changed from 1e-3 to 1e-4",
-    "config": {
-      "lr": 0.001,
-      "weight_decay": 1e-05,
-      "dropout": 0.4,
-      "batch_size": 256,
-      "optimizer": "Adam",
-      "scheduler": null,
-      "window": 128,
-      "horizon": 5,
-      "years": 5,
-      "preset": "largecap-stable",
-      "epochs_max": 100,
-      "patience": 15
-    },
-    "results": {
-      "best_val_acc": 0.541,
-      "test_acc": 0.541,
-      "test_loss": 0.6897,
-      "epochs_run": 20,
-      "runtime_min": 19.4,
-      "early_stopped": true
-    },
-    "verdict": "pending",
-    "notes": ""
-  },
-  {
-    "run_id": "run_002_lower_lr_1e4",
     "timestamp": "2026-03-20T22:54:20.554293+00:00",
     "kaggle_kernel_version": null,
     "device": "Tesla P100-PCIE-16GB",
@@ -180,82 +148,5 @@
     },
     "verdict": "discarded",
     "notes": "val improved to 55.5% but test dropped to 52.0% \u2014 overfitting without scheduler. Plateau is essential for generalization."
-  },
-  {
-    "run_id": "run_005_logreturns",
-    "timestamp": "2026-03-21T03:12:48.774219+00:00",
-    "kaggle_kernel_version": null,
-    "device": "pending",
-    "hypothesis": "Log-return normalization instead of per-window min-max \u2014 removes price scale/trend bias, makes features stationary",
-    "changes_from_previous": "--norm logreturns",
-    "config": {
-      "cmd_args": "--norm logreturns"
-    },
-    "results": {},
-    "verdict": "discarded",
-    "notes": "kernel error \u2014 no output collected"
-  },
-  {
-    "run_id": "run_006_adamw",
-    "timestamp": "2026-03-21T03:12:51.139424+00:00",
-    "kaggle_kernel_version": null,
-    "device": "pending",
-    "hypothesis": "AdamW optimizer \u2014 decoupled weight decay (mathematically correct L2 vs Adam)",
-    "changes_from_previous": "--optimizer adamw",
-    "config": {
-      "cmd_args": "--optimizer adamw"
-    },
-    "results": {},
-    "verdict": "discarded",
-    "notes": "kernel error \u2014 no output collected"
-  },
-  {
-    "run_id": "run_007_residual",
-    "timestamp": "2026-03-21T03:17:56.509614+00:00",
-    "kaggle_kernel_version": null,
-    "device": "Tesla P100-PCIE-16GB",
-    "hypothesis": "Residual skip connections \u2014 improve gradient flow through 8 conv layers",
-    "changes_from_previous": "--residual",
-    "config": {
-      "cmd_args": "--residual"
-    },
-    "results": {
-      "best_val_acc": 0.557,
-      "test_acc": 0.496,
-      "test_loss": 0.6959,
-      "epochs_run": 17,
-      "runtime_min": 18.6,
-      "early_stopped": true
-    },
-    "verdict": "discarded",
-    "notes": "test_acc 49.6% \u2264 no improvement \u274c vs best 54.1%"
-  },
-  {
-    "run_id": "run_008_residual_low_dropout",
-    "timestamp": "2026-03-21T03:17:58.869419+00:00",
-    "kaggle_kernel_version": null,
-    "device": "pending",
-    "hypothesis": "Residual + dropout 0.2 \u2014 BN already regularizes, reduce dropout to compensate",
-    "changes_from_previous": "--residual --dropout 0.2",
-    "config": {
-      "cmd_args": "--residual --dropout 0.2"
-    },
-    "results": {},
-    "verdict": "discarded",
-    "notes": "kernel error \u2014 no output collected"
-  },
-  {
-    "run_id": "run_009_no_batchnorm",
-    "timestamp": "2026-03-21T03:23:02.861184+00:00",
-    "kaggle_kernel_version": null,
-    "device": "pending",
-    "hypothesis": "Disable BatchNorm \u2014 test if BN is actually helping (also tests fixed BN ordering)",
-    "changes_from_previous": "--no-batchnorm",
-    "config": {
-      "cmd_args": "--no-batchnorm"
-    },
-    "results": {},
-    "verdict": "discarded",
-    "notes": "kernel error \u2014 no output collected"
   }
 ]
