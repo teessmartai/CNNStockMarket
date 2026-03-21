@@ -1,4 +1,16 @@
 {
-  "a": null,
-  "b": null
+  "a": {
+    "slot": "a",
+    "run_id": "run_008_adamw_logreturns",
+    "cmd_args": "--norm logreturns --optimizer adamw",
+    "version": 23,
+    "started_at": "2026-03-21T14:43:00Z"
+  },
+  "b": {
+    "slot": "b",
+    "run_id": "run_009_no_batchnorm",
+    "cmd_args": "--norm logreturns --no-batchnorm",
+    "version": 24,
+    "started_at": "2026-03-21T14:46:00Z"
+  }
 }

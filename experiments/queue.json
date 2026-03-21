@@ -9,13 +9,13 @@
     "id": "run_008_adamw_logreturns",
     "hypothesis": "AdamW on logreturns baseline \u2014 prior test was on minmax",
     "cmd_args": "--norm logreturns --optimizer adamw",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_009_no_batchnorm",
     "hypothesis": "Disable BatchNorm on logreturns baseline \u2014 is BN helping?",
     "cmd_args": "--norm logreturns --no-batchnorm",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_010_residual_low_dropout",
