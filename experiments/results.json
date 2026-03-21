@@ -576,14 +576,21 @@
     "run_id": "run_p2_005_3yr_stride5_shuffle",
     "timestamp": "2026-03-21T23:02:23.236242+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Recency hypothesis: 3yr (2023-2026) post-rate-hike regime only. Tighter distribution may help.",
     "changes_from_previous": "--years 3 --stride 5 --shuffle-split",
     "config": {
       "cmd_args": "--years 3 --stride 5 --shuffle-split"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "best_val_acc": 0.587,
+      "test_acc": 0.554,
+      "test_loss": 0.6872,
+      "epochs_run": 17,
+      "runtime_min": 14.0,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 55.4% \u2264 no improvement \u274c vs best 64.4%"
   }
 ]
