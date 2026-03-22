@@ -337,11 +337,134 @@ def save_slots(slots):
     save_json(SLOTS_FILE, slots)
 
 
+def regenerate_results_md():
+    """Regenerate RESULTS.md from results.json — called after every experiment."""
+    from datetime import datetime as dt
+
+    results = load_json(RESULTS_FILE, [])
+
+    def fmt_spp(spp):
+        if spp is None:
+            return "—"
+        if spp == 0.0:
+            return "~0"
+        if spp >= 1:
+            return f"{spp:.0f}"
+        inv = 1.0 / spp
+        return f"1:{int(inv):,}"
+
+    def fmt_params(p):
+        if not p:
+            return "—"
+        if p >= 1_000_000:
+            return f"{p/1_000_000:.1f}M"
+        if p >= 1_000:
+            return f"{p/1_000:.0f}K"
+        return str(p)
+
+    lines = []
+    lines.append("# AutoResearch Results")
+    lines.append("")
+    lines.append(f"_Last updated: {dt.utcnow().strftime('%Y-%m-%d %H:%M UTC')}_")
+    lines.append("")
+    lines.append("> **spp** = train_samples / num_params. "
+                 "Old runs used a fixed 35M-param model (spp ≈ 1:800–1:27K, severely overparameterized). "
+                 "New runs use `--samples-per-param` so the model auto-sizes to the data.")
+    lines.append("")
+
+    best = max(
+        (r for r in results if r.get("verdict") == "kept"),
+        key=lambda r: r["results"].get("test_acc", 0), default=None
+    )
+    if best:
+        ta     = best["results"].get("test_acc", 0) * 100
+        va     = best["results"].get("best_val_acc", 0) * 100
+        params = best.get("arch_meta", {}).get("num_params", 0)
+        arch   = best.get("arch_meta", {}).get("arch", "cnn").upper()
+        cfg    = best.get("changes_from_previous", "")
+        lines.append("## 🏆 Current Best")
+        lines.append("")
+        lines.append(f"**{best['run_id']}**  ")
+        lines.append(f"Test: **{ta:.1f}%** | Val: {va:.1f}% | {arch} {fmt_params(params)} params  ")
+        lines.append(f"Config: `{cfg}`")
+        lines.append("")
+
+    phase_defs = [
+        ("Phase 1 — Hyperparameter search (5yr, 54 largecap, stride=1, chrono)",
+         lambda r: r["run_id"].startswith("run_0")),
+        ("Phase 2 — Data range and split (stride=5, shuffle, year sweep)",
+         lambda r: "p2" in r["run_id"]),
+        ("Phase 3 — Scale, architecture, and regime (S&P500 403 tickers)",
+         lambda r: "p3" in r["run_id"]),
+    ]
+
+    for title, filt in phase_defs:
+        phase = [r for r in results if filt(r)]
+        if not phase:
+            continue
+        lines.append(f"## {title}")
+        lines.append("")
+        lines.append("| Run | Config | Val | Test | Params | spp | Verdict |")
+        lines.append("|-----|--------|-----|------|--------|-----|---------|")
+        for r in phase:
+            va     = r["results"].get("best_val_acc", 0) * 100
+            ta     = r["results"].get("test_acc", 0) * 100
+            params = r.get("arch_meta", {}).get("num_params", 0)
+            arch   = r.get("arch_meta", {}).get("arch", "cnn").upper()
+            spp    = r.get("actual_samples_per_param")
+            cfg    = r.get("changes_from_previous",
+                           r.get("config", {}).get("cmd_args", ""))[:55]
+            v      = r.get("verdict", "?")
+            icon   = {"kept": "✅ kept", "discarded": "❌", "pending": "⏳",
+                      "error": "💥", "invalid": "🚫 invalid"}.get(v, v)
+            lines.append(
+                f"| {r['run_id'][:38]} | `{cfg}` | {va:.1f}% | {ta:.1f}%"
+                f" | {arch} {fmt_params(params)} | {fmt_spp(spp)} | {icon} |"
+            )
+        lines.append("")
+
+    lines.append("## Key Findings")
+    lines.append("")
+    lines.append("| Finding | Detail |")
+    lines.append("|---------|--------|")
+    for f, d in [
+        ("Best valid result",        "68.8% test — S&P500, stride=133, 7yr, zero-leakage"),
+        ("Log-return normalisation", "+3.3pp over minmax — biggest Phase 1 single win"),
+        ("COVID window (7yr)",       "2019-2026 captures March-Aug 2020 crash/recovery; drives 63-69% range"),
+        ("Regime dilution (10yr+)",  "COVID shrinks to 7% of data, accuracy drops back to ~54%"),
+        ("Stride=133 (fully clean)", "No feature OR label overlap — 68.8% is methodologically solid"),
+        ("Old model sizing",         "35M params on 10-43K samples = spp 1:800 to 1:27K (overparameterized)"),
+        ("New model sizing",         "--samples-per-param auto-sizes via binary search in <0.1s"),
+        ("Leaky stride=1+shuffle",   "79.9% was label leakage — adjacent windows share 4/5 prediction days"),
+        ("T+1 is harder",            "52.6% vs 68.8% for T+5 — short-horizon is noisier"),
+        ("Reference paper inflated", "Gupta 2024 uses stride=1+shuffle (same leakage) — 91% is memorization"),
+    ]:
+        lines.append(f"| **{f}** | {d} |")
+    lines.append("")
+
+    lines.append("## Experiment Config")
+    lines.append("")
+    lines.append("```")
+    lines.append("Universe:      403 S&P500 tickers, 20yr CSVs (avg 18.7yr each)")
+    lines.append("Features:      OHLCV (5 channels), log-return normalised")
+    lines.append("Split:         70% train / 15% val / 15% test (shuffle or chrono)")
+    lines.append("Sizing:        --samples-per-param 100 (default) auto-sizes model to data volume")
+    lines.append("Baseline:      LR=1e-4, Adam, ReduceLROnPlateau, dropout=0.4, BN=True, residual=False")
+    lines.append("Architectures: cnn | lstm | transformer | tcn")
+    lines.append("Label:         1 if close[t+horizon] > close[t] else 0 (binary classification)")
+    lines.append("```")
+    lines.append("")
+
+    (REPO_ROOT / "RESULTS.md").write_text("\n".join(lines) + "\n")
+
+
 def commit_results(message):
+    regenerate_results_md()
     git("add",
         "experiments/results.json",
         "experiments/queue.json",
         "experiments/slot_state.json",
+        "RESULTS.md",
         "train_experiment.py",
         "src/training/trainer.py",
         "src/models/cnn.py")

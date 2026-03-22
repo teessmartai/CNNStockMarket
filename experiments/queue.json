@@ -192,30 +192,6 @@
     "status": "pending"
   },
   {
-    "id": "run_p3_016_sp500_s133_7yr_precovid",
-    "hypothesis": "Match run_p3_003 exactly but end 2019-12-31 (pre-COVID). Same 7yr window, same spp=100, same arch. If accuracy drops to ~54%, COVID is driving the result.",
-    "cmd_args": "--preset sp500 --years 7 --stride 133 --shuffle-split --end-date 2019-12-31 --samples-per-param 100",
-    "paired_with": "run_p3_003_sp500_stride133_7yr",
-    "paired_result": "68.8% test",
-    "status": "pending"
-  },
-  {
-    "id": "run_p3_017_sp500_s133_20yr_precovid",
-    "hypothesis": "Match run_p3_001 (66.0%) but end 2019-12-31. 20yr ending 2019 = 1999-2019 (dot-com, GFC, recovery). Isolates whether long-history gains come from COVID or other regimes.",
-    "cmd_args": "--preset sp500 --years 20 --stride 133 --shuffle-split --end-date 2019-12-31 --samples-per-param 100",
-    "paired_with": "run_p3_001_sp500_stride133_20yr",
-    "paired_result": "66.0% test",
-    "status": "pending"
-  },
-  {
-    "id": "run_p3_018_largecap_s5_7yr_precovid",
-    "hypothesis": "Match run_p2_009 (64.9%) but end 2019-12-31. 54 largecap tickers, stride=5, 7yr (2013-2019). Smaller universe \u2014 cleaner signal comparison.",
-    "cmd_args": "--preset largecap --years 7 --stride 5 --shuffle-split --end-date 2019-12-31 --samples-per-param 100",
-    "paired_with": "run_p2_009_7yr_stride5_shuffle",
-    "paired_result": "64.9% test",
-    "status": "pending"
-  },
-  {
     "id": "run_p3_019_largecap_s5_20yr_precovid",
     "hypothesis": "Match run_p2_001 (64.4%) but end 2019-12-31. 54 largecap, stride=5, 20yr (1999-2019). Largest pre-COVID dataset \u2014 best chance of non-COVID signal.",
     "cmd_args": "--preset largecap --years 20 --stride 5 --shuffle-split --end-date 2019-12-31 --samples-per-param 100",
@@ -224,17 +200,29 @@
     "status": "pending"
   },
   {
-    "id": "run_p3_020_sp500_s133_7yr_precovid_fixedparams",
-    "hypothesis": "Same absolute model as run_p3_003 (35,378,946 params) but pre-COVID data. vs run_p3_016 (spp=100, also pre-COVID). If 020 > 016: bigger model helps even with same data. If 020 \u2248 016: spp ratio is what matters, not absolute size.",
-    "cmd_args": "--preset sp500 --years 7 --stride 133 --shuffle-split --end-date 2019-12-31 --target-params 35378946",
-    "paired_with": "run_p3_016_sp500_s133_7yr_precovid",
+    "id": "run_p3_022_sp500_w30_s1_7yr_postcovid",
+    "hypothesis": "Post-COVID baseline: S&P500, window=30, stride=1, 7yr (2019-2026), spp=10. ~488K train \u2192 ~48,800 params. Establishes w=30 post-COVID reference.",
+    "cmd_args": "--preset sp500 --window 30 --stride 1 --years 7 --shuffle-split --samples-per-param 10",
     "status": "pending"
   },
   {
-    "id": "run_p3_021_largecap_s5_7yr_precovid_fixedparams",
-    "hypothesis": "Same absolute model as run_p2_009 (35,378,946 params) but pre-COVID. vs run_p3_018 (spp=100, pre-COVID).",
-    "cmd_args": "--preset largecap --years 7 --stride 5 --shuffle-split --end-date 2019-12-31 --target-params 35378946",
-    "paired_with": "run_p3_018_largecap_s5_7yr_precovid",
+    "id": "run_p3_023_sp500_w30_s1_7yr_precovid_spp10",
+    "hypothesis": "Pre-COVID spp-matched: same as p3_022 but end=2019-12-31 (2012-2019). Same spp=10 \u2192 same relative model size. Tests if COVID is driving accuracy.",
+    "cmd_args": "--preset sp500 --window 30 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --samples-per-param 10",
+    "paired_with": "run_p3_022_sp500_w30_s1_7yr_postcovid",
+    "status": "pending"
+  },
+  {
+    "id": "run_p3_024_sp500_w30_s1_7yr_precovid_fixedparams",
+    "hypothesis": "Pre-COVID fixed-params: same data as p3_023 but model pinned to exact param count from p3_022 post-COVID run. Isolates: does absolute capacity matter vs spp ratio?",
+    "cmd_args": "--preset sp500 --window 30 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --target-params FILL_FROM_P3_022",
+    "depends_on": "run_p3_022_sp500_w30_s1_7yr_postcovid",
+    "status": "pending"
+  },
+  {
+    "id": "run_p3_025_largecap_w30_s1_7yr_precovid_spp10",
+    "hypothesis": "Pre-COVID largecap: 54 stocks, window=30, stride=1, 7yr end=2019-12-31, spp=10. ~65K train \u2192 ~6,500 params. Pairs with p3_018 (was underpowered at stride=5).",
+    "cmd_args": "--preset largecap --window 30 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --samples-per-param 10",
     "status": "pending"
   },
   {
