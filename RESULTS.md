@@ -1,6 +1,6 @@
 # AutoResearch Results
 
-_Last updated: 2026-03-22 20:21 UTC_
+_Last updated: 2026-03-22 20:22 UTC_
 
 > **spp** = train_samples / num_params. Old runs used a fixed 35M-param model (spp ≈ 1:800–1:27K, severely overparameterized). New runs use `--samples-per-param` so the model auto-sizes to the data.
 
@@ -64,7 +64,7 @@ Config: `--preset sp500 --years 7 --stride 133 --shuffle-split`
 | run_p3_004_largecap_horizon1_stride | Is 1-day prediction (horizon=1) easier or harder than 5-day? | `--horizon 1 --stride 1 --years 7 --shuffle-split` | 55.4% | 52.6% | CNN 35.4M | ~0 | ❌ | 52.6%. Harder. 1-day moves are dominated by noise. 5-day trends are more predict |
 | run_p3_009_sp500_s5_20yr_default | S&P 500 full, stride=5, 20yr, shuffle — 259K train with default 35M model. Solid | `--preset sp500 --years 20 --stride 5 --shuffle-spl` | 64.5% | 62.8% | CNN — | — | ❌ | — |
 | run_p3_022_sp500_w20_s1_7yr_postcov | Post-COVID baseline: S&P500, window=20 (business month), stride=1, 7yr (2019-202 | `--preset sp500 --window 20 --stride 1 --years 7 --` | 0.0% | 0.0% | CNN — | — | ⏳ | — |
-| run_p3_011_transformer_s5_20yr_spp1 | Transformer medium (548K) S&P500 stride=5 20yr. Attention over 128-day window. | `--preset sp500 --years 20 --stride 5 --shuffle-spl` | 0.0% | 0.0% | CNN — | — | ⏳ | — |
+| run_p3_011_transformer_s5_20yr_spp1 | Transformer medium (548K) S&P500 stride=5 20yr. Attention over 128-day window. | `--preset sp500 --years 20 --stride 5 --shuffle-spl` | 0.0% | 0.0% | CNN — | — | ❌ | — |
 
 ## Key Findings
 

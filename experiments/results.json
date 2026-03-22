@@ -1750,7 +1750,7 @@
       "cmd_args": "--preset sp500 --years 20 --stride 5 --shuffle-split --arch transformer --samples-per-param 100"
     },
     "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "verdict": "discarded",
+    "notes": "kernel error \u2014 no output collected"
   }
 ]
