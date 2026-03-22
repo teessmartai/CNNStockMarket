@@ -642,7 +642,8 @@ def cmd_status(args):
         state = slots.get(sid)
         status = slot_version_done(state) if state else "free"
         run = state["run_id"] if state else "—"
-        print(f"    [{sid}] v{state.get('version','?') if state else '-':3}  {status:10s}  {run}")
+        ver = str(state.get('version', '?')) if state else '-'
+        print(f"    [{sid}] v{ver:3}  {status:10s}  {run}")
 
     print(f"\n  Recent results:")
     for r in results[-6:]:
