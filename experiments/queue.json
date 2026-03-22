@@ -217,7 +217,7 @@
     "id": "run_p3_026_sp500_w60_s1_7yr_postcovid",
     "hypothesis": "Post-COVID baseline: window=60 (business quarter), stride=1, 7yr (2019-2026), spp=10. ~479K train.",
     "cmd_args": "--preset sp500 --window 60 --stride 1 --years 7 --shuffle-split --samples-per-param 10",
-    "status": "running"
+    "status": "discarded"
   },
   {
     "id": "run_p3_027_sp500_w60_s1_7yr_precovid_spp10",
