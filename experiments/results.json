@@ -30,7 +30,26 @@
       "early_stopped": true
     },
     "verdict": "kept",
-    "notes": "Model peaked at ~epoch 2, early stopping at epoch 17. LR likely too high \u2014 overshoots and can't recover. Generalization gap: val 54.1% vs test 51.7% = 2.4%. This is the baseline to beat."
+    "notes": "Model peaked at ~epoch 2, early stopping at epoch 17. LR likely too high \u2014 overshoots and can't recover. Generalization gap: val 54.1% vs test 51.7% = 2.4%. This is the baseline to beat.",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_002_lower_lr_1e4",
@@ -62,7 +81,26 @@
       "early_stopped": true
     },
     "verdict": "kept",
-    "notes": "Generalization gap closed completely. val_acc=test_acc=54.1%. test_loss improved 0.6923\u21920.6897. Longer training (20 epochs vs 17). Clear win."
+    "notes": "Generalization gap closed completely. val_acc=test_acc=54.1%. test_loss improved 0.6923\u21920.6897. Longer training (20 epochs vs 17). Clear win.",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_003_scheduler_cosine",
@@ -94,7 +132,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "Cosine decay hurts \u2014 decays LR too aggressively before model has converged. Plateau default is better."
+    "notes": "Cosine decay hurts \u2014 decays LR too aggressively before model has converged. Plateau default is better.",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_004_scheduler_none_attempt1",
@@ -119,7 +176,26 @@
     },
     "results": {},
     "verdict": "discarded",
-    "notes": "INFRA ERROR: new kernel slug did not mount cnn-stock-code dataset. Re-run needed."
+    "notes": "INFRA ERROR: new kernel slug did not mount cnn-stock-code dataset. Re-run needed.",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_004_scheduler_none",
@@ -147,7 +223,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "val improved to 55.5% but test dropped to 52.0% \u2014 overfitting without scheduler. Plateau is essential for generalization."
+    "notes": "val improved to 55.5% but test dropped to 52.0% \u2014 overfitting without scheduler. Plateau is essential for generalization.",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_005_logreturns",
@@ -176,7 +271,26 @@
       "early_stopped": true
     },
     "verdict": "kept",
-    "notes": "HUGE jump: test 54.1% \u2192 57.4% (+3.3pp). New baseline. Log returns make features stationary \u2014 biggest single improvement so far."
+    "notes": "HUGE jump: test 54.1% \u2192 57.4% (+3.3pp). New baseline. Log returns make features stationary \u2014 biggest single improvement so far.",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_006_adamw",
@@ -205,7 +319,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "Worse than minmax baseline. NOTE: tested against old baseline (minmax), not logreturns. Should retest as --norm logreturns --optimizer adamw."
+    "notes": "Worse than minmax baseline. NOTE: tested against old baseline (minmax), not logreturns. Should retest as --norm logreturns --optimizer adamw.",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_008_adamw_logreturns",
@@ -232,7 +365,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "AdamW hurts generalization even with logreturns. val=58.3% but test=51.8% (6.5% gap). Adam stays."
+    "notes": "AdamW hurts generalization even with logreturns. val=58.3% but test=51.8% (6.5% gap). Adam stays.",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_007_residual",
@@ -263,7 +415,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "4.2pp generalization gap (val 57.9% vs test 53.7%). Residual adds overfitting on this dataset size. Logreturns baseline (no residual) stays."
+    "notes": "4.2pp generalization gap (val 57.9% vs test 53.7%). Residual adds overfitting on this dataset size. Logreturns baseline (no residual) stays.",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_010_residual_low_dropout",
@@ -284,7 +455,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 53.5% \u2264 no improvement \u274c vs best 57.4%"
+    "notes": "test_acc 53.5% \u2264 no improvement \u274c vs best 57.4%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_011_years7",
@@ -305,7 +495,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 0.0% \u2264 no improvement \u274c vs best 57.4%"
+    "notes": "test_acc 0.0% \u2264 no improvement \u274c vs best 57.4%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_012_lr5e5",
@@ -326,7 +535,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 56.9% \u2264 no improvement \u274c vs best 57.4%"
+    "notes": "test_acc 56.9% \u2264 no improvement \u274c vs best 57.4%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_013_window256",
@@ -347,7 +575,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 46.5% \u2264 no improvement \u274c vs best 57.4%"
+    "notes": "test_acc 46.5% \u2264 no improvement \u274c vs best 57.4%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 256,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_009_no_batchnorm",
@@ -377,7 +624,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test 54.7% < logreturns baseline 57.4%. BN is helping. Tiny val/test gap (0.7pp) \u2014 no overfitting without BN, but lower ceiling."
+    "notes": "test 54.7% < logreturns baseline 57.4%. BN is helping. Tiny val/test gap (0.7pp) \u2014 no overfitting without BN, but lower ceiling.",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_014_clipgrad",
@@ -398,7 +664,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 52.6% \u2264 no improvement \u274c vs best 57.4%"
+    "notes": "test_acc 52.6% \u2264 no improvement \u274c vs best 57.4%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_p2_001_20yr_stride5_shuffle",
@@ -430,7 +715,26 @@
       "early_stopped": true
     },
     "verdict": "kept",
-    "notes": "MASSIVE jump: +7pp over Phase 1 best (57.4%). WARNING: only 12K windows (expected 53K) \u2014 data dir had 5yr+20yr duplicates, runner overwrote 20yr with 5yr. True 20yr result likely even higher. Shuffle+stride=5 is clearly the key improvement."
+    "notes": "MASSIVE jump: +7pp over Phase 1 best (57.4%). WARNING: only 12K windows (expected 53K) \u2014 data dir had 5yr+20yr duplicates, runner overwrote 20yr with 5yr. True 20yr result likely even higher. Shuffle+stride=5 is clearly the key improvement.",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_p2_001_20yr_stride5_shuffle",
@@ -451,7 +755,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 0.0% \u2264 no improvement \u274c vs best 64.4%"
+    "notes": "test_acc 0.0% \u2264 no improvement \u274c vs best 64.4%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_p2_002_20yr_stride1_shuffle",
@@ -472,7 +795,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "INVALID \u2014 label leakage. stride=1 + random shuffle: test windows are adjacent to train windows (127/128 shared features, 4/5 overlapping prediction days). 79.9% is memorization of neighbors, not generalization."
+    "notes": "INVALID \u2014 label leakage. stride=1 + random shuffle: test windows are adjacent to train windows (127/128 shared features, 4/5 overlapping prediction days). 79.9% is memorization of neighbors, not generalization.",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_p2_003_20yr_stride5_chronological",
@@ -493,7 +835,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 0.0% \u2264 no improvement \u274c vs best 64.4%"
+    "notes": "test_acc 0.0% \u2264 no improvement \u274c vs best 64.4%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_p2_001_20yr_stride5_shuffle",
@@ -514,7 +875,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 55.4% \u2264 no improvement \u274c vs best 64.4%"
+    "notes": "test_acc 55.4% \u2264 no improvement \u274c vs best 64.4%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_p2_002_20yr_stride1_shuffle",
@@ -535,7 +915,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "INVALID \u2014 label leakage. stride=1 + random shuffle: test windows are adjacent to train windows (127/128 shared features, 4/5 overlapping prediction days). 79.9% is memorization of neighbors, not generalization."
+    "notes": "INVALID \u2014 label leakage. stride=1 + random shuffle: test windows are adjacent to train windows (127/128 shared features, 4/5 overlapping prediction days). 79.9% is memorization of neighbors, not generalization.",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_p2_003_20yr_stride5_chronological",
@@ -556,7 +955,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 54.7% \u2264 no improvement \u274c vs best 64.4%"
+    "notes": "test_acc 54.7% \u2264 no improvement \u274c vs best 64.4%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_p2_004_5yr_stride5_shuffle",
@@ -577,7 +995,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 55.4% \u2264 no improvement \u274c vs best 64.4%"
+    "notes": "test_acc 55.4% \u2264 no improvement \u274c vs best 64.4%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_p2_005_3yr_stride5_shuffle",
@@ -598,7 +1035,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 55.4% \u2264 no improvement \u274c vs best 64.4%"
+    "notes": "test_acc 55.4% \u2264 no improvement \u274c vs best 64.4%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_p2_006_10yr_stride5_shuffle",
@@ -619,7 +1075,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 55.4% \u2264 no improvement \u274c vs best 64.4%"
+    "notes": "test_acc 55.4% \u2264 no improvement \u274c vs best 64.4%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_p2_007_5yr_stride5_shuffle_dropout02",
@@ -640,7 +1115,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 55.3% \u2264 no improvement \u274c vs best 64.4%"
+    "notes": "test_acc 55.3% \u2264 no improvement \u274c vs best 64.4%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_p2_008_5yr_stride5_shuffle_window64",
@@ -661,7 +1155,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 54.9% \u2264 no improvement \u274c vs best 64.4%"
+    "notes": "test_acc 54.9% \u2264 no improvement \u274c vs best 64.4%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_p2_004b_5yr_stride5_shuffle",
@@ -682,7 +1195,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 55.9% \u2264 no improvement \u274c vs best 79.9%"
+    "notes": "test_acc 55.9% \u2264 no improvement \u274c vs best 79.9%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_p2_005b_3yr_stride5_shuffle",
@@ -703,7 +1235,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 55.4% \u2264 no improvement \u274c vs best 79.9%"
+    "notes": "test_acc 55.4% \u2264 no improvement \u274c vs best 79.9%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_p2_006b_10yr_stride5_shuffle",
@@ -724,7 +1275,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 54.1% \u2264 no improvement \u274c vs best 79.9%"
+    "notes": "test_acc 54.1% \u2264 no improvement \u274c vs best 79.9%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_p2_009_7yr_stride5_shuffle",
@@ -745,7 +1315,26 @@
       "early_stopped": true
     },
     "verdict": "kept",
-    "notes": "NEW BEST (valid): 64.9% test, 7yr stride=5 shuffle. Second time ~64-65% appears (v31 accidental also 64.4%). Confirm with rerun. 7yr (2019-2026) covers COVID crash + rate-hike cycle \u2014 may be informationally rich window."
+    "notes": "NEW BEST (valid): 64.9% test, 7yr stride=5 shuffle. Second time ~64-65% appears (v31 accidental also 64.4%). Confirm with rerun. 7yr (2019-2026) covers COVID crash + rate-hike cycle \u2014 may be informationally rich window.",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_p2_010_7yr_stride5_shuffle_confirm",
@@ -766,7 +1355,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 63.9% \u2264 no improvement \u274c vs best 64.9%"
+    "notes": "test_acc 63.9% \u2264 no improvement \u274c vs best 64.9%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_p2_011_6yr_stride5_shuffle",
@@ -787,7 +1395,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 63.3% \u2264 no improvement \u274c vs best 64.9%"
+    "notes": "test_acc 63.3% \u2264 no improvement \u274c vs best 64.9%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_p2_012_8yr_stride5_shuffle",
@@ -808,7 +1435,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 63.6% \u2264 no improvement \u274c vs best 64.9%"
+    "notes": "test_acc 63.6% \u2264 no improvement \u274c vs best 64.9%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_p3_001_sp500_stride133_20yr",
@@ -829,7 +1475,26 @@
       "early_stopped": true
     },
     "verdict": "kept",
-    "notes": "test_acc 66.0% > IMPROVED \u2705 vs best 64.9%"
+    "notes": "test_acc 66.0% > IMPROVED \u2705 vs best 64.9%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_p3_002_sp500_stride133_20yr_proper",
@@ -850,7 +1515,26 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 65.7% \u2264 no improvement \u274c vs best 68.8%"
+    "notes": "test_acc 65.7% \u2264 no improvement \u274c vs best 68.8%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_p3_003_sp500_stride133_7yr",
@@ -871,7 +1555,26 @@
       "early_stopped": true
     },
     "verdict": "kept",
-    "notes": "test_acc 68.8% > IMPROVED \u2705 vs best 66.0%"
+    "notes": "test_acc 68.8% > IMPROVED \u2705 vs best 66.0%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   },
   {
     "run_id": "run_p3_004_largecap_horizon1_stride1_7yr",
@@ -885,6 +1588,25 @@
     },
     "results": {},
     "verdict": "pending",
-    "notes": ""
+    "notes": "",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 35378946,
+      "conv_channels": [
+        128,
+        256,
+        256,
+        512,
+        1024,
+        1024,
+        1024,
+        1024
+      ],
+      "kernel_size": 9,
+      "fc_hidden": 256,
+      "window_size": 128,
+      "num_channels": 5
+    }
   }
 ]

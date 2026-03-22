@@ -249,7 +249,26 @@ def parse_log(log_path: Path):
         m = re.search(pattern, log_text)
         return cast(m.group(1)) if m else None
 
+    def extract_str(pattern):
+        m = re.search(pattern, log_text)
+        return m.group(1).strip() if m else None
+
     gpu_match = re.search(r"Device: GPU — ([^\n(]+)", log_text)
+
+    # Parse arch metadata from log
+    arch     = extract_str(r"Model:\s+(\w+)\s+\(")        or "cnn"
+    size     = extract_str(r"Model:\s+\w+\s+\((\w+)\)")   or "large"
+    n_params = int(extract(r"Model:\s+\S+\s+\([^)]+\)\s+—\s+([\d,]+)\s+parameters",
+                           cast=lambda x: int(x.replace(",",""))) or 0)
+    window   = int(extract(r"Window:\s+(\d+)d", cast=int) or 128)
+
+    arch_meta = {
+        "arch":       arch.lower(),
+        "size":       size.lower(),
+        "num_params": n_params,
+        "window_size": window,
+    }
+
     return {
         "device": gpu_match.group(1).strip() if gpu_match else "unknown",
         "best_val_acc":  round((extract(r"Best val acc:\s+([\d.]+)%") or 0) / 100, 4),
@@ -258,6 +277,7 @@ def parse_log(log_path: Path):
         "epochs_run":    int(extract(r"Epochs run:\s+(\d+)") or 0),
         "runtime_min":   extract(r"Runtime:\s+([\d.]+) min") or 0,
         "early_stopped": True,
+        "arch_meta":     arch_meta,
     }
 
 
@@ -360,8 +380,10 @@ def daemon_tick():
                 results.append(entry)
 
             if entry and metrics:
+                arch_meta = metrics.pop("arch_meta", {})
                 entry["results"] = metrics
                 entry["device"]  = metrics.pop("device", "unknown")
+                entry["arch_meta"] = arch_meta  # store arch info at top level
                 improved = metrics.get("test_acc", 0) > best_test
                 entry["verdict"] = "kept" if improved else "discarded"
                 entry["notes"]   = (
