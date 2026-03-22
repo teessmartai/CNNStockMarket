@@ -718,5 +718,19 @@
     "results": {},
     "verdict": "pending",
     "notes": ""
+  },
+  {
+    "run_id": "run_p2_009_7yr_stride5_shuffle",
+    "timestamp": "2026-03-22T04:07:12.134157+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "7yr, stride=5, shuffle \u2014 fill gap between 5yr and 10yr",
+    "changes_from_previous": "--years 7 --stride 5 --shuffle-split",
+    "config": {
+      "cmd_args": "--years 7 --stride 5 --shuffle-split"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
