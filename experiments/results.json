@@ -1852,5 +1852,19 @@
     "results": {},
     "verdict": "discarded",
     "notes": "kernel error \u2014 no output collected"
+  },
+  {
+    "run_id": "run_p3_010_lstm_s5_20yr_spp100",
+    "timestamp": "2026-03-22T20:07:54.377790+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "LSTM medium (2.2M) S&P500 stride=5 20yr. Sequential memory vs CNN local patterns.",
+    "changes_from_previous": "--preset sp500 --years 20 --stride 5 --shuffle-split --arch lstm --samples-per-param 100",
+    "config": {
+      "cmd_args": "--preset sp500 --years 20 --stride 5 --shuffle-split --arch lstm --samples-per-param 100"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
