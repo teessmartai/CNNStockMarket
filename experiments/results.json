@@ -1580,15 +1580,22 @@
     "run_id": "run_p3_004_largecap_horizon1_stride1_7yr",
     "timestamp": "2026-03-22T15:15:26.648183+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "T+1 horizon: stride=1 is safe (each window predicts unique day). 7yr largecap-stable = 88K windows. Much harder task but zero leakage and massive data.",
     "changes_from_previous": "--horizon 1 --stride 1 --years 7 --shuffle-split",
     "config": {
       "cmd_args": "--horizon 1 --stride 1 --years 7 --shuffle-split"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": "",
+    "results": {
+      "best_val_acc": 0.554,
+      "test_acc": 0.526,
+      "test_loss": 0.6918,
+      "epochs_run": 23,
+      "runtime_min": 31.7,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 52.6% \u2264 no improvement \u274c vs best 68.8%",
     "arch_meta": {
       "arch": "cnn",
       "size": "large",

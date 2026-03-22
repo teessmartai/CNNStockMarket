@@ -5,10 +5,5 @@
     "version": 54,
     "started_at": "2026-03-22T15:20:31.492650+00:00"
   },
-  "b": {
-    "slot": "b",
-    "run_id": "run_p3_004_largecap_horizon1_stride1_7yr",
-    "version": 53,
-    "started_at": "2026-03-22T15:15:28.653754+00:00"
-  }
+  "b": null
 }
