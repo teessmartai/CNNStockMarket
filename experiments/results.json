@@ -4,7 +4,7 @@
     "timestamp": "2026-03-20T18:16:31Z",
     "kaggle_kernel_version": 11,
     "device": "Tesla T4",
-    "hypothesis": "Baseline run \u2014 establish GPU training pipeline",
+    "hypothesis": "Establish GPU baseline. Can the model train at all?",
     "changes_from_previous": "GPU support added (was hardcoded CPU)",
     "config": {
       "lr": 0.001,
@@ -51,14 +51,15 @@
       "num_channels": 5
     },
     "actual_samples_per_param": 0.0012,
-    "train_samples": 42638
+    "train_samples": 42638,
+    "conclusion": "Training works. 51.7% \u2014 barely above coin flip. Starting point."
   },
   {
     "run_id": "run_002_lower_lr_1e4",
     "timestamp": "2026-03-20T22:54:20.554293+00:00",
     "kaggle_kernel_version": null,
     "device": "Tesla P100-PCIE-16GB",
-    "hypothesis": "Lower LR from 1e-3 to 1e-4 \u2014 fix epoch-2 peak and overfitting",
+    "hypothesis": "Does LR=1e-4 (vs 1e-3) improve generalization?",
     "changes_from_previous": "train_experiment.py: default lr 1e-3 \u2192 1e-4",
     "config": {
       "lr": 0.001,
@@ -104,7 +105,8 @@
       "num_channels": 5
     },
     "actual_samples_per_param": 0.0012,
-    "train_samples": 42638
+    "train_samples": 42638,
+    "conclusion": "Yes. +2.4pp to 54.1%. Lower LR became permanent default."
   },
   {
     "run_id": "run_003_scheduler_cosine",
@@ -259,7 +261,7 @@
     "timestamp": "2026-03-21T11:56:16Z",
     "kaggle_kernel_version": 17,
     "device": "Tesla P100-PCIE-16GB",
-    "hypothesis": "Log-return normalization \u2014 removes price scale/trend bias, makes features stationary",
+    "hypothesis": "Does log-return normalization outperform minmax scaling?",
     "changes_from_previous": "--norm logreturns",
     "config": {
       "lr": 0.0001,
@@ -302,7 +304,8 @@
       "num_channels": 5
     },
     "actual_samples_per_param": 0.0012,
-    "train_samples": 42638
+    "train_samples": 42638,
+    "conclusion": "Yes. +3.3pp to 57.4%. Biggest single win in Phase 1. Now permanent default."
   },
   {
     "run_id": "run_006_adamw",
@@ -815,7 +818,7 @@
     "timestamp": "2026-03-21T17:38:42.577679+00:00",
     "kaggle_kernel_version": null,
     "device": "Tesla P100-PCIE-16GB",
-    "hypothesis": "20yr data stride=1 shuffled \u2014 max data volume (265K windows)",
+    "hypothesis": "Does more data (20yr) with stride=1 shuffle improve results?",
     "changes_from_previous": "--norm logreturns --years 20 --stride 1 --shuffle-split",
     "config": {
       "cmd_args": "--norm logreturns --years 20 --stride 1 --shuffle-split"
@@ -850,7 +853,8 @@
       "num_channels": 5
     },
     "actual_samples_per_param": 0.0012,
-    "train_samples": 42638
+    "train_samples": 42638,
+    "conclusion": "79.9% \u2014 INVALID. Label leakage: adjacent windows share 4/5 prediction days. Memorization, not learning."
   },
   {
     "run_id": "run_p2_003_20yr_stride5_chronological",
@@ -941,7 +945,7 @@
     "timestamp": "2026-03-21T19:11:06.435304+00:00",
     "kaggle_kernel_version": null,
     "device": "Tesla P100-PCIE-16GB",
-    "hypothesis": "20yr data stride=1 shuffled \u2014 max data volume (265K windows)",
+    "hypothesis": "Does more data (20yr) with stride=1 shuffle improve results?",
     "changes_from_previous": "--norm logreturns --years 20 --stride 1 --shuffle-split",
     "config": {
       "cmd_args": "--norm logreturns --years 20 --stride 1 --shuffle-split"
@@ -976,7 +980,8 @@
       "num_channels": 5
     },
     "actual_samples_per_param": 0.0012,
-    "train_samples": 42638
+    "train_samples": 42638,
+    "conclusion": "79.9% \u2014 INVALID. Label leakage: adjacent windows share 4/5 prediction days. Memorization, not learning."
   },
   {
     "run_id": "run_p2_003_20yr_stride5_chronological",
@@ -1361,7 +1366,7 @@
     "timestamp": "2026-03-22T04:07:12.134157+00:00",
     "kaggle_kernel_version": null,
     "device": "Tesla P100-PCIE-16GB",
-    "hypothesis": "7yr, stride=5, shuffle \u2014 fill gap between 5yr and 10yr",
+    "hypothesis": "Does a 7yr window including COVID (2019-2026) outperform other year ranges?",
     "changes_from_previous": "--years 7 --stride 5 --shuffle-split",
     "config": {
       "cmd_args": "--years 7 --stride 5 --shuffle-split"
@@ -1396,7 +1401,8 @@
       "num_channels": 5
     },
     "actual_samples_per_param": 0.001,
-    "train_samples": 36208
+    "train_samples": 36208,
+    "conclusion": "64.9%. COVID regime (March-Aug 2020 crash+recovery) drives strong correlated signal across all stocks. Not yet tested if this generalizes."
   },
   {
     "run_id": "run_p2_010_7yr_stride5_shuffle_confirm",
@@ -1529,7 +1535,7 @@
     "timestamp": "2026-03-22T13:11:55.704758+00:00",
     "kaggle_kernel_version": null,
     "device": "Tesla P100-PCIE-16GB",
-    "hypothesis": "Fully clean: S&P500 (~490 tickers), stride=133 (zero feature+label overlap), 20yr, shuffle. Borderline sample count (~12K train) but zero leakage.",
+    "hypothesis": "Does expanding to full S&P500 (403 tickers) with stride=133 (zero overlap) improve on 54-stock baseline?",
     "changes_from_previous": "--preset sp500 --years 20 --stride 133 --shuffle-split",
     "config": {
       "cmd_args": "--preset sp500 --years 20 --stride 133 --shuffle-split"
@@ -1564,14 +1570,15 @@
       "num_channels": 5
     },
     "actual_samples_per_param": 0.0003,
-    "train_samples": 9772
+    "train_samples": 9772,
+    "conclusion": "66.0%. More tickers help. Stride=133 is methodologically clean. COVID still in data (diluted by 20yr range)."
   },
   {
     "run_id": "run_p3_002_sp500_stride133_20yr_proper",
     "timestamp": "2026-03-22T15:00:16.451294+00:00",
     "kaggle_kernel_version": null,
     "device": "Tesla P100-PCIE-16GB",
-    "hypothesis": "Phase 3 main: S&P 500 full (~416 tickers), stride=133, 20yr, shuffle. Fully clean, ~12K train. Compare to largecap-stable baseline.",
+    "hypothesis": "Confirm p3_001 result with fresh run.",
     "changes_from_previous": "--preset sp500 --years 20 --stride 133 --shuffle-split",
     "config": {
       "cmd_args": "--preset sp500 --years 20 --stride 133 --shuffle-split"
@@ -1606,14 +1613,15 @@
       "num_channels": 5
     },
     "actual_samples_per_param": 0.0003,
-    "train_samples": 9772
+    "train_samples": 9772,
+    "conclusion": "65.7%. Confirms result is real, not a fluke. Slightly lower \u2014 run-to-run variance."
   },
   {
     "run_id": "run_p3_003_sp500_stride133_7yr",
     "timestamp": "2026-03-22T15:00:18.414528+00:00",
     "kaggle_kernel_version": null,
     "device": "Tesla P100-PCIE-16GB",
-    "hypothesis": "S&P 500 stride=133, 7yr \u2014 includes COVID regime. ~4K train but clean. Does COVID boost hold with no leakage?",
+    "hypothesis": "S&P500 + zero-leakage stride + COVID window (7yr). Best conditions combined.",
     "changes_from_previous": "--preset sp500 --years 7 --stride 133 --shuffle-split",
     "config": {
       "cmd_args": "--preset sp500 --years 7 --stride 133 --shuffle-split"
@@ -1648,14 +1656,15 @@
       "num_channels": 5
     },
     "actual_samples_per_param": 0.0001,
-    "train_samples": 3648
+    "train_samples": 3648,
+    "conclusion": "68.8%. Current best. Methodologically clean but COVID-regime dependent. Pre-COVID validation pending (runs p3_022/023)."
   },
   {
     "run_id": "run_p3_004_largecap_horizon1_stride1_7yr",
     "timestamp": "2026-03-22T15:15:26.648183+00:00",
     "kaggle_kernel_version": null,
     "device": "Tesla P100-PCIE-16GB",
-    "hypothesis": "T+1 horizon: stride=1 is safe (each window predicts unique day). 7yr largecap-stable = 88K windows. Much harder task but zero leakage and massive data.",
+    "hypothesis": "Is 1-day prediction (horizon=1) easier or harder than 5-day?",
     "changes_from_previous": "--horizon 1 --stride 1 --years 7 --shuffle-split",
     "config": {
       "cmd_args": "--horizon 1 --stride 1 --years 7 --shuffle-split"
@@ -1690,7 +1699,8 @@
       "num_channels": 5
     },
     "actual_samples_per_param": 0.0,
-    "train_samples": 1367
+    "train_samples": 1367,
+    "conclusion": "52.6%. Harder. 1-day moves are dominated by noise. 5-day trends are more predictable."
   },
   {
     "run_id": "run_p3_005_sp500_horizon1_stride1_7yr",
@@ -1712,15 +1722,22 @@
     "run_id": "run_p3_009_sp500_s5_20yr_default",
     "timestamp": "2026-03-22T15:55:49.342758+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "S&P 500 full, stride=5, 20yr, shuffle \u2014 259K train with default 35M model. Solid data volume.",
     "changes_from_previous": "--preset sp500 --years 20 --stride 5 --shuffle-split",
     "config": {
       "cmd_args": "--preset sp500 --years 20 --stride 5 --shuffle-split"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": "",
+    "results": {
+      "best_val_acc": 0.645,
+      "test_acc": 0.628,
+      "test_loss": 0.6498,
+      "epochs_run": 29,
+      "runtime_min": 169.1,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 62.8% \u2264 no improvement \u274c vs best 68.8%",
     "actual_samples_per_param": null,
     "train_samples": 36208
   }
