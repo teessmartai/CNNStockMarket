@@ -200,29 +200,42 @@
     "status": "pending"
   },
   {
-    "id": "run_p3_022_sp500_w30_s1_7yr_postcovid",
-    "hypothesis": "Post-COVID baseline: S&P500, window=30, stride=1, 7yr (2019-2026), spp=10. ~488K train \u2192 ~48,800 params. Establishes w=30 post-COVID reference.",
-    "cmd_args": "--preset sp500 --window 30 --stride 1 --years 7 --shuffle-split --samples-per-param 10",
+    "id": "run_p3_022_sp500_w20_s1_7yr_postcovid",
+    "hypothesis": "Post-COVID baseline: S&P500, window=20 (business month), stride=1, 7yr (2019-2026), spp=10. ~488K train \u2192 ~48,800 params.",
+    "cmd_args": "--preset sp500 --window 20 --stride 1 --years 7 --shuffle-split --samples-per-param 10",
     "status": "pending"
   },
   {
-    "id": "run_p3_023_sp500_w30_s1_7yr_precovid_spp10",
-    "hypothesis": "Pre-COVID spp-matched: same as p3_022 but end=2019-12-31 (2012-2019). Same spp=10 \u2192 same relative model size. Tests if COVID is driving accuracy.",
-    "cmd_args": "--preset sp500 --window 30 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --samples-per-param 10",
-    "paired_with": "run_p3_022_sp500_w30_s1_7yr_postcovid",
+    "id": "run_p3_023_sp500_w20_s1_7yr_precovid_spp10",
+    "hypothesis": "Pre-COVID spp-matched: window=20, stride=1, 7yr end=2019-12-31, spp=10. Is COVID driving the result?",
+    "cmd_args": "--preset sp500 --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --samples-per-param 10",
+    "paired_with": "run_p3_022_sp500_w20_s1_7yr_postcovid",
     "status": "pending"
   },
   {
-    "id": "run_p3_024_sp500_w30_s1_7yr_precovid_fixedparams",
-    "hypothesis": "Pre-COVID fixed-params: same data as p3_023 but model pinned to exact param count from p3_022 post-COVID run. Isolates: does absolute capacity matter vs spp ratio?",
-    "cmd_args": "--preset sp500 --window 30 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --target-params FILL_FROM_P3_022",
-    "depends_on": "run_p3_022_sp500_w30_s1_7yr_postcovid",
+    "id": "run_p3_024_sp500_w20_s1_7yr_precovid_fixedparams",
+    "hypothesis": "Pre-COVID fixed-params: same data as p3_023 but model pinned to p3_022 param count. Absolute capacity vs spp ratio.",
+    "cmd_args": "--preset sp500 --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --target-params FILL_FROM_P3_022",
+    "depends_on": "run_p3_022_sp500_w20_s1_7yr_postcovid",
     "status": "pending"
   },
   {
-    "id": "run_p3_025_largecap_w30_s1_7yr_precovid_spp10",
-    "hypothesis": "Pre-COVID largecap: 54 stocks, window=30, stride=1, 7yr end=2019-12-31, spp=10. ~65K train \u2192 ~6,500 params. Pairs with p3_018 (was underpowered at stride=5).",
-    "cmd_args": "--preset largecap --window 30 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --samples-per-param 10",
+    "id": "run_p3_025_largecap_w20_s1_7yr_precovid_spp10",
+    "hypothesis": "Largecap pre-COVID: window=20, stride=1, 7yr end=2019-12-31, spp=10. ~65K train \u2192 ~6,500 params.",
+    "cmd_args": "--preset largecap --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --samples-per-param 10",
+    "status": "pending"
+  },
+  {
+    "id": "run_p3_026_sp500_w60_s1_7yr_postcovid",
+    "hypothesis": "Post-COVID baseline: window=60 (business quarter), stride=1, 7yr (2019-2026), spp=10. ~479K train.",
+    "cmd_args": "--preset sp500 --window 60 --stride 1 --years 7 --shuffle-split --samples-per-param 10",
+    "status": "pending"
+  },
+  {
+    "id": "run_p3_027_sp500_w60_s1_7yr_precovid_spp10",
+    "hypothesis": "Pre-COVID spp-matched: window=60, stride=1, 7yr end=2019-12-31, spp=10. Pairs with p3_026.",
+    "cmd_args": "--preset sp500 --window 60 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --samples-per-param 10",
+    "paired_with": "run_p3_026_sp500_w60_s1_7yr_postcovid",
     "status": "pending"
   },
   {
@@ -244,15 +257,15 @@
     "status": "pending"
   },
   {
-    "id": "run_p3_013_cnn_w30_h1_s1_7yr",
-    "hypothesis": "T+1, window=30 (1.5mo): recent momentum. ~489K train, 35M params. Does short lookback help 1-day prediction?",
-    "cmd_args": "--preset sp500 --horizon 1 --window 30 --stride 1 --years 7 --shuffle-split --samples-per-param 100",
+    "id": "run_p3_013_cnn_w20_h1_s1_7yr",
+    "hypothesis": "T+1 window=20 (business month): ~488K train. Does 1-month lookback help 1-day prediction?",
+    "cmd_args": "--preset sp500 --horizon 1 --window 20 --stride 1 --years 7 --shuffle-split --samples-per-param 100",
     "status": "pending"
   },
   {
-    "id": "run_p3_014_cnn_w90_h1_s1_7yr",
-    "hypothesis": "T+1, window=90 (1 quarter): earnings cycle context. ~472K train. Quarter lookback vs 30-day vs 128-day.",
-    "cmd_args": "--preset sp500 --horizon 1 --window 90 --stride 1 --years 7 --shuffle-split --samples-per-param 100",
+    "id": "run_p3_014_cnn_w60_h1_s1_7yr",
+    "hypothesis": "T+1 window=60 (business quarter): ~479K train. 1-quarter lookback vs 1-month vs 6-month.",
+    "cmd_args": "--preset sp500 --horizon 1 --window 60 --stride 1 --years 7 --shuffle-split --samples-per-param 100",
     "status": "pending"
   },
   {
