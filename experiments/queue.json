@@ -177,7 +177,7 @@
     "id": "run_p3_009_sp500_s5_20yr_spp100",
     "hypothesis": "S&P500 stride=5 20yr with spp=100. ~277K train \u2192 ~2,770 params. Properly sized \u2014 compare to p3_009_default (35M params, same data).",
     "cmd_args": "--preset sp500 --years 20 --stride 5 --shuffle-split --samples-per-param 100",
-    "status": "discarded"
+    "status": "pending"
   },
   {
     "id": "run_p3_019_largecap_s5_20yr_precovid",
@@ -185,7 +185,7 @@
     "cmd_args": "--preset largecap-stable --years 20 --stride 5 --shuffle-split --end-date 2019-12-31 --samples-per-param 100",
     "paired_with": "run_p2_001_20yr_stride5_shuffle",
     "paired_result": "64.4% test",
-    "status": "discarded"
+    "status": "pending"
   },
   {
     "id": "run_p3_022_sp500_w20_s1_7yr_postcovid",
@@ -198,20 +198,20 @@
     "hypothesis": "Pre-COVID spp-matched: window=20, stride=1, 7yr end=2019-12-31, spp=10. Is COVID driving the result?",
     "cmd_args": "--preset sp500 --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --samples-per-param 10",
     "paired_with": "run_p3_022_sp500_w20_s1_7yr_postcovid",
-    "status": "discarded"
+    "status": "pending"
   },
   {
     "id": "run_p3_024_sp500_w20_s1_7yr_precovid_fixedparams",
-    "hypothesis": "Pre-COVID fixed-params: same data as p3_023 but model pinned to p3_022 param count. Absolute capacity vs spp ratio.",
-    "cmd_args": "--preset sp500 --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --target-params FILL_FROM_P3_022",
+    "hypothesis": "Pre-COVID fixed-params: same data as p3_023 but model pinned to p3_022 param count. Absolute capacity vs spp ratio. (target-params=48800 estimated from spp=10 on 488K samples)",
+    "cmd_args": "--preset sp500 --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --target-params 48800",
     "depends_on": "run_p3_022_sp500_w20_s1_7yr_postcovid",
-    "status": "discarded"
+    "status": "pending"
   },
   {
     "id": "run_p3_025_largecap_w20_s1_7yr_precovid_spp10",
     "hypothesis": "Largecap pre-COVID: window=20, stride=1, 7yr end=2019-12-31, spp=10. ~65K train \u2192 ~6,500 params.",
     "cmd_args": "--preset largecap-stable --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --samples-per-param 10",
-    "status": "running"
+    "status": "pending"
   },
   {
     "id": "run_p3_026_sp500_w60_s1_7yr_postcovid",
@@ -236,7 +236,7 @@
     "id": "run_p3_011_transformer_s5_20yr_spp100",
     "hypothesis": "Transformer medium (548K) S&P500 stride=5 20yr. Attention over 128-day window.",
     "cmd_args": "--preset sp500 --years 20 --stride 5 --shuffle-split --arch transformer --samples-per-param 100",
-    "status": "discarded"
+    "status": "pending"
   },
   {
     "id": "run_p3_012_tcn_s5_20yr_spp100",

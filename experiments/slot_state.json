@@ -1,9 +1,4 @@
 {
   "a": null,
-  "b": {
-    "slot": "b",
-    "run_id": "run_p3_025_largecap_w20_s1_7yr_precovid_spp10",
-    "version": null,
-    "started_at": "2026-03-22T22:25:34.504589+00:00"
-  }
+  "b": null
 }

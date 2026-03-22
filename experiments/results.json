@@ -1740,20 +1740,6 @@
     "notes": ""
   },
   {
-    "run_id": "run_p3_011_transformer_s5_20yr_spp100",
-    "timestamp": "2026-03-22T20:17:59.280949+00:00",
-    "kaggle_kernel_version": null,
-    "device": "pending",
-    "hypothesis": "Transformer medium (548K) S&P500 stride=5 20yr. Attention over 128-day window.",
-    "changes_from_previous": "--preset sp500 --years 20 --stride 5 --shuffle-split --arch transformer --samples-per-param 100",
-    "config": {
-      "cmd_args": "--preset sp500 --years 20 --stride 5 --shuffle-split --arch transformer --samples-per-param 100"
-    },
-    "results": {},
-    "verdict": "discarded",
-    "notes": "kernel error \u2014 no output collected"
-  },
-  {
     "run_id": "run_p3_005_sp500_horizon1_stride1_7yr",
     "timestamp": "2026-03-22T20:23:56.259588+00:00",
     "kaggle_kernel_version": null,
@@ -1781,106 +1767,6 @@
       "num_params": 0,
       "window_size": 128
     }
-  },
-  {
-    "run_id": "run_p3_023_sp500_w20_s1_7yr_precovid_spp10",
-    "timestamp": "2026-03-22T21:01:35.792432+00:00",
-    "kaggle_kernel_version": null,
-    "device": "Tesla P100-PCIE-16GB",
-    "hypothesis": "Pre-COVID spp-matched: window=20, stride=1, 7yr end=2019-12-31, spp=10. Is COVID driving the result?",
-    "changes_from_previous": "--preset sp500 --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --samples-per-param 10",
-    "config": {
-      "cmd_args": "--preset sp500 --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --samples-per-param 10"
-    },
-    "results": {
-      "actual_samples_per_param": null,
-      "train_samples": null,
-      "best_val_acc": 0.0,
-      "test_acc": 0.0,
-      "test_loss": 0,
-      "epochs_run": 0,
-      "runtime_min": 0,
-      "early_stopped": true
-    },
-    "verdict": "discarded",
-    "notes": "test_acc 0.0% \u2264 no improvement \u274c vs best 68.8%",
-    "arch_meta": {
-      "arch": "cnn",
-      "size": "large",
-      "num_params": 0,
-      "window_size": 20
-    }
-  },
-  {
-    "run_id": "run_p3_009_sp500_s5_20yr_spp100",
-    "timestamp": "2026-03-22T21:28:42.478024+00:00",
-    "kaggle_kernel_version": null,
-    "device": "pending",
-    "hypothesis": "S&P500 stride=5 20yr with spp=100. ~277K train \u2192 ~2,770 params. Properly sized \u2014 compare to p3_009_default (35M params, same data).",
-    "changes_from_previous": "--preset sp500 --years 20 --stride 5 --shuffle-split --samples-per-param 100",
-    "config": {
-      "cmd_args": "--preset sp500 --years 20 --stride 5 --shuffle-split --samples-per-param 100"
-    },
-    "results": {},
-    "verdict": "discarded",
-    "notes": "kernel error \u2014 no output collected"
-  },
-  {
-    "run_id": "run_p3_019_largecap_s5_20yr_precovid",
-    "timestamp": "2026-03-22T22:09:21.767475+00:00",
-    "kaggle_kernel_version": null,
-    "device": "Tesla P100-PCIE-16GB",
-    "hypothesis": "Match run_p2_001 (64.4%) but end 2019-12-31. 54 largecap, stride=5, 20yr (1999-2019). Largest pre-COVID dataset \u2014 best chance of non-COVID signal.",
-    "changes_from_previous": "--preset largecap-stable --years 20 --stride 5 --shuffle-split --end-date 2019-12-31 --samples-per-param 100",
-    "config": {
-      "cmd_args": "--preset largecap-stable --years 20 --stride 5 --shuffle-split --end-date 2019-12-31 --samples-per-param 100"
-    },
-    "results": {
-      "actual_samples_per_param": null,
-      "train_samples": null,
-      "best_val_acc": 0.0,
-      "test_acc": 0.0,
-      "test_loss": 0,
-      "epochs_run": 0,
-      "runtime_min": 0,
-      "early_stopped": true
-    },
-    "verdict": "discarded",
-    "notes": "test_acc 0.0% \u2264 no improvement \u274c vs best 68.8%",
-    "arch_meta": {
-      "arch": "cnn",
-      "size": "large",
-      "num_params": 0,
-      "window_size": 128
-    }
-  },
-  {
-    "run_id": "run_p3_024_sp500_w20_s1_7yr_precovid_fixedparams",
-    "timestamp": "2026-03-22T22:24:50.118692+00:00",
-    "kaggle_kernel_version": null,
-    "device": "pending",
-    "hypothesis": "Pre-COVID fixed-params: same data as p3_023 but model pinned to p3_022 param count. Absolute capacity vs spp ratio.",
-    "changes_from_previous": "--preset sp500 --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --target-params FILL_FROM_P3_022",
-    "config": {
-      "cmd_args": "--preset sp500 --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --target-params FILL_FROM_P3_022"
-    },
-    "results": {},
-    "verdict": "discarded",
-    "notes": "kernel error \u2014 no output collected"
-  },
-  {
-    "run_id": "run_p3_025_largecap_w20_s1_7yr_precovid_spp10",
-    "timestamp": "2026-03-22T22:25:11.686198+00:00",
-    "kaggle_kernel_version": null,
-    "device": "pending",
-    "hypothesis": "Largecap pre-COVID: window=20, stride=1, 7yr end=2019-12-31, spp=10. ~65K train \u2192 ~6,500 params.",
-    "changes_from_previous": "--preset largecap-stable --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --samples-per-param 10",
-    "config": {
-      "cmd_args": "--preset largecap-stable --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --samples-per-param 10"
-    },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
   },
   {
     "run_id": "run_p3_026_sp500_w60_s1_7yr_postcovid",

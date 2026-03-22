@@ -483,7 +483,13 @@ def daemon_tick():
     best_test = current_best_test_acc()
 
     pending   = [e for e in queue if e["status"] == "pending"]
+    free_slots = [sid for sid, slug in SLOTS.items() if not slots.get(sid)]
     changed   = False
+
+    # Rebuild dataset ONCE per tick (before any launches) — avoids race condition
+    # when both slots launch simultaneously and stomp each other's DATASET_DIR
+    if pending and free_slots:
+        rebuild_dataset("autoresearch: pre-launch sync")
 
     for slot_id, slug in SLOTS.items():
         slot_run = slots.get(slot_id)
@@ -568,7 +574,6 @@ def daemon_tick():
             })
 
             patch_runner_cmd(slot_id, exp["cmd_args"])
-            rebuild_dataset(f"autoresearch: {exp['id']}")   # keep code in sync
             ok, version = push_kernel(slot_id)
             if ok:
                 slots[slot_id] = {"slot": slot_id, "run_id": exp["id"],
