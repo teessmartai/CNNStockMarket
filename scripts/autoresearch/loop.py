@@ -39,7 +39,7 @@ SLOTS = {
     "a": KERNEL_SLUG,
     "b": KERNEL_SLUG,
 }
-BASE_CMD     = "--preset largecap-stable --window 128 --horizon 5 --years 5 --norm logreturns"
+BASE_CMD     = ""  # defaults are set in train_experiment.py; each experiment specifies all flags explicitly
 DATASET_DIR  = Path("/tmp/kaggle-code-dataset")
 KERNEL_DIRS  = {
     "a": Path("/tmp/kaggle-setup/kernel"),

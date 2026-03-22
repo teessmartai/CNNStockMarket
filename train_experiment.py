@@ -252,7 +252,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--optimizer",    type=str,   default="adam",
                    choices=["adam", "adamw"],
                    help="Optimizer: adam (default) or adamw")
-    p.add_argument("--norm",         type=str,   default="minmax",
+    p.add_argument("--norm",         type=str,   default="logreturns",
                    choices=["minmax", "logreturns"],
                    help="Input normalization: minmax per-window (default) or logreturns")
     p.add_argument("--batchnorm",    action=argparse.BooleanOptionalAction, default=True,
