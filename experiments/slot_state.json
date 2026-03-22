@@ -5,10 +5,5 @@
     "version": 46,
     "started_at": "2026-03-22T04:07:14.092704+00:00"
   },
-  "b": {
-    "slot": "b",
-    "run_id": "run_p2_006b_10yr_stride5_shuffle",
-    "version": 45,
-    "started_at": "2026-03-22T04:02:11.397587+00:00"
-  }
+  "b": null
 }
