@@ -1,6 +1,6 @@
 # AutoResearch Results
 
-_Last updated: 2026-03-22 20:51 UTC_
+_Last updated: 2026-03-22 20:56 UTC_
 
 > **spp** = train_samples / num_params. Old runs used a fixed 35M-param model (spp ≈ 1:800–1:27K, severely overparameterized). New runs use `--samples-per-param` so the model auto-sizes to the data.
 
@@ -67,7 +67,7 @@ Config: `--preset sp500 --years 7 --stride 133 --shuffle-split`
 | run_p3_011_transformer_s5_20yr_spp1 | Transformer medium (548K) S&P500 stride=5 20yr. Attention over 128-day window. | `--preset sp500 --years 20 --stride 5 --shuffle-spl` | 0.0% | 0.0% | CNN — | — | ❌ | — |
 | run_p3_005_sp500_horizon1_stride1_7 | T+1 horizon, S&P 500, 7yr, stride=1, shuffle. ~1.4M windows, fully clean. Upper  | `--preset sp500 --horizon 1 --stride 1 --years 7 --` | 52.1% | 52.0% | CNN — | — | ❌ | — |
 | run_p3_009_sp500_s5_20yr_spp100 | S&P500 stride=5 20yr with spp=100. ~277K train → ~2,770 params. Properly sized — | `--preset sp500 --years 20 --stride 5 --shuffle-spl` | 0.0% | 0.0% | CNN — | — | ⏳ | — |
-| run_p3_019_largecap_s5_20yr_precovi | Match run_p2_001 (64.4%) but end 2019-12-31. 54 largecap, stride=5, 20yr (1999-2 | `--preset largecap --years 20 --stride 5 --shuffle-` | 0.0% | 0.0% | CNN — | — | ⏳ | — |
+| run_p3_019_largecap_s5_20yr_precovi | Match run_p2_001 (64.4%) but end 2019-12-31. 54 largecap, stride=5, 20yr (1999-2 | `--preset largecap --years 20 --stride 5 --shuffle-` | 0.0% | 0.0% | CNN — | — | ❌ | — |
 
 ## Key Findings
 
