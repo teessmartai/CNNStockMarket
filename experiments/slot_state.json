@@ -1,10 +1,5 @@
 {
-  "a": {
-    "slot": "a",
-    "run_id": "run_p3_023_sp500_w20_s1_7yr_precovid_spp10",
-    "version": 58,
-    "started_at": "2026-03-22T19:17:32.795346+00:00"
-  },
+  "a": null,
   "b": {
     "slot": "b",
     "run_id": "run_p3_022_sp500_w20_s1_7yr_postcovid",
