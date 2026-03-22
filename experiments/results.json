@@ -835,15 +835,22 @@
     "run_id": "run_p3_002_sp500_stride133_20yr_proper",
     "timestamp": "2026-03-22T15:00:16.451294+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Phase 3 main: S&P 500 full (~416 tickers), stride=133, 20yr, shuffle. Fully clean, ~12K train. Compare to largecap-stable baseline.",
     "changes_from_previous": "--preset sp500 --years 20 --stride 133 --shuffle-split",
     "config": {
       "cmd_args": "--preset sp500 --years 20 --stride 133 --shuffle-split"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "best_val_acc": 0.66,
+      "test_acc": 0.657,
+      "test_loss": 0.6398,
+      "epochs_run": 33,
+      "runtime_min": 7.6,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 65.7% \u2264 no improvement \u274c vs best 68.8%"
   },
   {
     "run_id": "run_p3_003_sp500_stride133_7yr",
@@ -865,5 +872,19 @@
     },
     "verdict": "kept",
     "notes": "test_acc 68.8% > IMPROVED \u2705 vs best 66.0%"
+  },
+  {
+    "run_id": "run_p3_004_largecap_horizon1_stride1_7yr",
+    "timestamp": "2026-03-22T15:15:26.648183+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "T+1 horizon: stride=1 is safe (each window predicts unique day). 7yr largecap-stable = 88K windows. Much harder task but zero leakage and massive data.",
+    "changes_from_previous": "--horizon 1 --stride 1 --years 7 --shuffle-split",
+    "config": {
+      "cmd_args": "--horizon 1 --stride 1 --years 7 --shuffle-split"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]

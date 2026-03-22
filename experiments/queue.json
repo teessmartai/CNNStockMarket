@@ -147,7 +147,7 @@
     "id": "run_p3_002_sp500_stride133_20yr_proper",
     "hypothesis": "Phase 3 main: S&P 500 full (~416 tickers), stride=133, 20yr, shuffle. Fully clean, ~12K train. Compare to largecap-stable baseline.",
     "cmd_args": "--preset sp500 --years 20 --stride 133 --shuffle-split",
-    "status": "running"
+    "status": "discarded"
   },
   {
     "id": "run_p3_003_sp500_stride133_7yr",
@@ -159,7 +159,7 @@
     "id": "run_p3_004_largecap_horizon1_stride1_7yr",
     "hypothesis": "T+1 horizon: stride=1 is safe (each window predicts unique day). 7yr largecap-stable = 88K windows. Much harder task but zero leakage and massive data.",
     "cmd_args": "--horizon 1 --stride 1 --years 7 --shuffle-split",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_p3_005_sp500_horizon1_stride1_7yr",
