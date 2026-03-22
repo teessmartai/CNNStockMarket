@@ -258,6 +258,10 @@ def parse_args() -> argparse.Namespace:
                    help="Add residual skip connections between conv layers")
     p.add_argument("--clip-grad",    type=float, default=0.0,
                    help="Gradient clipping max norm (0 = disabled, e.g. 1.0)")
+    p.add_argument("--width-mult",   type=float, default=1.0,
+                   help="Scale all conv filter counts by this multiplier (0.25/0.5/1.0/2.0)")
+    p.add_argument("--num-layers",   type=int,   default=8,
+                   help="Number of conv layers 1–8 (uses first N entries of CONV_CHANNELS)")
     p.add_argument("--shuffle-split", action="store_true", default=False,
                    help="Randomly shuffle windows before train/val/test split (use with stride>=horizon)")
     p.add_argument("--seed",         type=int,   default=42,
@@ -402,17 +406,22 @@ def main():
     test_loader  = DataLoader(test_dataset, batch_size=args.batch, shuffle=False, num_workers=0, pin_memory=pin)
 
     # ── 4. Model + trainer ────────────────────────────────────────────────────
+    # Build conv_channels: slice to --num-layers, then scale by --width-mult
+    _base_channels = CONV_CHANNELS[:max(1, min(args.num_layers, len(CONV_CHANNELS)))]
+    _conv_channels = [max(1, int(c * args.width_mult)) for c in _base_channels]
+
     model = StockCNN(
         window_size   = args.window,
         num_channels  = NUM_CHANNELS,
-        conv_channels = CONV_CHANNELS,
+        conv_channels = _conv_channels,
         kernel_size   = KERNEL_SIZE,
-        fc_hidden     = FC_HIDDEN,
+        fc_hidden     = max(1, int(FC_HIDDEN * args.width_mult)),
         dropout       = args.dropout,
         use_batchnorm = args.batchnorm,
         use_residual  = args.residual,
     )
     log.info(f"\n  Model: {model.count_parameters():,} parameters")
+    log.info(f"  Conv channels: {_conv_channels}")
     log.info(f"  BatchNorm: {args.batchnorm}   Residual: {args.residual}   ClipGrad: {args.clip_grad or 'off'}")
     log.info(f"  Scheduler: {args.scheduler}   Optimizer: {args.optimizer}   Norm: {args.norm}")
     trainer = Trainer(
