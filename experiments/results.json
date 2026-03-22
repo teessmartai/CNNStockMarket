@@ -472,7 +472,7 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 0.0% \u2264 no improvement \u274c vs best 64.4%"
+    "notes": "INVALID \u2014 label leakage. stride=1 + random shuffle: test windows are adjacent to train windows (127/128 shared features, 4/5 overlapping prediction days). 79.9% is memorization of neighbors, not generalization."
   },
   {
     "run_id": "run_p2_003_20yr_stride5_chronological",
@@ -534,8 +534,8 @@
       "runtime_min": 409.6,
       "early_stopped": true
     },
-    "verdict": "kept",
-    "notes": "test_acc 79.9% > IMPROVED \u2705 vs best 64.4%"
+    "verdict": "discarded",
+    "notes": "INVALID \u2014 label leakage. stride=1 + random shuffle: test windows are adjacent to train windows (127/128 shared features, 4/5 overlapping prediction days). 79.9% is memorization of neighbors, not generalization."
   },
   {
     "run_id": "run_p2_003_20yr_stride5_chronological",
@@ -744,7 +744,7 @@
       "runtime_min": 12.8,
       "early_stopped": true
     },
-    "verdict": "discarded",
-    "notes": "test_acc 64.9% \u2264 no improvement \u274c vs best 79.9%"
+    "verdict": "kept",
+    "notes": "NEW BEST (valid): 64.9% test, 7yr stride=5 shuffle. Second time ~64-65% appears (v31 accidental also 64.4%). Confirm with rerun. 7yr (2019-2026) covers COVID crash + rate-hike cycle \u2014 may be informationally rich window."
   }
 ]
