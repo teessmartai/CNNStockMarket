@@ -93,6 +93,6 @@
     "id": "run_p2_008_5yr_stride5_shuffle_window64",
     "hypothesis": "Shorter window (64 days) with stride=5 shuffle. May capture shorter-term patterns better.",
     "cmd_args": "--years 5 --stride 5 --shuffle-split --window 64",
-    "status": "pending"
+    "status": "running"
   }
 ]
