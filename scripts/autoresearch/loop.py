@@ -404,22 +404,24 @@ def regenerate_results_md():
             continue
         lines.append(f"## {title}")
         lines.append("")
-        lines.append("| Run | Config | Val | Test | Params | spp | Verdict |")
-        lines.append("|-----|--------|-----|------|--------|-----|---------|")
+        lines.append("| Run | Hypothesis | Config | Val | Test | Params | spp | Verdict | Conclusion |")
+        lines.append("|-----|-----------|--------|-----|------|--------|-----|---------|------------|")
         for r in phase:
-            va     = r["results"].get("best_val_acc", 0) * 100
-            ta     = r["results"].get("test_acc", 0) * 100
-            params = r.get("arch_meta", {}).get("num_params", 0)
-            arch   = r.get("arch_meta", {}).get("arch", "cnn").upper()
-            spp    = r.get("actual_samples_per_param")
-            cfg    = r.get("changes_from_previous",
-                           r.get("config", {}).get("cmd_args", ""))[:55]
-            v      = r.get("verdict", "?")
-            icon   = {"kept": "✅ kept", "discarded": "❌", "pending": "⏳",
-                      "error": "💥", "invalid": "🚫 invalid"}.get(v, v)
+            va         = r["results"].get("best_val_acc", 0) * 100
+            ta         = r["results"].get("test_acc", 0) * 100
+            params     = r.get("arch_meta", {}).get("num_params", 0)
+            arch       = r.get("arch_meta", {}).get("arch", "cnn").upper()
+            spp        = r.get("actual_samples_per_param")
+            cfg        = r.get("changes_from_previous",
+                               r.get("config", {}).get("cmd_args", ""))[:50]
+            v          = r.get("verdict", "?")
+            icon       = {"kept": "✅", "discarded": "❌", "pending": "⏳",
+                          "error": "💥", "invalid": "🚫"}.get(v, v)
+            hyp        = r.get("hypothesis", "")[:80]
+            conclusion = r.get("conclusion", "—")[:80]
             lines.append(
-                f"| {r['run_id'][:38]} | `{cfg}` | {va:.1f}% | {ta:.1f}%"
-                f" | {arch} {fmt_params(params)} | {fmt_spp(spp)} | {icon} |"
+                f"| {r['run_id'][:35]} | {hyp} | `{cfg}` | {va:.1f}% | {ta:.1f}%"
+                f" | {arch} {fmt_params(params)} | {fmt_spp(spp)} | {icon} | {conclusion} |"
             )
         lines.append("")
 
@@ -566,6 +568,7 @@ def daemon_tick():
             })
 
             patch_runner_cmd(slot_id, exp["cmd_args"])
+            rebuild_dataset(f"autoresearch: {exp['id']}")   # keep code in sync
             ok, version = push_kernel(slot_id)
             if ok:
                 slots[slot_id] = {"slot": slot_id, "run_id": exp["id"],
