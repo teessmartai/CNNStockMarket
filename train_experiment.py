@@ -268,6 +268,10 @@ def parse_args() -> argparse.Namespace:
                    help="Target train_samples / num_params ratio. "
                         "Controls model size: higher = smaller model. "
                         "Default 100. Same value = fair comparison across archs.")
+    p.add_argument("--target-params", type=int, default=None,
+                   help="Pin model to exact parameter count regardless of data size. "
+                        "Overrides --samples-per-param. Use to test same absolute "
+                        "model capacity across different data regimes.")
     p.add_argument("--shuffle-split", action="store_true", default=False,
                    help="Randomly shuffle windows before train/val/test split (use with stride>=horizon)")
     p.add_argument("--seed",         type=int,   default=42,
@@ -414,20 +418,38 @@ def main():
     # ── 4. Model + trainer ────────────────────────────────────────────────────
     from src.models.registry import build_model_for_samples
     n_train = len(X_train)
-    model = build_model_for_samples(
-        arch               = args.arch,
-        train_samples      = n_train,
-        samples_per_param  = args.samples_per_param,
-        window_size        = args.window,
-        num_channels       = NUM_CHANNELS,
-        num_classes        = 2,
-        dropout            = args.dropout,
-        use_batchnorm      = args.batchnorm,
-        use_residual       = args.residual,
-    )
-    actual_spp = n_train / model.count_parameters()
-    log.info(f"\n  Model: {args.arch.upper()} — {model.count_parameters():,} parameters")
-    log.info(f"  samples_per_param target={args.samples_per_param}  actual={actual_spp:.1f}  (train={n_train:,})")
+    if args.target_params:
+        # Pin to exact param count — ignores spp, sizes model explicitly
+        effective_spp = max(1, n_train // args.target_params)
+        model = build_model_for_samples(
+            arch               = args.arch,
+            train_samples      = args.target_params,   # trick: spp=1 → target_params params
+            samples_per_param  = 1,
+            window_size        = args.window,
+            num_channels       = NUM_CHANNELS,
+            num_classes        = 2,
+            dropout            = args.dropout,
+            use_batchnorm      = args.batchnorm,
+            use_residual       = args.residual,
+        )
+        actual_spp = n_train / model.count_parameters()
+        log.info(f"\n  Model: {args.arch.upper()} — {model.count_parameters():,} parameters (pinned)")
+        log.info(f"  target_params={args.target_params:,}  actual_spp={actual_spp:.1f}  (train={n_train:,})")
+    else:
+        model = build_model_for_samples(
+            arch               = args.arch,
+            train_samples      = n_train,
+            samples_per_param  = args.samples_per_param,
+            window_size        = args.window,
+            num_channels       = NUM_CHANNELS,
+            num_classes        = 2,
+            dropout            = args.dropout,
+            use_batchnorm      = args.batchnorm,
+            use_residual       = args.residual,
+        )
+        actual_spp = n_train / model.count_parameters()
+        log.info(f"\n  Model: {args.arch.upper()} — {model.count_parameters():,} parameters")
+        log.info(f"  samples_per_param target={args.samples_per_param}  actual={actual_spp:.1f}  (train={n_train:,})")
     log.info(f"  BatchNorm: {args.batchnorm}   Residual: {args.residual}   ClipGrad: {args.clip_grad or 'off'}")
     log.info(f"  Scheduler: {args.scheduler}   Optimizer: {args.optimizer}   Norm: {args.norm}")
     trainer = Trainer(
