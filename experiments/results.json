@@ -814,14 +814,21 @@
     "run_id": "run_p3_001_sp500_stride133_20yr",
     "timestamp": "2026-03-22T13:11:55.704758+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Fully clean: S&P500 (~490 tickers), stride=133 (zero feature+label overlap), 20yr, shuffle. Borderline sample count (~12K train) but zero leakage.",
     "changes_from_previous": "--preset sp500 --years 20 --stride 133 --shuffle-split",
     "config": {
       "cmd_args": "--preset sp500 --years 20 --stride 133 --shuffle-split"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "best_val_acc": 0.669,
+      "test_acc": 0.66,
+      "test_loss": 0.6447,
+      "epochs_run": 35,
+      "runtime_min": 1.4,
+      "early_stopped": true
+    },
+    "verdict": "kept",
+    "notes": "test_acc 66.0% > IMPROVED \u2705 vs best 64.9%"
   }
 ]

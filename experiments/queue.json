@@ -141,6 +141,6 @@
     "id": "run_p3_001_sp500_stride133_20yr",
     "hypothesis": "Fully clean: S&P500 (~490 tickers), stride=133 (zero feature+label overlap), 20yr, shuffle. Borderline sample count (~12K train) but zero leakage.",
     "cmd_args": "--preset sp500 --years 20 --stride 133 --shuffle-split",
-    "status": "running"
+    "status": "kept"
   }
 ]
