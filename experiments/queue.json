@@ -224,7 +224,7 @@
     "hypothesis": "Pre-COVID spp-matched: window=60, stride=1, 7yr end=2019-12-31, spp=10. Pairs with p3_026.",
     "cmd_args": "--preset sp500 --window 60 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --samples-per-param 10",
     "paired_with": "run_p3_026_sp500_w60_s1_7yr_postcovid",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_p3_010_lstm_s5_20yr_spp100",
