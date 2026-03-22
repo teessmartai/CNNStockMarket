@@ -830,5 +830,33 @@
     },
     "verdict": "kept",
     "notes": "test_acc 66.0% > IMPROVED \u2705 vs best 64.9%"
+  },
+  {
+    "run_id": "run_p3_002_sp500_stride133_20yr_proper",
+    "timestamp": "2026-03-22T15:00:16.451294+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Phase 3 main: S&P 500 full (~416 tickers), stride=133, 20yr, shuffle. Fully clean, ~12K train. Compare to largecap-stable baseline.",
+    "changes_from_previous": "--preset sp500 --years 20 --stride 133 --shuffle-split",
+    "config": {
+      "cmd_args": "--preset sp500 --years 20 --stride 133 --shuffle-split"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
+  },
+  {
+    "run_id": "run_p3_003_sp500_stride133_7yr",
+    "timestamp": "2026-03-22T15:00:18.414528+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "S&P 500 stride=133, 7yr \u2014 includes COVID regime. ~4K train but clean. Does COVID boost hold with no leakage?",
+    "changes_from_previous": "--preset sp500 --years 7 --stride 133 --shuffle-split",
+    "config": {
+      "cmd_args": "--preset sp500 --years 7 --stride 133 --shuffle-split"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
