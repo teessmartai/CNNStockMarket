@@ -117,6 +117,6 @@
     "id": "run_p2_009_7yr_stride5_shuffle",
     "hypothesis": "7yr, stride=5, shuffle \u2014 fill gap between 5yr and 10yr",
     "cmd_args": "--years 7 --stride 5 --shuffle-split",
-    "status": "running"
+    "status": "discarded"
   }
 ]

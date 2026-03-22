@@ -730,14 +730,21 @@
     "run_id": "run_p2_009_7yr_stride5_shuffle",
     "timestamp": "2026-03-22T04:07:12.134157+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "7yr, stride=5, shuffle \u2014 fill gap between 5yr and 10yr",
     "changes_from_previous": "--years 7 --stride 5 --shuffle-split",
     "config": {
       "cmd_args": "--years 7 --stride 5 --shuffle-split"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "best_val_acc": 0.647,
+      "test_acc": 0.649,
+      "test_loss": 0.6513,
+      "epochs_run": 46,
+      "runtime_min": 12.8,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 64.9% \u2264 no improvement \u274c vs best 79.9%"
   }
 ]
