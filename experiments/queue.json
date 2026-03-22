@@ -99,13 +99,13 @@
     "id": "run_p2_004b_5yr_stride5_shuffle",
     "hypothesis": "RERUN with fixed --years filter: 5yr, stride=5, shuffle",
     "cmd_args": "--years 5 --stride 5 --shuffle-split",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_p2_005b_3yr_stride5_shuffle",
     "hypothesis": "RERUN with fixed --years filter: 3yr, stride=5, shuffle",
     "cmd_args": "--years 3 --stride 5 --shuffle-split",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_p2_006b_10yr_stride5_shuffle",

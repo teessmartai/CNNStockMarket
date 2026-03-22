@@ -662,5 +662,33 @@
     },
     "verdict": "discarded",
     "notes": "test_acc 54.9% \u2264 no improvement \u274c vs best 64.4%"
+  },
+  {
+    "run_id": "run_p2_004b_5yr_stride5_shuffle",
+    "timestamp": "2026-03-22T03:41:56.787423+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "RERUN with fixed --years filter: 5yr, stride=5, shuffle",
+    "changes_from_previous": "--years 5 --stride 5 --shuffle-split",
+    "config": {
+      "cmd_args": "--years 5 --stride 5 --shuffle-split"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
+  },
+  {
+    "run_id": "run_p2_005b_3yr_stride5_shuffle",
+    "timestamp": "2026-03-22T03:41:58.654009+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "RERUN with fixed --years filter: 3yr, stride=5, shuffle",
+    "changes_from_previous": "--years 3 --stride 5 --shuffle-split",
+    "config": {
+      "cmd_args": "--years 3 --stride 5 --shuffle-split"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
