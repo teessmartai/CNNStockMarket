@@ -2,229 +2,229 @@
   {
     "id": "run_007_residual",
     "hypothesis": "Residual skip connections on top of logreturns baseline",
-    "cmd_args": "--norm logreturns --residual",
+    "cmd_args": "--norm logreturns --residual --samples-per-param 100",
     "status": "discarded"
   },
   {
     "id": "run_008_adamw_logreturns",
     "hypothesis": "AdamW on logreturns baseline \u2014 prior test was on minmax",
-    "cmd_args": "--norm logreturns --optimizer adamw",
+    "cmd_args": "--norm logreturns --optimizer adamw --samples-per-param 100",
     "status": "error"
   },
   {
     "id": "run_009_no_batchnorm",
     "hypothesis": "Disable BatchNorm on logreturns baseline \u2014 is BN helping?",
-    "cmd_args": "--norm logreturns --no-batchnorm",
+    "cmd_args": "--norm logreturns --no-batchnorm --samples-per-param 100",
     "status": "discarded"
   },
   {
     "id": "run_010_residual_low_dropout",
     "hypothesis": "Residual + dropout 0.2 on logreturns baseline",
-    "cmd_args": "--norm logreturns --residual --dropout 0.2",
+    "cmd_args": "--norm logreturns --residual --dropout 0.2 --samples-per-param 100",
     "status": "discarded"
   },
   {
     "id": "run_011_years7",
     "hypothesis": "More training data (7yr vs 5yr) \u2014 ~85K windows vs 60K",
-    "cmd_args": "--norm logreturns --years 7",
+    "cmd_args": "--norm logreturns --years 7 --samples-per-param 100",
     "status": "discarded"
   },
   {
     "id": "run_012_lr5e5",
     "hypothesis": "Lower LR (5e-5) \u2014 log returns are smaller magnitude, may need gentler updates",
-    "cmd_args": "--norm logreturns --lr 5e-5",
+    "cmd_args": "--norm logreturns --lr 5e-5 --samples-per-param 100",
     "status": "discarded"
   },
   {
     "id": "run_013_window256",
     "hypothesis": "Larger window (256 vs 128) \u2014 more temporal context per sample",
-    "cmd_args": "--norm logreturns --window 256",
+    "cmd_args": "--norm logreturns --window 256 --samples-per-param 100",
     "status": "discarded"
   },
   {
     "id": "run_014_clipgrad",
     "hypothesis": "Gradient clipping (max norm 1.0) \u2014 stabilize training",
-    "cmd_args": "--norm logreturns --clip-grad 1.0",
+    "cmd_args": "--norm logreturns --clip-grad 1.0 --samples-per-param 100",
     "status": "discarded"
   },
   {
     "id": "run_p2_001_20yr_stride5_shuffle",
     "hypothesis": "Phase 2 baseline: 20yr data, stride=5 (non-overlapping labels), random split",
-    "cmd_args": "--norm logreturns --years 20 --stride 5 --shuffle-split",
+    "cmd_args": "--norm logreturns --years 20 --stride 5 --shuffle-split --samples-per-param 100",
     "status": "discarded"
   },
   {
     "id": "run_p2_002_20yr_stride1_shuffle",
     "hypothesis": "20yr data stride=1 shuffled \u2014 max data volume (265K windows)",
-    "cmd_args": "--norm logreturns --years 20 --stride 1 --shuffle-split",
+    "cmd_args": "--norm logreturns --years 20 --stride 1 --shuffle-split --samples-per-param 100",
     "status": "kept"
   },
   {
     "id": "run_p2_003_20yr_stride5_chronological",
     "hypothesis": "20yr data stride=5 chronological \u2014 compare vs shuffle to quantify regime bias",
-    "cmd_args": "--norm logreturns --years 20 --stride 5",
+    "cmd_args": "--norm logreturns --years 20 --stride 5 --samples-per-param 100",
     "status": "discarded"
   },
   {
     "id": "run_p2_004_5yr_stride5_shuffle",
     "hypothesis": "Reproduce accidental v31: 5yr data, stride=5, shuffle \u2014 confirmed best so far at 64.4%",
-    "cmd_args": "--years 5 --stride 5 --shuffle-split",
+    "cmd_args": "--years 5 --stride 5 --shuffle-split --samples-per-param 100",
     "status": "discarded"
   },
   {
     "id": "run_p2_005_3yr_stride5_shuffle",
     "hypothesis": "Recency hypothesis: 3yr (2023-2026) post-rate-hike regime only. Tighter distribution may help.",
-    "cmd_args": "--years 3 --stride 5 --shuffle-split",
+    "cmd_args": "--years 3 --stride 5 --shuffle-split --samples-per-param 100",
     "status": "discarded"
   },
   {
     "id": "run_p2_006_10yr_stride5_shuffle",
     "hypothesis": "Mid-range data: 10yr. Find the sweet spot between recency and data volume.",
-    "cmd_args": "--years 10 --stride 5 --shuffle-split",
+    "cmd_args": "--years 10 --stride 5 --shuffle-split --samples-per-param 100",
     "status": "discarded"
   },
   {
     "id": "run_p2_007_5yr_stride5_shuffle_dropout02",
     "hypothesis": "With stride=5 shuffle, fewer windows (~12K). Try lower dropout (0.2) \u2014 less regularization needed.",
-    "cmd_args": "--years 5 --stride 5 --shuffle-split --dropout 0.2",
+    "cmd_args": "--years 5 --stride 5 --shuffle-split --dropout 0.2 --samples-per-param 100",
     "status": "discarded"
   },
   {
     "id": "run_p2_008_5yr_stride5_shuffle_window64",
     "hypothesis": "Shorter window (64 days) with stride=5 shuffle. May capture shorter-term patterns better.",
-    "cmd_args": "--years 5 --stride 5 --shuffle-split --window 64",
+    "cmd_args": "--years 5 --stride 5 --shuffle-split --window 64 --samples-per-param 100",
     "status": "discarded"
   },
   {
     "id": "run_p2_004b_5yr_stride5_shuffle",
     "hypothesis": "RERUN with fixed --years filter: 5yr, stride=5, shuffle",
-    "cmd_args": "--years 5 --stride 5 --shuffle-split",
+    "cmd_args": "--years 5 --stride 5 --shuffle-split --samples-per-param 100",
     "status": "discarded"
   },
   {
     "id": "run_p2_005b_3yr_stride5_shuffle",
     "hypothesis": "RERUN with fixed --years filter: 3yr, stride=5, shuffle",
-    "cmd_args": "--years 3 --stride 5 --shuffle-split",
+    "cmd_args": "--years 3 --stride 5 --shuffle-split --samples-per-param 100",
     "status": "discarded"
   },
   {
     "id": "run_p2_006b_10yr_stride5_shuffle",
     "hypothesis": "RERUN with fixed --years filter: 10yr, stride=5, shuffle",
-    "cmd_args": "--years 10 --stride 5 --shuffle-split",
+    "cmd_args": "--years 10 --stride 5 --shuffle-split --samples-per-param 100",
     "status": "discarded"
   },
   {
     "id": "run_p2_009_7yr_stride5_shuffle",
     "hypothesis": "7yr, stride=5, shuffle \u2014 fill gap between 5yr and 10yr",
-    "cmd_args": "--years 7 --stride 5 --shuffle-split",
+    "cmd_args": "--years 7 --stride 5 --shuffle-split --samples-per-param 100",
     "status": "discarded"
   },
   {
     "id": "run_p2_010_7yr_stride5_shuffle_confirm",
     "hypothesis": "Confirm 7yr result (64.9%) \u2014 rerun with different seed to check variance",
-    "cmd_args": "--years 7 --stride 5 --shuffle-split --seed 123",
+    "cmd_args": "--years 7 --stride 5 --shuffle-split --seed 123 --samples-per-param 100",
     "status": "discarded"
   },
   {
     "id": "run_p2_011_6yr_stride5_shuffle",
     "hypothesis": "Flank 7yr: try 6yr \u2014 is it the window or the data volume?",
-    "cmd_args": "--years 6 --stride 5 --shuffle-split",
+    "cmd_args": "--years 6 --stride 5 --shuffle-split --samples-per-param 100",
     "status": "discarded"
   },
   {
     "id": "run_p2_012_8yr_stride5_shuffle",
     "hypothesis": "Flank 7yr: try 8yr \u2014 find exact sweet spot",
-    "cmd_args": "--years 8 --stride 5 --shuffle-split",
+    "cmd_args": "--years 8 --stride 5 --shuffle-split --samples-per-param 100",
     "status": "discarded"
   },
   {
     "id": "run_p3_001_sp500_stride133_20yr",
     "hypothesis": "Fully clean: S&P500 (~490 tickers), stride=133 (zero feature+label overlap), 20yr, shuffle. Borderline sample count (~12K train) but zero leakage.",
-    "cmd_args": "--preset sp500 --years 20 --stride 133 --shuffle-split",
+    "cmd_args": "--preset sp500 --years 20 --stride 133 --shuffle-split --samples-per-param 100",
     "status": "kept"
   },
   {
     "id": "run_p3_002_sp500_stride133_20yr_proper",
     "hypothesis": "Phase 3 main: S&P 500 full (~416 tickers), stride=133, 20yr, shuffle. Fully clean, ~12K train. Compare to largecap-stable baseline.",
-    "cmd_args": "--preset sp500 --years 20 --stride 133 --shuffle-split --size small",
+    "cmd_args": "--preset sp500 --years 20 --stride 133 --shuffle-split --samples-per-param 100",
     "status": "discarded"
   },
   {
     "id": "run_p3_003_sp500_stride133_7yr",
     "hypothesis": "S&P 500 stride=133, 7yr \u2014 includes COVID regime. ~4K train but clean. Does COVID boost hold with no leakage?",
-    "cmd_args": "--preset sp500 --years 7  --stride 133 --shuffle-split --size tiny",
+    "cmd_args": "--preset sp500 --years 7 --stride 133 --shuffle-split --samples-per-param 100",
     "status": "kept"
   },
   {
     "id": "run_p3_004_largecap_horizon1_stride1_7yr",
     "hypothesis": "T+1 horizon: stride=1 is safe (each window predicts unique day). 7yr largecap-stable = 88K windows. Much harder task but zero leakage and massive data.",
-    "cmd_args": "--horizon 1 --stride 1 --years 7 --shuffle-split",
+    "cmd_args": "--horizon 1 --stride 1 --years 7 --shuffle-split --samples-per-param 100",
     "status": "discarded"
   },
   {
     "id": "run_p3_005_sp500_horizon1_stride1_7yr",
     "hypothesis": "T+1 horizon, S&P 500, 7yr, stride=1, shuffle. ~1.4M windows, fully clean. Upper bound on this architecture with T+1.",
-    "cmd_args": "--preset sp500 --horizon 1 --stride 1 --years 7 --shuffle-split",
+    "cmd_args": "--preset sp500 --horizon 1 --stride 1 --years 7 --shuffle-split --samples-per-param 100",
     "status": "running"
   },
   {
     "id": "run_p3_009_sp500_s5_20yr_default",
     "hypothesis": "S&P 500 full, stride=5, 20yr, shuffle \u2014 259K train with default 35M model. Solid data volume.",
-    "cmd_args": "--preset sp500 --years 20 --stride 5 --shuffle-split",
+    "cmd_args": "--preset sp500 --years 20 --stride 5 --shuffle-split --samples-per-param 100",
     "status": "running"
   },
   {
     "id": "run_p3_006_cnn_small_s133_20yr",
     "hypothesis": "CNN small (140K params) for stride=133 ~10K samples. Right-sized vs default 35M.",
-    "cmd_args": "--preset sp500 --years 20 --stride 133 --shuffle-split --size small",
+    "cmd_args": "--preset sp500 --years 20 --stride 133 --shuffle-split --samples-per-param 100",
     "status": "pending"
   },
   {
     "id": "run_p3_007_cnn_medium_s133_20yr",
     "hypothesis": "CNN medium (2.2M params) for stride=133.",
-    "cmd_args": "--preset sp500 --years 20 --stride 133 --shuffle-split --size medium",
+    "cmd_args": "--preset sp500 --years 20 --stride 133 --shuffle-split --samples-per-param 100",
     "status": "pending"
   },
   {
     "id": "run_p3_009_cnn_large_s5_20yr",
     "hypothesis": "CNN large (35M, default) S&P500 stride=5 20yr \u2014 solid 260K sample baseline.",
-    "cmd_args": "--preset sp500 --years 20 --stride 5   --shuffle-split --size medium",
+    "cmd_args": "--preset sp500 --years 20 --stride 5 --shuffle-split --samples-per-param 100",
     "status": "pending"
   },
   {
     "id": "run_p3_010_lstm_medium_s5_20yr",
     "hypothesis": "LSTM medium (2.2M) S&P500 stride=5 20yr. Sequential memory vs CNN local patterns.",
-    "cmd_args": "--preset sp500 --years 20 --stride 5   --shuffle-split --arch lstm   --size medium",
+    "cmd_args": "--preset sp500 --years 20 --stride 5 --shuffle-split --arch lstm --samples-per-param 100",
     "status": "pending"
   },
   {
     "id": "run_p3_011_transformer_medium_s5",
     "hypothesis": "Transformer medium (548K) S&P500 stride=5 20yr. Attention over 128-day window.",
-    "cmd_args": "--preset sp500 --years 20 --stride 5   --shuffle-split --arch transformer --size medium",
+    "cmd_args": "--preset sp500 --years 20 --stride 5 --shuffle-split --arch transformer --samples-per-param 100",
     "status": "pending"
   },
   {
     "id": "run_p3_012_tcn_medium_s5_20yr",
     "hypothesis": "TCN medium (581K) S&P500 stride=5 20yr. Causal dilated convolutions, full-year receptive field.",
-    "cmd_args": "--preset sp500 --years 20 --stride 5   --shuffle-split --arch tcn    --size medium",
+    "cmd_args": "--preset sp500 --years 20 --stride 5 --shuffle-split --arch tcn --samples-per-param 100",
     "status": "pending"
   },
   {
     "id": "run_p3_013_cnn_w30_h1_s1_7yr",
     "hypothesis": "T+1, window=30 (1.5mo): recent momentum. ~489K train, 35M params. Does short lookback help 1-day prediction?",
-    "cmd_args": "--preset sp500 --horizon 1 --window 30 --stride 1 --years 7 --shuffle-split --size large",
+    "cmd_args": "--preset sp500 --horizon 1 --window 30 --stride 1 --years 7 --shuffle-split --samples-per-param 100",
     "status": "pending"
   },
   {
     "id": "run_p3_014_cnn_w90_h1_s1_7yr",
     "hypothesis": "T+1, window=90 (1 quarter): earnings cycle context. ~472K train. Quarter lookback vs 30-day vs 128-day.",
-    "cmd_args": "--preset sp500 --horizon 1 --window 90 --stride 1 --years 7 --shuffle-split --size large",
+    "cmd_args": "--preset sp500 --horizon 1 --window 90 --stride 1 --years 7 --shuffle-split --samples-per-param 100",
     "status": "pending"
   },
   {
     "id": "run_p3_015_cnn_w128_h1_s1_7yr",
     "hypothesis": "T+1, window=128 (6mo): baseline T+1 with current window. Compare vs w30 and w90.",
-    "cmd_args": "--preset sp500 --horizon 1 --window 128 --stride 1 --years 7 --shuffle-split --size large",
+    "cmd_args": "--preset sp500 --horizon 1 --window 128 --stride 1 --years 7 --shuffle-split --samples-per-param 100",
     "status": "pending"
   }
 ]

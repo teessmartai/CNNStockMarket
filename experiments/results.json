@@ -49,7 +49,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 42638
   },
   {
     "run_id": "run_002_lower_lr_1e4",
@@ -100,7 +102,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 42638
   },
   {
     "run_id": "run_003_scheduler_cosine",
@@ -151,7 +155,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 42638
   },
   {
     "run_id": "run_004_scheduler_none_attempt1",
@@ -195,7 +201,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 42638
   },
   {
     "run_id": "run_004_scheduler_none",
@@ -242,7 +250,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 42638
   },
   {
     "run_id": "run_005_logreturns",
@@ -290,7 +300,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 42638
   },
   {
     "run_id": "run_006_adamw",
@@ -338,7 +350,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 42638
   },
   {
     "run_id": "run_008_adamw_logreturns",
@@ -384,7 +398,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 42638
   },
   {
     "run_id": "run_007_residual",
@@ -434,7 +450,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 42638
   },
   {
     "run_id": "run_010_residual_low_dropout",
@@ -474,7 +492,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 42638
   },
   {
     "run_id": "run_011_years7",
@@ -514,7 +534,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 42638
   },
   {
     "run_id": "run_012_lr5e5",
@@ -554,7 +576,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 42638
   },
   {
     "run_id": "run_013_window256",
@@ -594,7 +618,9 @@
       "fc_hidden": 256,
       "window_size": 256,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 42638
   },
   {
     "run_id": "run_009_no_batchnorm",
@@ -643,7 +669,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 42638
   },
   {
     "run_id": "run_014_clipgrad",
@@ -683,7 +711,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 42638
   },
   {
     "run_id": "run_p2_001_20yr_stride5_shuffle",
@@ -734,7 +764,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 36208
   },
   {
     "run_id": "run_p2_001_20yr_stride5_shuffle",
@@ -774,7 +806,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 36208
   },
   {
     "run_id": "run_p2_002_20yr_stride1_shuffle",
@@ -814,7 +848,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 42638
   },
   {
     "run_id": "run_p2_003_20yr_stride5_chronological",
@@ -854,7 +890,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 36208
   },
   {
     "run_id": "run_p2_001_20yr_stride5_shuffle",
@@ -894,7 +932,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 36208
   },
   {
     "run_id": "run_p2_002_20yr_stride1_shuffle",
@@ -934,7 +974,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 42638
   },
   {
     "run_id": "run_p2_003_20yr_stride5_chronological",
@@ -974,7 +1016,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 36208
   },
   {
     "run_id": "run_p2_004_5yr_stride5_shuffle",
@@ -1014,7 +1058,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 36208
   },
   {
     "run_id": "run_p2_005_3yr_stride5_shuffle",
@@ -1054,7 +1100,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 36208
   },
   {
     "run_id": "run_p2_006_10yr_stride5_shuffle",
@@ -1094,7 +1142,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 36208
   },
   {
     "run_id": "run_p2_007_5yr_stride5_shuffle_dropout02",
@@ -1134,7 +1184,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 36208
   },
   {
     "run_id": "run_p2_008_5yr_stride5_shuffle_window64",
@@ -1174,7 +1226,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 36208
   },
   {
     "run_id": "run_p2_004b_5yr_stride5_shuffle",
@@ -1214,7 +1268,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 36208
   },
   {
     "run_id": "run_p2_005b_3yr_stride5_shuffle",
@@ -1254,7 +1310,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 36208
   },
   {
     "run_id": "run_p2_006b_10yr_stride5_shuffle",
@@ -1294,7 +1352,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 36208
   },
   {
     "run_id": "run_p2_009_7yr_stride5_shuffle",
@@ -1334,7 +1394,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 36208
   },
   {
     "run_id": "run_p2_010_7yr_stride5_shuffle_confirm",
@@ -1374,7 +1436,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 36208
   },
   {
     "run_id": "run_p2_011_6yr_stride5_shuffle",
@@ -1414,7 +1478,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 36208
   },
   {
     "run_id": "run_p2_012_8yr_stride5_shuffle",
@@ -1454,7 +1520,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 36208
   },
   {
     "run_id": "run_p3_001_sp500_stride133_20yr",
@@ -1494,7 +1562,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.0,
+    "train_samples": 9873
   },
   {
     "run_id": "run_p3_002_sp500_stride133_20yr_proper",
@@ -1534,7 +1604,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.0,
+    "train_samples": 9873
   },
   {
     "run_id": "run_p3_003_sp500_stride133_7yr",
@@ -1574,7 +1646,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.0,
+    "train_samples": 9873
   },
   {
     "run_id": "run_p3_004_largecap_horizon1_stride1_7yr",
@@ -1614,7 +1688,9 @@
       "fc_hidden": 256,
       "window_size": 128,
       "num_channels": 5
-    }
+    },
+    "actual_samples_per_param": 0.001,
+    "train_samples": 42638
   },
   {
     "run_id": "run_p3_005_sp500_horizon1_stride1_7yr",
@@ -1628,7 +1704,9 @@
     },
     "results": {},
     "verdict": "pending",
-    "notes": ""
+    "notes": "",
+    "actual_samples_per_param": 0.001,
+    "train_samples": 42638
   },
   {
     "run_id": "run_p3_009_sp500_s5_20yr_default",
@@ -1642,6 +1720,8 @@
     },
     "results": {},
     "verdict": "pending",
-    "notes": ""
+    "notes": "",
+    "actual_samples_per_param": 0.001,
+    "train_samples": 36208
   }
 ]

@@ -269,7 +269,14 @@ def parse_log(log_path: Path):
         "window_size": window,
     }
 
+    spp_match = re.search(r"actual=([0-9.]+)", log_text)
+    actual_spp = float(spp_match.group(1)) if spp_match else None
+    train_match = re.search(r"train=([0-9,]+)", log_text)
+    train_samples = int(train_match.group(1).replace(",","")) if train_match else None
+
     return {
+        "actual_samples_per_param": actual_spp,
+        "train_samples": train_samples,
         "device": gpu_match.group(1).strip() if gpu_match else "unknown",
         "best_val_acc":  round((extract(r"Best val acc:\s+([\d.]+)%") or 0) / 100, 4),
         "test_acc":      round((extract(r"Test accuracy:\s+([\d.]+)%") or 0) / 100, 4),
@@ -302,7 +309,14 @@ def collect_result(slug, slot):
         return cast(m.group(1)) if m else None
 
     gpu_match = re.search(r"Device: GPU — ([^\n(]+)", log_text)
+    spp_match = re.search(r"actual=([0-9.]+)", log_text)
+    actual_spp = float(spp_match.group(1)) if spp_match else None
+    train_match = re.search(r"train=([0-9,]+)", log_text)
+    train_samples = int(train_match.group(1).replace(",","")) if train_match else None
+
     return {
+        "actual_samples_per_param": actual_spp,
+        "train_samples": train_samples,
         "device": gpu_match.group(1).strip() if gpu_match else "unknown",
         "best_val_acc":  round((extract(r"Best val acc:\s+([\d.]+)%") or 0) / 100, 4),
         "test_acc":      round((extract(r"Test accuracy:\s+([\d.]+)%") or 0) / 100, 4),
