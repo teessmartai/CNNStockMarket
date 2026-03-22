@@ -174,20 +174,8 @@
     "status": "running"
   },
   {
-    "id": "run_p3_006_cnn_small_s133_20yr",
-    "hypothesis": "CNN small (140K params) for stride=133 ~10K samples. Right-sized vs default 35M.",
-    "cmd_args": "--preset sp500 --years 20 --stride 133 --shuffle-split --samples-per-param 100",
-    "status": "pending"
-  },
-  {
-    "id": "run_p3_007_cnn_medium_s133_20yr",
-    "hypothesis": "CNN medium (2.2M params) for stride=133.",
-    "cmd_args": "--preset sp500 --years 20 --stride 133 --shuffle-split --samples-per-param 100",
-    "status": "pending"
-  },
-  {
-    "id": "run_p3_009_cnn_large_s5_20yr",
-    "hypothesis": "CNN large (35M, default) S&P500 stride=5 20yr \u2014 solid 260K sample baseline.",
+    "id": "run_p3_009_sp500_s5_20yr_spp100",
+    "hypothesis": "S&P500 stride=5 20yr with spp=100. ~277K train \u2192 ~2,770 params. Properly sized \u2014 compare to p3_009_default (35M params, same data).",
     "cmd_args": "--preset sp500 --years 20 --stride 5 --shuffle-split --samples-per-param 100",
     "status": "pending"
   },
@@ -239,19 +227,19 @@
     "status": "pending"
   },
   {
-    "id": "run_p3_010_lstm_medium_s5_20yr",
+    "id": "run_p3_010_lstm_s5_20yr_spp100",
     "hypothesis": "LSTM medium (2.2M) S&P500 stride=5 20yr. Sequential memory vs CNN local patterns.",
     "cmd_args": "--preset sp500 --years 20 --stride 5 --shuffle-split --arch lstm --samples-per-param 100",
     "status": "pending"
   },
   {
-    "id": "run_p3_011_transformer_medium_s5",
+    "id": "run_p3_011_transformer_s5_20yr_spp100",
     "hypothesis": "Transformer medium (548K) S&P500 stride=5 20yr. Attention over 128-day window.",
     "cmd_args": "--preset sp500 --years 20 --stride 5 --shuffle-split --arch transformer --samples-per-param 100",
     "status": "pending"
   },
   {
-    "id": "run_p3_012_tcn_medium_s5_20yr",
+    "id": "run_p3_012_tcn_s5_20yr_spp100",
     "hypothesis": "TCN medium (581K) S&P500 stride=5 20yr. Causal dilated convolutions, full-year receptive field.",
     "cmd_args": "--preset sp500 --years 20 --stride 5 --shuffle-split --arch tcn --samples-per-param 100",
     "status": "pending"
