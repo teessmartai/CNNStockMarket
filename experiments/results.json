@@ -1782,5 +1782,19 @@
     "results": {},
     "verdict": "pending",
     "notes": ""
+  },
+  {
+    "run_id": "run_p3_023_sp500_w20_s1_7yr_precovid_spp10",
+    "timestamp": "2026-03-22T19:17:30.828891+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Pre-COVID spp-matched: window=20, stride=1, 7yr end=2019-12-31, spp=10. Is COVID driving the result?",
+    "changes_from_previous": "--preset sp500 --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --samples-per-param 10",
+    "config": {
+      "cmd_args": "--preset sp500 --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --samples-per-param 10"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
