@@ -118,5 +118,23 @@
     "hypothesis": "7yr, stride=5, shuffle \u2014 fill gap between 5yr and 10yr",
     "cmd_args": "--years 7 --stride 5 --shuffle-split",
     "status": "discarded"
+  },
+  {
+    "id": "run_p2_010_7yr_stride5_shuffle_confirm",
+    "hypothesis": "Confirm 7yr result (64.9%) \u2014 rerun with different seed to check variance",
+    "cmd_args": "--years 7 --stride 5 --shuffle-split --seed 123",
+    "status": "pending"
+  },
+  {
+    "id": "run_p2_011_6yr_stride5_shuffle",
+    "hypothesis": "Flank 7yr: try 6yr \u2014 is it the window or the data volume?",
+    "cmd_args": "--years 6 --stride 5 --shuffle-split",
+    "status": "pending"
+  },
+  {
+    "id": "run_p2_012_8yr_stride5_shuffle",
+    "hypothesis": "Flank 7yr: try 8yr \u2014 find exact sweet spot",
+    "cmd_args": "--years 8 --stride 5 --shuffle-split",
+    "status": "pending"
   }
 ]
