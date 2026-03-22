@@ -1,4 +1,9 @@
 {
-  "a": null,
+  "a": {
+    "slot": "a",
+    "run_id": "run_p2_012_8yr_stride5_shuffle",
+    "version": 49,
+    "started_at": "2026-03-22T12:40:51.661968+00:00"
+  },
   "b": null
 }
