@@ -135,6 +135,6 @@
     "id": "run_p2_012_8yr_stride5_shuffle",
     "hypothesis": "Flank 7yr: try 8yr \u2014 find exact sweet spot",
     "cmd_args": "--years 8 --stride 5 --shuffle-split",
-    "status": "running"
+    "status": "discarded"
   }
 ]

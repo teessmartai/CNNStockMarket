@@ -793,14 +793,21 @@
     "run_id": "run_p2_012_8yr_stride5_shuffle",
     "timestamp": "2026-03-22T12:40:49.606655+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Flank 7yr: try 8yr \u2014 find exact sweet spot",
     "changes_from_previous": "--years 8 --stride 5 --shuffle-split",
     "config": {
       "cmd_args": "--years 8 --stride 5 --shuffle-split"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "best_val_acc": 0.631,
+      "test_acc": 0.636,
+      "test_loss": 0.6605,
+      "epochs_run": 46,
+      "runtime_min": 14.8,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 63.6% \u2264 no improvement \u274c vs best 64.9%"
   }
 ]
