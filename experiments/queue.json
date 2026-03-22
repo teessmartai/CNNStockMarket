@@ -205,7 +205,7 @@
     "hypothesis": "Pre-COVID fixed-params: same data as p3_023 but model pinned to p3_022 param count. Absolute capacity vs spp ratio.",
     "cmd_args": "--preset sp500 --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --target-params FILL_FROM_P3_022",
     "depends_on": "run_p3_022_sp500_w20_s1_7yr_postcovid",
-    "status": "running"
+    "status": "discarded"
   },
   {
     "id": "run_p3_025_largecap_w20_s1_7yr_precovid_spp10",
