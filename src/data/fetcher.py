@@ -46,6 +46,10 @@ def fetch_stock_data(
         if cache_age < timedelta(days=cache_days):
             logger.debug(f"Loading {ticker} from cache")
             df = pd.read_csv(cache_file, index_col=0, parse_dates=True)
+            # Slice to requested date range — cache file may contain more history
+            # (e.g. 20yr CSV bundled but --years 5 requested)
+            df = df[df.index >= pd.Timestamp(start_date)]
+            df = df[df.index <= pd.Timestamp(end_date)]
             return df
 
     # Fetch from Yahoo Finance
