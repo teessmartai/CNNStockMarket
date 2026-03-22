@@ -153,7 +153,7 @@
     "id": "run_p3_003_sp500_stride133_7yr",
     "hypothesis": "S&P 500 stride=133, 7yr \u2014 includes COVID regime. ~4K train but clean. Does COVID boost hold with no leakage?",
     "cmd_args": "--preset sp500 --years 7 --stride 133 --shuffle-split",
-    "status": "running"
+    "status": "kept"
   },
   {
     "id": "run_p3_004_largecap_horizon1_stride1_7yr",

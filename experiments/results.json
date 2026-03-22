@@ -849,14 +849,21 @@
     "run_id": "run_p3_003_sp500_stride133_7yr",
     "timestamp": "2026-03-22T15:00:18.414528+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "S&P 500 stride=133, 7yr \u2014 includes COVID regime. ~4K train but clean. Does COVID boost hold with no leakage?",
     "changes_from_previous": "--preset sp500 --years 7 --stride 133 --shuffle-split",
     "config": {
       "cmd_args": "--preset sp500 --years 7 --stride 133 --shuffle-split"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "best_val_acc": 0.708,
+      "test_acc": 0.688,
+      "test_loss": 0.6137,
+      "epochs_run": 41,
+      "runtime_min": 3.7,
+      "early_stopped": true
+    },
+    "verdict": "kept",
+    "notes": "test_acc 68.8% > IMPROVED \u2705 vs best 66.0%"
   }
 ]
