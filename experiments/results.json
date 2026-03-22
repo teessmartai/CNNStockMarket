@@ -1754,5 +1754,33 @@
     "results": {},
     "verdict": "discarded",
     "notes": "kernel error \u2014 no output collected"
+  },
+  {
+    "run_id": "run_p3_019_largecap_s5_20yr_precovid",
+    "timestamp": "2026-03-22T19:07:24.844375+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Match run_p2_001 (64.4%) but end 2019-12-31. 54 largecap, stride=5, 20yr (1999-2019). Largest pre-COVID dataset \u2014 best chance of non-COVID signal.",
+    "changes_from_previous": "--preset largecap --years 20 --stride 5 --shuffle-split --end-date 2019-12-31 --samples-per-param 100",
+    "config": {
+      "cmd_args": "--preset largecap --years 20 --stride 5 --shuffle-split --end-date 2019-12-31 --samples-per-param 100"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
+  },
+  {
+    "run_id": "run_p3_022_sp500_w20_s1_7yr_postcovid",
+    "timestamp": "2026-03-22T19:07:26.669155+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Post-COVID baseline: S&P500, window=20 (business month), stride=1, 7yr (2019-2026), spp=10. ~488K train \u2192 ~48,800 params.",
+    "changes_from_previous": "--preset sp500 --window 20 --stride 1 --years 7 --shuffle-split --samples-per-param 10",
+    "config": {
+      "cmd_args": "--preset sp500 --window 20 --stride 1 --years 7 --shuffle-split --samples-per-param 10"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]

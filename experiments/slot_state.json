@@ -1,4 +1,14 @@
 {
-  "a": null,
-  "b": null
+  "a": {
+    "slot": "a",
+    "run_id": "run_p3_019_largecap_s5_20yr_precovid",
+    "version": 57,
+    "started_at": "2026-03-22T19:07:26.667248+00:00"
+  },
+  "b": {
+    "slot": "b",
+    "run_id": "run_p3_022_sp500_w20_s1_7yr_postcovid",
+    "version": null,
+    "started_at": "2026-03-22T19:07:27.996182+00:00"
+  }
 }

@@ -185,13 +185,13 @@
     "cmd_args": "--preset largecap --years 20 --stride 5 --shuffle-split --end-date 2019-12-31 --samples-per-param 100",
     "paired_with": "run_p2_001_20yr_stride5_shuffle",
     "paired_result": "64.4% test",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_p3_022_sp500_w20_s1_7yr_postcovid",
     "hypothesis": "Post-COVID baseline: S&P500, window=20 (business month), stride=1, 7yr (2019-2026), spp=10. ~488K train \u2192 ~48,800 params.",
     "cmd_args": "--preset sp500 --window 20 --stride 1 --years 7 --shuffle-split --samples-per-param 10",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_p3_023_sp500_w20_s1_7yr_precovid_spp10",
