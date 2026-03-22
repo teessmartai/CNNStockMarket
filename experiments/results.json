@@ -1853,5 +1853,33 @@
       "num_params": 0,
       "window_size": 128
     }
+  },
+  {
+    "run_id": "run_p3_024_sp500_w20_s1_7yr_precovid_fixedparams",
+    "timestamp": "2026-03-22T22:24:50.118692+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Pre-COVID fixed-params: same data as p3_023 but model pinned to p3_022 param count. Absolute capacity vs spp ratio.",
+    "changes_from_previous": "--preset sp500 --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --target-params FILL_FROM_P3_022",
+    "config": {
+      "cmd_args": "--preset sp500 --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --target-params FILL_FROM_P3_022"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
+  },
+  {
+    "run_id": "run_p3_025_largecap_w20_s1_7yr_precovid_spp10",
+    "timestamp": "2026-03-22T22:25:11.686198+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Largecap pre-COVID: window=20, stride=1, 7yr end=2019-12-31, spp=10. ~65K train \u2192 ~6,500 params.",
+    "changes_from_previous": "--preset largecap-stable --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --samples-per-param 10",
+    "config": {
+      "cmd_args": "--preset largecap-stable --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --samples-per-param 10"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
