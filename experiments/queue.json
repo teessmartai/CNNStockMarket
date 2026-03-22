@@ -192,6 +192,38 @@
     "status": "pending"
   },
   {
+    "id": "run_p3_016_sp500_s133_7yr_precovid",
+    "hypothesis": "Match run_p3_003 exactly but end 2019-12-31 (pre-COVID). Same 7yr window, same spp=100, same arch. If accuracy drops to ~54%, COVID is driving the result.",
+    "cmd_args": "--preset sp500 --years 7 --stride 133 --shuffle-split --end-date 2019-12-31 --samples-per-param 100",
+    "paired_with": "run_p3_003_sp500_stride133_7yr",
+    "paired_result": "68.8% test",
+    "status": "pending"
+  },
+  {
+    "id": "run_p3_017_sp500_s133_20yr_precovid",
+    "hypothesis": "Match run_p3_001 (66.0%) but end 2019-12-31. 20yr ending 2019 = 1999-2019 (dot-com, GFC, recovery). Isolates whether long-history gains come from COVID or other regimes.",
+    "cmd_args": "--preset sp500 --years 20 --stride 133 --shuffle-split --end-date 2019-12-31 --samples-per-param 100",
+    "paired_with": "run_p3_001_sp500_stride133_20yr",
+    "paired_result": "66.0% test",
+    "status": "pending"
+  },
+  {
+    "id": "run_p3_018_largecap_s5_7yr_precovid",
+    "hypothesis": "Match run_p2_009 (64.9%) but end 2019-12-31. 54 largecap tickers, stride=5, 7yr (2013-2019). Smaller universe \u2014 cleaner signal comparison.",
+    "cmd_args": "--preset largecap --years 7 --stride 5 --shuffle-split --end-date 2019-12-31 --samples-per-param 100",
+    "paired_with": "run_p2_009_7yr_stride5_shuffle",
+    "paired_result": "64.9% test",
+    "status": "pending"
+  },
+  {
+    "id": "run_p3_019_largecap_s5_20yr_precovid",
+    "hypothesis": "Match run_p2_001 (64.4%) but end 2019-12-31. 54 largecap, stride=5, 20yr (1999-2019). Largest pre-COVID dataset \u2014 best chance of non-COVID signal.",
+    "cmd_args": "--preset largecap --years 20 --stride 5 --shuffle-split --end-date 2019-12-31 --samples-per-param 100",
+    "paired_with": "run_p2_001_20yr_stride5_shuffle",
+    "paired_result": "64.4% test",
+    "status": "pending"
+  },
+  {
     "id": "run_p3_010_lstm_medium_s5_20yr",
     "hypothesis": "LSTM medium (2.2M) S&P500 stride=5 20yr. Sequential memory vs CNN local patterns.",
     "cmd_args": "--preset sp500 --years 20 --stride 5 --shuffle-split --arch lstm --samples-per-param 100",

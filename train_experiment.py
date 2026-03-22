@@ -231,6 +231,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--window",   type=int,   default=128,  help="Window size in trading days (default: 128)")
     p.add_argument("--horizon",  type=int,   default=5,    help="Prediction horizon in days (default: 5)")
     p.add_argument("--years",    type=float, default=5.0,  help="Years of history per stock (default: 5)")
+    p.add_argument("--end-date", type=str,   default=None,
+                   help="End date for training data YYYY-MM-DD (default: today). "
+                        "Use to test pre/post-regime performance, e.g. --end-date 2019-12-31 for pre-COVID.")
     p.add_argument("--stride",   type=int,   default=1,    help="Window stride — 1=overlapping (default: 1)")
 
     # Training
@@ -346,8 +349,8 @@ def main():
     log.info("")
 
     # ── 1. Fetch data ─────────────────────────────────────────────────────────
-    end_date   = datetime.today().strftime("%Y-%m-%d")
-    start_date = (datetime.today() - timedelta(days=int(args.years * 365.25))).strftime("%Y-%m-%d")
+    end_date   = args.end_date if args.end_date else datetime.today().strftime("%Y-%m-%d")
+    start_date = (datetime.strptime(end_date, "%Y-%m-%d") - timedelta(days=int(args.years * 365.25))).strftime("%Y-%m-%d")
 
     log.info(f"Fetching {len(tickers)} stocks  {start_date} → {end_date}...")
     stock_data = fetch_multiple_stocks(tickers, start_date, end_date, use_cache=True)
