@@ -667,15 +667,22 @@
     "run_id": "run_p2_004b_5yr_stride5_shuffle",
     "timestamp": "2026-03-22T03:41:56.787423+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "RERUN with fixed --years filter: 5yr, stride=5, shuffle",
     "changes_from_previous": "--years 5 --stride 5 --shuffle-split",
     "config": {
       "cmd_args": "--years 5 --stride 5 --shuffle-split"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "best_val_acc": 0.6,
+      "test_acc": 0.559,
+      "test_loss": 0.6842,
+      "epochs_run": 20,
+      "runtime_min": 16.5,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 55.9% \u2264 no improvement \u274c vs best 79.9%"
   },
   {
     "run_id": "run_p2_005b_3yr_stride5_shuffle",
@@ -697,5 +704,19 @@
     },
     "verdict": "discarded",
     "notes": "test_acc 55.4% \u2264 no improvement \u274c vs best 79.9%"
+  },
+  {
+    "run_id": "run_p2_006b_10yr_stride5_shuffle",
+    "timestamp": "2026-03-22T04:02:09.413703+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "RERUN with fixed --years filter: 10yr, stride=5, shuffle",
+    "changes_from_previous": "--years 10 --stride 5 --shuffle-split",
+    "config": {
+      "cmd_args": "--years 10 --stride 5 --shuffle-split"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
