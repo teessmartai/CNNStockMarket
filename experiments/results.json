@@ -639,14 +639,21 @@
     "run_id": "run_p2_008_5yr_stride5_shuffle_window64",
     "timestamp": "2026-03-22T00:18:05.082492+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Shorter window (64 days) with stride=5 shuffle. May capture shorter-term patterns better.",
     "changes_from_previous": "--years 5 --stride 5 --shuffle-split --window 64",
     "config": {
       "cmd_args": "--years 5 --stride 5 --shuffle-split --window 64"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "best_val_acc": 0.593,
+      "test_acc": 0.549,
+      "test_loss": 0.6874,
+      "epochs_run": 16,
+      "runtime_min": 10.7,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 54.9% \u2264 no improvement \u274c vs best 64.4%"
   }
 ]
