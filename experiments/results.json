@@ -1608,5 +1608,19 @@
       "window_size": 128,
       "num_channels": 5
     }
+  },
+  {
+    "run_id": "run_p3_005_sp500_horizon1_stride1_7yr",
+    "timestamp": "2026-03-22T15:20:29.438358+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "T+1 horizon, S&P 500, 7yr, stride=1, shuffle. ~1.4M windows, fully clean. Upper bound on this architecture with T+1.",
+    "changes_from_previous": "--preset sp500 --horizon 1 --stride 1 --years 7 --shuffle-split",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 1 --stride 1 --years 7 --shuffle-split"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
