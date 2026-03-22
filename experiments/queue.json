@@ -166,5 +166,29 @@
     "hypothesis": "T+1 horizon, S&P 500, 7yr, stride=1, shuffle. ~1.4M windows, fully clean. Upper bound on this architecture with T+1.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 1 --years 7 --shuffle-split",
     "status": "pending"
+  },
+  {
+    "id": "run_p3_006_sp500_s133_width025_layers4",
+    "hypothesis": "Right-size model for 10K samples: width=0.25 x 4 layers = 140K params. Should regularize better than 35M param default.",
+    "cmd_args": "--preset sp500 --years 20 --stride 133 --shuffle-split --width-mult 0.25 --num-layers 4",
+    "status": "pending"
+  },
+  {
+    "id": "run_p3_007_sp500_s133_width025_layers8",
+    "hypothesis": "Width=0.25 full depth (8 layers) = 2.2M params \u2014 medium, still smaller than default 35M.",
+    "cmd_args": "--preset sp500 --years 20 --stride 133 --shuffle-split --width-mult 0.25",
+    "status": "pending"
+  },
+  {
+    "id": "run_p3_008_sp500_s133_width05",
+    "hypothesis": "Width=0.5 (8.9M params) \u2014 halfway between default and 0.25x for stride=133 data.",
+    "cmd_args": "--preset sp500 --years 20 --stride 133 --shuffle-split --width-mult 0.5",
+    "status": "pending"
+  },
+  {
+    "id": "run_p3_009_sp500_s5_20yr_default",
+    "hypothesis": "S&P 500 full, stride=5, 20yr, shuffle \u2014 259K train with default 35M model. Solid data volume.",
+    "cmd_args": "--preset sp500 --years 20 --stride 5 --shuffle-split",
+    "status": "pending"
   }
 ]
