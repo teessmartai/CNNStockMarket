@@ -236,7 +236,7 @@
     "id": "run_p3_011_transformer_s5_20yr_spp100",
     "hypothesis": "Transformer medium (548K) S&P500 stride=5 20yr. Attention over 128-day window.",
     "cmd_args": "--preset sp500 --years 20 --stride 5 --shuffle-split --arch transformer --samples-per-param 100",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_p3_012_tcn_s5_20yr_spp100",
