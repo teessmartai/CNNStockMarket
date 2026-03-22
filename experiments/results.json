@@ -50,7 +50,7 @@
       "window_size": 128,
       "num_channels": 5
     },
-    "actual_samples_per_param": 0.001,
+    "actual_samples_per_param": 0.0012,
     "train_samples": 42638
   },
   {
@@ -103,7 +103,7 @@
       "window_size": 128,
       "num_channels": 5
     },
-    "actual_samples_per_param": 0.001,
+    "actual_samples_per_param": 0.0012,
     "train_samples": 42638
   },
   {
@@ -156,7 +156,7 @@
       "window_size": 128,
       "num_channels": 5
     },
-    "actual_samples_per_param": 0.001,
+    "actual_samples_per_param": 0.0012,
     "train_samples": 42638
   },
   {
@@ -202,7 +202,7 @@
       "window_size": 128,
       "num_channels": 5
     },
-    "actual_samples_per_param": 0.001,
+    "actual_samples_per_param": 0.0012,
     "train_samples": 42638
   },
   {
@@ -251,7 +251,7 @@
       "window_size": 128,
       "num_channels": 5
     },
-    "actual_samples_per_param": 0.001,
+    "actual_samples_per_param": 0.0012,
     "train_samples": 42638
   },
   {
@@ -301,7 +301,7 @@
       "window_size": 128,
       "num_channels": 5
     },
-    "actual_samples_per_param": 0.001,
+    "actual_samples_per_param": 0.0012,
     "train_samples": 42638
   },
   {
@@ -351,7 +351,7 @@
       "window_size": 128,
       "num_channels": 5
     },
-    "actual_samples_per_param": 0.001,
+    "actual_samples_per_param": 0.0012,
     "train_samples": 42638
   },
   {
@@ -399,7 +399,7 @@
       "window_size": 128,
       "num_channels": 5
     },
-    "actual_samples_per_param": 0.001,
+    "actual_samples_per_param": 0.0012,
     "train_samples": 42638
   },
   {
@@ -451,7 +451,7 @@
       "window_size": 128,
       "num_channels": 5
     },
-    "actual_samples_per_param": 0.001,
+    "actual_samples_per_param": 0.0012,
     "train_samples": 42638
   },
   {
@@ -493,7 +493,7 @@
       "window_size": 128,
       "num_channels": 5
     },
-    "actual_samples_per_param": 0.001,
+    "actual_samples_per_param": 0.0012,
     "train_samples": 42638
   },
   {
@@ -535,7 +535,7 @@
       "window_size": 128,
       "num_channels": 5
     },
-    "actual_samples_per_param": 0.001,
+    "actual_samples_per_param": 0.0012,
     "train_samples": 42638
   },
   {
@@ -577,7 +577,7 @@
       "window_size": 128,
       "num_channels": 5
     },
-    "actual_samples_per_param": 0.001,
+    "actual_samples_per_param": 0.0012,
     "train_samples": 42638
   },
   {
@@ -619,7 +619,7 @@
       "window_size": 256,
       "num_channels": 5
     },
-    "actual_samples_per_param": 0.001,
+    "actual_samples_per_param": 0.0012,
     "train_samples": 42638
   },
   {
@@ -670,7 +670,7 @@
       "window_size": 128,
       "num_channels": 5
     },
-    "actual_samples_per_param": 0.001,
+    "actual_samples_per_param": 0.0012,
     "train_samples": 42638
   },
   {
@@ -712,7 +712,7 @@
       "window_size": 128,
       "num_channels": 5
     },
-    "actual_samples_per_param": 0.001,
+    "actual_samples_per_param": 0.0012,
     "train_samples": 42638
   },
   {
@@ -849,7 +849,7 @@
       "window_size": 128,
       "num_channels": 5
     },
-    "actual_samples_per_param": 0.001,
+    "actual_samples_per_param": 0.0012,
     "train_samples": 42638
   },
   {
@@ -975,7 +975,7 @@
       "window_size": 128,
       "num_channels": 5
     },
-    "actual_samples_per_param": 0.001,
+    "actual_samples_per_param": 0.0012,
     "train_samples": 42638
   },
   {
@@ -1563,8 +1563,8 @@
       "window_size": 128,
       "num_channels": 5
     },
-    "actual_samples_per_param": 0.0,
-    "train_samples": 9873
+    "actual_samples_per_param": 0.0003,
+    "train_samples": 9772
   },
   {
     "run_id": "run_p3_002_sp500_stride133_20yr_proper",
@@ -1605,8 +1605,8 @@
       "window_size": 128,
       "num_channels": 5
     },
-    "actual_samples_per_param": 0.0,
-    "train_samples": 9873
+    "actual_samples_per_param": 0.0003,
+    "train_samples": 9772
   },
   {
     "run_id": "run_p3_003_sp500_stride133_7yr",
@@ -1647,8 +1647,8 @@
       "window_size": 128,
       "num_channels": 5
     },
-    "actual_samples_per_param": 0.0,
-    "train_samples": 9873
+    "actual_samples_per_param": 0.0001,
+    "train_samples": 3648
   },
   {
     "run_id": "run_p3_004_largecap_horizon1_stride1_7yr",
@@ -1689,8 +1689,8 @@
       "window_size": 128,
       "num_channels": 5
     },
-    "actual_samples_per_param": 0.001,
-    "train_samples": 42638
+    "actual_samples_per_param": 0.0,
+    "train_samples": 1367
   },
   {
     "run_id": "run_p3_005_sp500_horizon1_stride1_7yr",
@@ -1705,7 +1705,7 @@
     "results": {},
     "verdict": "pending",
     "notes": "",
-    "actual_samples_per_param": 0.001,
+    "actual_samples_per_param": null,
     "train_samples": 42638
   },
   {
@@ -1721,7 +1721,7 @@
     "results": {},
     "verdict": "pending",
     "notes": "",
-    "actual_samples_per_param": 0.001,
+    "actual_samples_per_param": null,
     "train_samples": 36208
   }
 ]
