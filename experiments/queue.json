@@ -87,7 +87,7 @@
     "id": "run_p2_007_5yr_stride5_shuffle_dropout02",
     "hypothesis": "With stride=5 shuffle, fewer windows (~12K). Try lower dropout (0.2) \u2014 less regularization needed.",
     "cmd_args": "--years 5 --stride 5 --shuffle-split --dropout 0.2",
-    "status": "running"
+    "status": "discarded"
   },
   {
     "id": "run_p2_008_5yr_stride5_shuffle_window64",
