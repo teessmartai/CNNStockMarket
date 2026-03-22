@@ -746,5 +746,33 @@
     },
     "verdict": "kept",
     "notes": "NEW BEST (valid): 64.9% test, 7yr stride=5 shuffle. Second time ~64-65% appears (v31 accidental also 64.4%). Confirm with rerun. 7yr (2019-2026) covers COVID crash + rate-hike cycle \u2014 may be informationally rich window."
+  },
+  {
+    "run_id": "run_p2_010_7yr_stride5_shuffle_confirm",
+    "timestamp": "2026-03-22T12:20:37.992577+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Confirm 7yr result (64.9%) \u2014 rerun with different seed to check variance",
+    "changes_from_previous": "--years 7 --stride 5 --shuffle-split --seed 123",
+    "config": {
+      "cmd_args": "--years 7 --stride 5 --shuffle-split --seed 123"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
+  },
+  {
+    "run_id": "run_p2_011_6yr_stride5_shuffle",
+    "timestamp": "2026-03-22T12:20:40.001750+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Flank 7yr: try 6yr \u2014 is it the window or the data volume?",
+    "changes_from_previous": "--years 6 --stride 5 --shuffle-split",
+    "config": {
+      "cmd_args": "--years 6 --stride 5 --shuffle-split"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]

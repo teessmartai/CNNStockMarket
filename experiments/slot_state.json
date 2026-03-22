@@ -1,4 +1,14 @@
 {
-  "a": null,
-  "b": null
+  "a": {
+    "slot": "a",
+    "run_id": "run_p2_010_7yr_stride5_shuffle_confirm",
+    "version": 47,
+    "started_at": "2026-03-22T12:20:40.001723+00:00"
+  },
+  "b": {
+    "slot": "b",
+    "run_id": "run_p2_011_6yr_stride5_shuffle",
+    "version": 48,
+    "started_at": "2026-03-22T12:20:41.758615+00:00"
+  }
 }
