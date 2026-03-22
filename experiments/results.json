@@ -1740,5 +1740,19 @@
     "notes": "test_acc 62.8% \u2264 no improvement \u274c vs best 68.8%",
     "actual_samples_per_param": null,
     "train_samples": 36208
+  },
+  {
+    "run_id": "run_p3_009_sp500_s5_20yr_spp100",
+    "timestamp": "2026-03-22T18:57:18.682457+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "S&P500 stride=5 20yr with spp=100. ~277K train \u2192 ~2,770 params. Properly sized \u2014 compare to p3_009_default (35M params, same data).",
+    "changes_from_previous": "--preset sp500 --years 20 --stride 5 --shuffle-split --samples-per-param 100",
+    "config": {
+      "cmd_args": "--preset sp500 --years 20 --stride 5 --shuffle-split --samples-per-param 100"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
