@@ -1824,5 +1824,19 @@
     "results": {},
     "verdict": "discarded",
     "notes": "kernel error \u2014 no output collected"
+  },
+  {
+    "run_id": "run_p3_026_sp500_w60_s1_7yr_postcovid",
+    "timestamp": "2026-03-22T19:47:45.162796+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Post-COVID baseline: window=60 (business quarter), stride=1, 7yr (2019-2026), spp=10. ~479K train.",
+    "changes_from_previous": "--preset sp500 --window 60 --stride 1 --years 7 --shuffle-split --samples-per-param 10",
+    "config": {
+      "cmd_args": "--preset sp500 --window 60 --stride 1 --years 7 --shuffle-split --samples-per-param 10"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
