@@ -809,5 +809,19 @@
     },
     "verdict": "discarded",
     "notes": "test_acc 63.6% \u2264 no improvement \u274c vs best 64.9%"
+  },
+  {
+    "run_id": "run_p3_001_sp500_stride133_20yr",
+    "timestamp": "2026-03-22T13:11:55.704758+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Fully clean: S&P500 (~490 tickers), stride=133 (zero feature+label overlap), 20yr, shuffle. Borderline sample count (~12K train) but zero leakage.",
+    "changes_from_previous": "--preset sp500 --years 20 --stride 133 --shuffle-split",
+    "config": {
+      "cmd_args": "--preset sp500 --years 20 --stride 133 --shuffle-split"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
