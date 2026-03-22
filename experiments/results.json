@@ -1822,7 +1822,7 @@
       "cmd_args": "--preset largecap --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --samples-per-param 10"
     },
     "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "verdict": "discarded",
+    "notes": "kernel error \u2014 no output collected"
   }
 ]
