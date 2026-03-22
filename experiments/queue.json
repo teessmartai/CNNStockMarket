@@ -57,7 +57,7 @@
     "id": "run_p2_002_20yr_stride1_shuffle",
     "hypothesis": "20yr data stride=1 shuffled \u2014 max data volume (265K windows)",
     "cmd_args": "--norm logreturns --years 20 --stride 1 --shuffle-split",
-    "status": "running"
+    "status": "kept"
   },
   {
     "id": "run_p2_003_20yr_stride5_chronological",
