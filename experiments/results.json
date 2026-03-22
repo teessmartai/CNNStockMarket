@@ -1836,7 +1836,7 @@
       "cmd_args": "--preset sp500 --window 60 --stride 1 --years 7 --shuffle-split --samples-per-param 10"
     },
     "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "verdict": "discarded",
+    "notes": "kernel error \u2014 no output collected"
   }
 ]
