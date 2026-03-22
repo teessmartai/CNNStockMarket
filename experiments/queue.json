@@ -94,5 +94,29 @@
     "hypothesis": "Shorter window (64 days) with stride=5 shuffle. May capture shorter-term patterns better.",
     "cmd_args": "--years 5 --stride 5 --shuffle-split --window 64",
     "status": "discarded"
+  },
+  {
+    "id": "run_p2_004b_5yr_stride5_shuffle",
+    "hypothesis": "RERUN with fixed --years filter: 5yr, stride=5, shuffle",
+    "cmd_args": "--years 5 --stride 5 --shuffle-split",
+    "status": "pending"
+  },
+  {
+    "id": "run_p2_005b_3yr_stride5_shuffle",
+    "hypothesis": "RERUN with fixed --years filter: 3yr, stride=5, shuffle",
+    "cmd_args": "--years 3 --stride 5 --shuffle-split",
+    "status": "pending"
+  },
+  {
+    "id": "run_p2_006b_10yr_stride5_shuffle",
+    "hypothesis": "RERUN with fixed --years filter: 10yr, stride=5, shuffle",
+    "cmd_args": "--years 10 --stride 5 --shuffle-split",
+    "status": "pending"
+  },
+  {
+    "id": "run_p2_009_7yr_stride5_shuffle",
+    "hypothesis": "7yr, stride=5, shuffle \u2014 fill gap between 5yr and 10yr",
+    "cmd_args": "--years 7 --stride 5 --shuffle-split",
+    "status": "pending"
   }
 ]
