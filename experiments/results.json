@@ -751,28 +751,42 @@
     "run_id": "run_p2_010_7yr_stride5_shuffle_confirm",
     "timestamp": "2026-03-22T12:20:37.992577+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Confirm 7yr result (64.9%) \u2014 rerun with different seed to check variance",
     "changes_from_previous": "--years 7 --stride 5 --shuffle-split --seed 123",
     "config": {
       "cmd_args": "--years 7 --stride 5 --shuffle-split --seed 123"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "best_val_acc": 0.643,
+      "test_acc": 0.639,
+      "test_loss": 0.6581,
+      "epochs_run": 41,
+      "runtime_min": 11.4,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 63.9% \u2264 no improvement \u274c vs best 64.9%"
   },
   {
     "run_id": "run_p2_011_6yr_stride5_shuffle",
     "timestamp": "2026-03-22T12:20:40.001750+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Flank 7yr: try 6yr \u2014 is it the window or the data volume?",
     "changes_from_previous": "--years 6 --stride 5 --shuffle-split",
     "config": {
       "cmd_args": "--years 6 --stride 5 --shuffle-split"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "best_val_acc": 0.643,
+      "test_acc": 0.633,
+      "test_loss": 0.6638,
+      "epochs_run": 55,
+      "runtime_min": 13.2,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 63.3% \u2264 no improvement \u274c vs best 64.9%"
   }
 ]
