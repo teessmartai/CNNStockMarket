@@ -2964,15 +2964,30 @@
     "run_id": "run_p5_009_h1_stride133_7yr_adamw",
     "timestamp": "2026-03-28T22:50:47.725162+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Best result used adam (default). AdamW (decoupled weight decay) may provide better regularization and generalization on the h1 stride=133 7yr clean setup without leakage.",
     "changes_from_previous": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --optimizer adamw",
     "config": {
       "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --optimizer adamw"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "actual_samples_per_param": 26.4,
+      "train_samples": 3648,
+      "best_val_acc": 0.532,
+      "test_acc": 0.536,
+      "test_loss": 0.6914,
+      "epochs_run": 75,
+      "runtime_min": 0.4,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 53.6% \u2264 no improvement \u274c vs best 68.8%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 0,
+      "window_size": 128
+    }
   },
   {
     "run_id": "run_p5_010_h1_stride133_7yr_window40",

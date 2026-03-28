@@ -426,7 +426,7 @@
     "id": "run_p5_009_h1_stride133_7yr_adamw",
     "hypothesis": "Best result used adam (default). AdamW (decoupled weight decay) may provide better regularization and generalization on the h1 stride=133 7yr clean setup without leakage.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --optimizer adamw",
-    "status": "running",
+    "status": "discarded",
     "source": "autostrategy",
     "generated_at": "2026-03-28T22:38:57.312701+00:00"
   },
