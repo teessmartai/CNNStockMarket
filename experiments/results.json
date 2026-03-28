@@ -2364,5 +2364,19 @@
     "results": {},
     "verdict": "pending",
     "notes": ""
+  },
+  {
+    "run_id": "run_p4_004_h1_w10_s1_20yr",
+    "timestamp": "2026-03-28T17:20:19.221073+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Biweekly window for h1 on 20yr data",
+    "changes_from_previous": "--preset sp500 --horizon 1 --window 10 --stride 1 --years 20 --shuffle-split --samples-per-param 100",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 1 --window 10 --stride 1 --years 20 --shuffle-split --samples-per-param 100"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
