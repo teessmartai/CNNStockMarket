@@ -2123,14 +2123,29 @@
     "run_id": "run_p3_013_cnn_w20_h1_s1_7yr",
     "timestamp": "2026-03-28T04:22:54.019729+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "T+1 window=20 (business month): ~488K train. Does 1-month lookback help 1-day prediction?",
     "changes_from_previous": "--preset sp500 --horizon 1 --window 20 --stride 1 --years 7 --shuffle-split --samples-per-param 100",
     "config": {
       "cmd_args": "--preset sp500 --horizon 1 --window 20 --stride 1 --years 7 --shuffle-split --samples-per-param 100"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "actual_samples_per_param": 95.8,
+      "train_samples": 486628,
+      "best_val_acc": 0.544,
+      "test_acc": 0.542,
+      "test_loss": 0.6839,
+      "epochs_run": 63,
+      "runtime_min": 16.3,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 54.2% \u2264 no improvement \u274c vs best 68.8%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 0,
+      "window_size": 20
+    }
   }
 ]

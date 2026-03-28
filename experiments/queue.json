@@ -248,7 +248,7 @@
     "id": "run_p3_013_cnn_w20_h1_s1_7yr",
     "hypothesis": "T+1 window=20 (business month): ~488K train. Does 1-month lookback help 1-day prediction?",
     "cmd_args": "--preset sp500 --horizon 1 --window 20 --stride 1 --years 7 --shuffle-split --samples-per-param 100",
-    "status": "running"
+    "status": "discarded"
   },
   {
     "id": "run_p3_014_cnn_w60_h1_s1_7yr",
