@@ -266,7 +266,7 @@
     "id": "run_p4_001_h1_w20_s133_20yr",
     "hypothesis": "Mirror of best h5 config (stride133, 20yr) but for h1 \u2014 does non-overlapping stride help next-day prediction too?",
     "cmd_args": "--preset sp500 --horizon 1 --window 20 --stride 133 --years 20 --shuffle-split --samples-per-param 100",
-    "status": "running"
+    "status": "discarded"
   },
   {
     "id": "run_p4_002_h1_w20_s5_20yr",
