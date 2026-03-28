@@ -19,6 +19,14 @@ logger = logging.getLogger(__name__)
 # Standard OHLCV column names
 STANDARD_COLUMNS = ["Open", "High", "Low", "Close", "Volume"]
 
+# Feature group → extra channel names (beyond base OHLCV)
+from src.features.engineer import (   # noqa: E402
+    compute_features,
+    cross_sectional_rank,
+    feature_channels,
+    ALL_GROUPS,
+)
+
 
 def to_log_returns(df: pd.DataFrame) -> tuple:
     """
@@ -355,17 +363,23 @@ def combine_multiple_stocks(
     stride: int = 1,
     columns: Optional[List[str]] = None,
     normalization: str = "minmax",
+    feature_groups: Optional[List[str]] = None,
+    use_xrank: bool = False,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
     Combine windows from multiple stocks into a single dataset.
 
     Args:
-        stock_data: Dict mapping ticker -> DataFrame
-        window_size: Periods per window
-        horizon: Prediction horizon
-        stride: Step size between windows (1=overlapping)
-        columns: List of column names to use (default: OHLCV)
-        normalization: "minmax" (per-window) or "logreturns" (global z-score of returns)
+        stock_data:     Dict mapping ticker → raw OHLCV DataFrame
+        window_size:    Periods per window
+        horizon:        Prediction horizon
+        stride:         Step size between windows (1=overlapping)
+        columns:        List of column names to use (default: OHLCV only)
+        normalization:  "minmax" (per-window) or "logreturns" (global z-score)
+        feature_groups: Optional list of extra feature groups to compute
+                        (e.g. ["returns", "rsi", "macd"]).  None → OHLCV only.
+        use_xrank:      If True, apply cross-sectional rank normalisation
+                        across all stocks before windowing.
 
     Returns:
         Combined (X, y) arrays from all stocks
@@ -373,23 +387,63 @@ def combine_multiple_stocks(
     all_X = []
     all_y = []
 
-    for ticker, df in stock_data.items():
-        try:
-            label_close = None
-            feat_df = df
-            if normalization == "logreturns":
-                feat_df, label_close = to_log_returns(df)
-            X, y = create_sliding_windows(
-                feat_df, window_size, horizon,
-                normalization=normalization,
-                stride=stride, columns=columns,
-                _label_close=label_close,
-            )
-            all_X.append(X)
-            all_y.append(y)
-            logger.debug(f"{ticker}: {len(X)} windows")
-        except ValueError as e:
-            logger.warning(f"Skipping {ticker}: {e}")
+    # ── Step 1: compute per-stock feature DataFrames ───────────────────────────
+    if feature_groups is not None:
+        # Build enhanced feature frames (OHLCV log-returns + technical channels)
+        feat_frames: dict = {}
+        label_closes: dict = {}
+        for ticker, df in stock_data.items():
+            try:
+                feat_df = compute_features(df, groups=feature_groups)
+                # Keep original Close for label generation
+                label_closes[ticker] = df["Close"].loc[feat_df.index]
+                feat_frames[ticker] = feat_df
+            except Exception as e:
+                logger.warning(f"Feature computation failed for {ticker}: {e}")
+
+        # ── Step 2: cross-sectional rank normalisation (optional) ──────────────
+        if use_xrank and feat_frames:
+            feat_frames = cross_sectional_rank(feat_frames)
+
+        # ── Step 3: create sliding windows ────────────────────────────────────
+        feat_cols = ["Open", "High", "Low", "Close", "Volume"] + feature_channels(
+            [g for g in feature_groups if g in ALL_GROUPS]
+        )
+        for ticker, feat_df in feat_frames.items():
+            try:
+                label_close = label_closes.get(ticker)
+                X, y = create_sliding_windows(
+                    feat_df, window_size, horizon,
+                    normalization="logreturns",   # already z-scored in compute_features
+                    stride=stride,
+                    columns=[c for c in feat_cols if c in feat_df.columns],
+                    _label_close=label_close,
+                )
+                all_X.append(X)
+                all_y.append(y)
+                logger.debug(f"{ticker}: {len(X)} windows, {X.shape[2]} channels")
+            except ValueError as e:
+                logger.warning(f"Skipping {ticker}: {e}")
+
+    else:
+        # ── Legacy path: OHLCV only (unchanged behaviour) ─────────────────────
+        for ticker, df in stock_data.items():
+            try:
+                label_close = None
+                feat_df = df
+                if normalization == "logreturns":
+                    feat_df, label_close = to_log_returns(df)
+                X, y = create_sliding_windows(
+                    feat_df, window_size, horizon,
+                    normalization=normalization,
+                    stride=stride, columns=columns,
+                    _label_close=label_close,
+                )
+                all_X.append(X)
+                all_y.append(y)
+                logger.debug(f"{ticker}: {len(X)} windows")
+            except ValueError as e:
+                logger.warning(f"Skipping {ticker}: {e}")
 
     if not all_X:
         raise ValueError("No valid data from any stock")
@@ -398,8 +452,10 @@ def combine_multiple_stocks(
     y_combined = np.concatenate(all_y, axis=0)
 
     mode_desc = "overlapping" if stride == 1 else f"stride={stride}"
+    n_channels = X_combined.shape[2]
     logger.info(
-        f"Combined {len(stock_data)} stocks: {len(X_combined)} total windows ({mode_desc})"
+        f"Combined {len(all_X)} stocks: {len(X_combined)} total windows "
+        f"({mode_desc}), {n_channels} channels"
     )
 
     return X_combined, y_combined

@@ -264,6 +264,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--arch",  default="cnn",
                    choices=["cnn", "lstm", "transformer", "tcn"],
                    help="Model architecture (default: cnn)")
+    p.add_argument("--features", type=str, default=None,
+                   help="Comma-separated feature groups to add beyond OHLCV log-returns. "
+                        "Available: returns,gap,volatility,rsi,macd,bbands  "
+                        "Use 'all' for all groups.  "
+                        "Append '+xrank' to apply cross-sectional rank normalisation, "
+                        "e.g. --features all+xrank  (default: None = OHLCV only)")
     p.add_argument("--samples-per-param", type=int, default=100,
                    help="Target train_samples / num_params ratio. "
                         "Controls model size: higher = smaller model. "
@@ -369,14 +375,47 @@ def main():
         log.warning(f"  Skipped (no data): {', '.join(skipped)}")
 
     # ── 2. Build combined dataset ─────────────────────────────────────────────
-    log.info(f"\nBuilding windows (size={args.window}, horizon={args.horizon}, stride={args.stride}, norm={args.norm})...")
+    # Parse --features flag → feature_groups list + xrank flag
+    from src.features.engineer import ALL_GROUPS, feature_channels
+    feature_groups = None
+    use_xrank = False
+    if args.features:
+        feat_str = args.features.lower().strip()
+        use_xrank = feat_str.endswith("+xrank")
+        feat_str  = feat_str.replace("+xrank", "").strip()
+        if feat_str in ("all", ""):
+            feature_groups = ALL_GROUPS[:]
+        else:
+            feature_groups = [g.strip() for g in feat_str.split(",") if g.strip()]
+        # Validate
+        bad = [g for g in feature_groups if g not in ALL_GROUPS]
+        if bad:
+            log.error(f"Unknown feature groups: {bad}. Available: {ALL_GROUPS}")
+            sys.exit(1)
+        extra_cols = feature_channels(feature_groups)
+        log.info(
+            f"\nFeature engineering: groups={feature_groups}"
+            + (" + cross-sectional rank" if use_xrank else "")
+            + f"\n  Extra channels ({len(extra_cols)}): {extra_cols}"
+        )
+
+    feat_note = (
+        f"features={args.features}" if args.features else "features=ohlcv"
+    )
+    log.info(f"\nBuilding windows (size={args.window}, horizon={args.horizon}, "
+             f"stride={args.stride}, norm={args.norm}, {feat_note})...")
     X_all, y_all = combine_multiple_stocks(
         stock_data,
-        window_size   = args.window,
-        horizon       = args.horizon,
-        stride        = args.stride,
-        normalization = args.norm,
+        window_size    = args.window,
+        horizon        = args.horizon,
+        stride         = args.stride,
+        normalization  = args.norm,
+        feature_groups = feature_groups,
+        use_xrank      = use_xrank,
     )
+
+    # Derive actual channel count from data (handles any feature combination)
+    actual_num_channels = X_all.shape[2] if len(X_all.shape) == 3 else NUM_CHANNELS
 
     # Per-stock breakdown
     for ticker, df in stock_data.items():
@@ -426,7 +465,7 @@ def main():
             train_samples      = args.target_params,   # trick: spp=1 → target_params params
             samples_per_param  = 1,
             window_size        = args.window,
-            num_channels       = NUM_CHANNELS,
+            num_channels       = actual_num_channels,
             num_classes        = 2,
             dropout            = args.dropout,
             use_batchnorm      = args.batchnorm,
@@ -441,7 +480,7 @@ def main():
             train_samples      = n_train,
             samples_per_param  = args.samples_per_param,
             window_size        = args.window,
-            num_channels       = NUM_CHANNELS,
+            num_channels       = actual_num_channels,
             num_classes        = 2,
             dropout            = args.dropout,
             use_batchnorm      = args.batchnorm,
