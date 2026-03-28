@@ -3031,5 +3031,19 @@
       "num_params": 0,
       "window_size": 128
     }
+  },
+  {
+    "run_id": "run_p5_012_h1_stride5_7yr_chronological",
+    "timestamp": "2026-03-28T23:16:37.815191+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Best stride=133 got 68.8% with shuffle-split. Test if chronological split (no shuffle, preserve temporal order, eliminates regime-mixing bias) with stride=5 and 7yr achieves comparable or better accuracy through stronger temporal integrity.",
+    "changes_from_previous": "--preset sp500 --horizon 1 --stride 5 --years 7 --samples-per-param 100 --window 20",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 1 --stride 5 --years 7 --samples-per-param 100 --window 20"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
