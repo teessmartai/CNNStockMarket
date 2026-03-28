@@ -453,5 +453,53 @@
     "status": "discarded",
     "source": "autostrategy",
     "generated_at": "2026-03-28T22:38:57.312771+00:00"
+  },
+  {
+    "id": "run_p5_013_h1_stride133_7yr_larger_window",
+    "hypothesis": "Best result (68.8%) uses default window=20. Test if a larger lookback window (w=40) captures longer-term patterns better for h1 stride=133 setup, improving signal-to-noise ratio.",
+    "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --window 40 --mode screen",
+    "status": "running",
+    "source": "autostrategy",
+    "generated_at": "2026-03-28T23:26:50.447732+00:00"
+  },
+  {
+    "id": "run_p5_014_h1_stride133_7yr_adamw_lr",
+    "hypothesis": "Best result uses default adam optimizer. Test if adamw with slightly lower lr (5e-4) provides better regularization and convergence stability for the proven stride=133 7yr config.",
+    "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --optimizer adamw --lr 5e-4 --mode screen",
+    "status": "pending",
+    "source": "autostrategy",
+    "generated_at": "2026-03-28T23:26:50.447781+00:00"
+  },
+  {
+    "id": "run_p5_015_h1_stride133_7yr_xrank",
+    "hypothesis": "Feature engineering with xrank (cross-sectional rank normalization) shows promise in h5 experiments. Test if xrank features improve h1 stride=133 7yr by reducing market-regime sensitivity.",
+    "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --features returns,gap,volatility,rsi,macd,bbands,xrank --mode screen",
+    "status": "pending",
+    "source": "autostrategy",
+    "generated_at": "2026-03-28T23:26:50.447810+00:00"
+  },
+  {
+    "id": "run_p5_016_h1_stride133_20yr_spp10",
+    "hypothesis": "Best 20yr result (66.0%) used default spp=100. With 20yr data, spp=10 creates a much larger model (400M params). Test if the extra capacity helps utilize the full 20yr regime diversity better.",
+    "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 20 --shuffle-split --samples-per-param 10 --mode screen",
+    "status": "pending",
+    "source": "autostrategy",
+    "generated_at": "2026-03-28T23:26:50.447835+00:00"
+  },
+  {
+    "id": "run_p5_017_h1_stride133_7yr_dropout05",
+    "hypothesis": "Best result (68.8%) uses default dropout=0.5. Test if increased dropout (0.6) acts as stronger regularization to prevent overfitting on the 7yr COVID-inclusive window.",
+    "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --dropout 0.6 --mode screen",
+    "status": "pending",
+    "source": "autostrategy",
+    "generated_at": "2026-03-28T23:26:50.447862+00:00"
+  },
+  {
+    "id": "run_p5_018_h1_stride133_7yr_lstm",
+    "hypothesis": "CNN dominates top results. Test if LSTM architecture better captures temporal dependencies in daily price movements for the proven stride=133 7yr setup.",
+    "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --arch lstm --mode screen",
+    "status": "pending",
+    "source": "autostrategy",
+    "generated_at": "2026-03-28T23:26:50.447888+00:00"
   }
 ]
