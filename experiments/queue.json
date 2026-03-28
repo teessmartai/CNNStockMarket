@@ -362,7 +362,7 @@
     "id": "run_p5_001_h1_stride133_7yr_tech",
     "hypothesis": "Best result (68.8%) used h1 implicit + stride=133 + 7yr. Test if adding technical features (returns,gap,volatility,rsi,macd,bbands) improves on this clean baseline without leakage.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --features returns,gap,volatility,rsi,macd,bbands --samples-per-param 100",
-    "status": "running",
+    "status": "discarded",
     "source": "autostrategy",
     "generated_at": "2026-03-28T21:11:53.667822+00:00"
   },
