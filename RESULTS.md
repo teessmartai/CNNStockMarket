@@ -1,6 +1,6 @@
 # AutoResearch Results
 
-_Last updated: 2026-03-28 04:53 UTC_
+_Last updated: 2026-03-28 05:23 UTC_
 
 > **spp** = train_samples / num_params. Old runs used a fixed 35M-param model (spp ≈ 1:800–1:27K, severely overparameterized). New runs use `--samples-per-param` so the model auto-sizes to the data.
 
@@ -80,7 +80,7 @@ Config: `--preset sp500 --years 7 --stride 133 --shuffle-split`
 | run_p3_011_transformer_s5_20yr_spp1 | Transformer medium (548K) S&P500 stride=5 20yr. Attention over 128-day window. | `--preset sp500 --years 20 --stride 5 --shuffle-spl` | 0.0% | 0.0% | CNN — | — | ❌ | — |
 | run_p3_012_tcn_s5_20yr_spp100 | TCN medium (581K) S&P500 stride=5 20yr. Causal dilated convolutions, full-year r | `--preset sp500 --years 20 --stride 5 --shuffle-spl` | 0.0% | 0.0% | CNN — | — | ⏳ | — |
 | run_p3_013_cnn_w20_h1_s1_7yr | T+1 window=20 (business month): ~488K train. Does 1-month lookback help 1-day pr | `--preset sp500 --horizon 1 --window 20 --stride 1 ` | 54.4% | 54.2% | CNN — | — | ❌ | — |
-| run_p3_014_cnn_w60_h1_s1_7yr | T+1 window=60 (business quarter): ~479K train. 1-quarter lookback vs 1-month vs  | `--preset sp500 --horizon 1 --window 60 --stride 1 ` | 0.0% | 0.0% | CNN — | — | ⏳ | — |
+| run_p3_014_cnn_w60_h1_s1_7yr | T+1 window=60 (business quarter): ~479K train. 1-quarter lookback vs 1-month vs  | `--preset sp500 --horizon 1 --window 60 --stride 1 ` | 54.1% | 54.1% | CNN — | — | ❌ | — |
 
 ## Key Findings
 
