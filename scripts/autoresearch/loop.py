@@ -628,13 +628,14 @@ def cmd_daemon(args):
         running = [s for s in slots.values() if s is not None]
         pending = [e for e in queue if e["status"] == "pending"]
 
-        if not running and not pending:
-            # Ask the repo-specific strategist to refill the queue.
-            # If strategist.py lives alongside this file, import and run it.
-            # If it's absent or proposes nothing, the daemon exits cleanly.
+        num_slots = len(slots)
+        free_slots = num_slots - len(running)
+        if not pending and free_slots > 0:
+            # A slot is free and nothing is queued — call strategist to refill.
+            # This keeps slots busy even while other slots are still running.
             _strategist = Path(__file__).parent / "strategist.py"
             if _strategist.exists():
-                print("\n🧠 Queue empty — calling AutoStrategy...")
+                print(f"\n🧠 {free_slots} slot(s) free, queue empty — calling AutoStrategy...")
                 try:
                     import importlib.util as _ilu
                     _spec = _ilu.spec_from_file_location("strategist", _strategist)
@@ -648,8 +649,10 @@ def cmd_daemon(args):
                 except Exception as _e:
                     print(f"  Strategist error: {_e}")
                     import traceback; traceback.print_exc()
-            print("\n✅ Queue empty and no runs active — daemon done.")
-            break
+
+            if not running:
+                print("\n✅ Queue empty and no runs active — daemon done.")
+                break
 
         print(f"  Running: {len(running)} | Pending: {len(pending)}")
         time.sleep(POLL_INTERVAL)
