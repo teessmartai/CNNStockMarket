@@ -2355,28 +2355,58 @@
     "run_id": "run_p4_003_h1_w5_s1_20yr",
     "timestamp": "2026-03-28T17:14:54.860997+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Very short window (1 week) for h1 \u2014 captures intraweek momentum only",
     "changes_from_previous": "--preset sp500 --horizon 1 --window 5 --stride 1 --years 20 --shuffle-split --samples-per-param 100",
     "config": {
       "cmd_args": "--preset sp500 --horizon 1 --window 5 --stride 1 --years 20 --shuffle-split --samples-per-param 100"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "actual_samples_per_param": 104.2,
+      "train_samples": 1325842,
+      "best_val_acc": 0.529,
+      "test_acc": 0.526,
+      "test_loss": 0.6905,
+      "epochs_run": 55,
+      "runtime_min": 35.9,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 52.6% \u2264 no improvement \u274c vs best 68.8%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 0,
+      "window_size": 5
+    }
   },
   {
     "run_id": "run_p4_004_h1_w10_s1_20yr",
     "timestamp": "2026-03-28T17:20:19.221073+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Biweekly window for h1 on 20yr data",
     "changes_from_previous": "--preset sp500 --horizon 1 --window 10 --stride 1 --years 20 --shuffle-split --samples-per-param 100",
     "config": {
       "cmd_args": "--preset sp500 --horizon 1 --window 10 --stride 1 --years 20 --shuffle-split --samples-per-param 100"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "actual_samples_per_param": 104.1,
+      "train_samples": 1324435,
+      "best_val_acc": 0.539,
+      "test_acc": 0.537,
+      "test_loss": 0.6858,
+      "epochs_run": 50,
+      "runtime_min": 32.6,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 53.7% \u2264 no improvement \u274c vs best 68.8%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 0,
+      "window_size": 10
+    }
   }
 ]

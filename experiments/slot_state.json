@@ -1,14 +1,4 @@
 {
-  "a": {
-    "slot": "a",
-    "run_id": "run_p4_003_h1_w5_s1_20yr",
-    "version": 91,
-    "started_at": "2026-03-28T17:14:56.606497+00:00"
-  },
-  "b": {
-    "slot": "b",
-    "run_id": "run_p4_004_h1_w10_s1_20yr",
-    "version": 92,
-    "started_at": "2026-03-28T17:20:21.204599+00:00"
-  }
+  "a": null,
+  "b": null
 }

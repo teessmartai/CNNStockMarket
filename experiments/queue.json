@@ -278,13 +278,13 @@
     "id": "run_p4_003_h1_w5_s1_20yr",
     "hypothesis": "Very short window (1 week) for h1 \u2014 captures intraweek momentum only",
     "cmd_args": "--preset sp500 --horizon 1 --window 5 --stride 1 --years 20 --shuffle-split --samples-per-param 100",
-    "status": "running"
+    "status": "discarded"
   },
   {
     "id": "run_p4_004_h1_w10_s1_20yr",
     "hypothesis": "Biweekly window for h1 on 20yr data",
     "cmd_args": "--preset sp500 --horizon 1 --window 10 --stride 1 --years 20 --shuffle-split --samples-per-param 100",
-    "status": "running"
+    "status": "discarded"
   },
   {
     "id": "run_p4_005_h1_w20_s1_20yr",
