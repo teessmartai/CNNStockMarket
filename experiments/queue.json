@@ -314,7 +314,7 @@
     "id": "run_p4_009_h5_xrank_s133_7yr",
     "hypothesis": "Best h5 config + all features + cross-sectional rank. Regime-agnostic normalisation.",
     "cmd_args": "--preset sp500 --horizon 5 --window 20 --stride 133 --years 7 --shuffle-split --features all+xrank --samples-per-param 10",
-    "status": "running"
+    "status": "discarded"
   },
   {
     "id": "run_p4_010_h1_tech_w20_s5_20yr",
