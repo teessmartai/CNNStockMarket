@@ -2857,5 +2857,19 @@
     "results": {},
     "verdict": "pending",
     "notes": ""
+  },
+  {
+    "run_id": "run_p5_006_h1_stride133_7yr_window64",
+    "timestamp": "2026-03-28T21:33:42.752615+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Best result used implicit window=20. Test larger window=64 with stride=133 (zero-leakage) + 7yr to capture longer-term dependencies and market dynamics within each non-overlapping sample.",
+    "changes_from_previous": "--preset sp500 --horizon 1 --window 64 --stride 133 --years 7 --shuffle-split --samples-per-param 100",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 1 --window 64 --stride 133 --years 7 --shuffle-split --samples-per-param 100"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
