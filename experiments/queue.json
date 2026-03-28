@@ -450,7 +450,7 @@
     "id": "run_p5_012_h1_stride5_7yr_chronological",
     "hypothesis": "Best stride=133 got 68.8% with shuffle-split. Test if chronological split (no shuffle, preserve temporal order, eliminates regime-mixing bias) with stride=5 and 7yr achieves comparable or better accuracy through stronger temporal integrity.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 5 --years 7 --samples-per-param 100 --window 20",
-    "status": "running",
+    "status": "discarded",
     "source": "autostrategy",
     "generated_at": "2026-03-28T22:38:57.312771+00:00"
   }
