@@ -1887,14 +1887,29 @@
     "run_id": "run_p3_025_largecap_w20_s1_7yr_precovid_spp10",
     "timestamp": "2026-03-28T01:59:41.203400+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Largecap pre-COVID: window=20, stride=1, 7yr end=2019-12-31, spp=10. ~65K train \u2192 ~6,500 params.",
     "changes_from_previous": "--preset largecap-stable --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --samples-per-param 10",
     "config": {
       "cmd_args": "--preset largecap-stable --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --samples-per-param 10"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "actual_samples_per_param": null,
+      "train_samples": null,
+      "best_val_acc": 0.0,
+      "test_acc": 0.0,
+      "test_loss": 0,
+      "epochs_run": 0,
+      "runtime_min": 0,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 0.0% \u2264 no improvement \u274c vs best 68.8%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 0,
+      "window_size": 20
+    }
   }
 ]
