@@ -629,6 +629,25 @@ def cmd_daemon(args):
         pending = [e for e in queue if e["status"] == "pending"]
 
         if not running and not pending:
+            # Ask the repo-specific strategist to refill the queue.
+            # If strategist.py lives alongside this file, import and run it.
+            # If it's absent or proposes nothing, the daemon exits cleanly.
+            _strategist = Path(__file__).parent / "strategist.py"
+            if _strategist.exists():
+                print("\n🧠 Queue empty — calling AutoStrategy...")
+                try:
+                    import importlib.util as _ilu
+                    _spec = _ilu.spec_from_file_location("strategist", _strategist)
+                    _mod  = _ilu.module_from_spec(_spec)
+                    _spec.loader.exec_module(_mod)
+                    _added = _mod.run_strategy()
+                    if _added > 0:
+                        rebuild_dataset("autostrategy: new experiments queued")
+                        print(f"  Strategist queued {_added} experiments — continuing.\n")
+                        continue   # skip sleep, pick up new experiments immediately
+                except Exception as _e:
+                    print(f"  Strategist error: {_e}")
+                    import traceback; traceback.print_exc()
             print("\n✅ Queue empty and no runs active — daemon done.")
             break
 
