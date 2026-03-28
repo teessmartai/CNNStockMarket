@@ -1938,7 +1938,7 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 0.0% \u2264 no improvement \u274c vs best 68.8%",
+    "notes": "failed: 0 stocks fetched (CSV end-date cache miss bug) \u2014 re-queued",
     "arch_meta": {
       "arch": "cnn",
       "size": "large",
