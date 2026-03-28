@@ -198,14 +198,14 @@
     "hypothesis": "Pre-COVID spp-matched: window=20, stride=1, 7yr end=2019-12-31, spp=10. Is COVID driving the result?",
     "cmd_args": "--preset sp500 --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --samples-per-param 10",
     "paired_with": "run_p3_022_sp500_w20_s1_7yr_postcovid",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_p3_024_sp500_w20_s1_7yr_precovid_fixedparams",
     "hypothesis": "Pre-COVID fixed-params: same data as p3_023 but model pinned to p3_022 param count. Absolute capacity vs spp ratio. (target-params=48800 estimated from spp=10 on 488K samples)",
     "cmd_args": "--preset sp500 --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --target-params 48800",
     "depends_on": "run_p3_022_sp500_w20_s1_7yr_postcovid",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_p3_025_largecap_w20_s1_7yr_precovid_spp10",
