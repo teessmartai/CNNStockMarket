@@ -5,5 +5,10 @@
     "version": 78,
     "started_at": "2026-03-28T03:31:10.239184+00:00"
   },
-  "b": null
+  "b": {
+    "slot": "b",
+    "run_id": "run_p3_025_largecap_w20_s1_7yr_precovid_spp10",
+    "version": 79,
+    "started_at": "2026-03-28T03:46:37.132486+00:00"
+  }
 }
