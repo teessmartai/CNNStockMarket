@@ -260,6 +260,6 @@
     "id": "run_p3_015_cnn_w128_h1_s1_7yr",
     "hypothesis": "T+1, window=128 (6mo): baseline T+1 with current window. Compare vs w30 and w90.",
     "cmd_args": "--preset sp500 --horizon 1 --window 128 --stride 1 --years 7 --shuffle-split --samples-per-param 100",
-    "status": "pending"
+    "status": "running"
   }
 ]
