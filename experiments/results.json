@@ -2210,15 +2210,30 @@
     "run_id": "run_p3_010_lstm_s5_20yr_spp100",
     "timestamp": "2026-03-28T11:58:11.187083+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "LSTM medium (2.2M) S&P500 stride=5 20yr. Sequential memory vs CNN local patterns.",
     "changes_from_previous": "--preset sp500 --years 20 --stride 5 --shuffle-split --arch lstm --samples-per-param 100",
     "config": {
       "cmd_args": "--preset sp500 --years 20 --stride 5 --shuffle-split --arch lstm --samples-per-param 100"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "actual_samples_per_param": 92.6,
+      "train_samples": 258093,
+      "best_val_acc": 0.554,
+      "test_acc": 0.558,
+      "test_loss": 0.6828,
+      "epochs_run": 100,
+      "runtime_min": 8.8,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 55.8% \u2264 no improvement \u274c vs best 68.8%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 0,
+      "window_size": 128
+    }
   },
   {
     "run_id": "run_p3_011_transformer_s5_20yr_spp100",
