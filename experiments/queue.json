@@ -378,7 +378,7 @@
     "id": "run_p5_003_h1_stride133_7yr_lstm",
     "hypothesis": "Best result used default CNN. Test LSTM (sequential memory better for time series) with zero-leakage stride=133 + 7yr window to see if architecture choice matters more than data regime.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --arch lstm --samples-per-param 100",
-    "status": "running",
+    "status": "discarded",
     "source": "autostrategy",
     "generated_at": "2026-03-28T21:11:53.667906+00:00"
   },
@@ -394,7 +394,7 @@
     "id": "run_p5_005_h1_stride5_20yr_dropout",
     "hypothesis": "Top stride=5 result (64.4%) used default dropout. Test dropout=0.3 to reduce overfitting on the larger 20yr dataset and see if regularization helps regime generalization.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 5 --years 20 --shuffle-split --dropout 0.3 --samples-per-param 100",
-    "status": "pending",
+    "status": "running",
     "source": "autostrategy",
     "generated_at": "2026-03-28T21:11:53.667957+00:00"
   },
