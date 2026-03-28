@@ -2147,5 +2147,19 @@
       "num_params": 0,
       "window_size": 20
     }
+  },
+  {
+    "run_id": "run_p3_014_cnn_w60_h1_s1_7yr",
+    "timestamp": "2026-03-28T04:53:23.164686+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "T+1 window=60 (business quarter): ~479K train. 1-quarter lookback vs 1-month vs 6-month.",
+    "changes_from_previous": "--preset sp500 --horizon 1 --window 60 --stride 1 --years 7 --shuffle-split --samples-per-param 100",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 1 --window 60 --stride 1 --years 7 --shuffle-split --samples-per-param 100"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
