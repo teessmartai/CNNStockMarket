@@ -308,7 +308,7 @@
     "id": "run_p4_008_h5_tech_s133_7yr",
     "hypothesis": "Best h5 config + all tech features. Does RSI/MACD/BBands lift the 68.8% ceiling?",
     "cmd_args": "--preset sp500 --horizon 5 --window 20 --stride 133 --years 7 --shuffle-split --features all --samples-per-param 100",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_p4_009_h5_xrank_s133_7yr",
