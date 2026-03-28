@@ -1,10 +1,5 @@
 {
-  "a": {
-    "slot": "a",
-    "run_id": "run_p3_011_transformer_s5_20yr_spp100",
-    "version": 82,
-    "started_at": "2026-03-28T04:12:30.618946+00:00"
-  },
+  "a": null,
   "b": {
     "slot": "b",
     "run_id": "run_p3_012_tcn_s5_20yr_spp100",
