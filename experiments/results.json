@@ -2068,7 +2068,7 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 0.0% \u2264 no improvement \u274c vs best 68.8%",
+    "notes": "crashed: AttributeError window_size/num_channels in save_checkpoint \u2014 fixed and re-queued",
     "arch_meta": {
       "arch": "cnn",
       "size": "large",
@@ -2097,7 +2097,7 @@
       "early_stopped": true
     },
     "verdict": "discarded",
-    "notes": "test_acc 0.0% \u2264 no improvement \u274c vs best 68.8%",
+    "notes": "crashed: AttributeError window_size/num_channels in save_checkpoint \u2014 fixed and re-queued",
     "arch_meta": {
       "arch": "cnn",
       "size": "large",
@@ -2117,7 +2117,7 @@
     },
     "results": {},
     "verdict": "discarded",
-    "notes": "kernel error \u2014 no output collected"
+    "notes": "crashed: AttributeError window_size/num_channels in save_checkpoint \u2014 fixed and re-queued"
   },
   {
     "run_id": "run_p3_013_cnn_w20_h1_s1_7yr",
