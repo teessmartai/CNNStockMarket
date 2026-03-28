@@ -211,7 +211,7 @@
     "id": "run_p3_025_largecap_w20_s1_7yr_precovid_spp10",
     "hypothesis": "Largecap pre-COVID: window=20, stride=1, 7yr end=2019-12-31, spp=10. ~65K train \u2192 ~6,500 params.",
     "cmd_args": "--preset largecap-stable --window 20 --stride 1 --years 7 --shuffle-split --end-date 2019-12-31 --samples-per-param 10",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_p3_026_sp500_w60_s1_7yr_postcovid",
