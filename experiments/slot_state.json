@@ -1,5 +1,10 @@
 {
-  "a": null,
+  "a": {
+    "slot": "a",
+    "run_id": "run_p3_019_largecap_s5_20yr_precovid",
+    "version": 77,
+    "started_at": "2026-03-28T03:20:46.847853+00:00"
+  },
   "b": {
     "slot": "b",
     "run_id": "run_p3_024_sp500_w20_s1_7yr_precovid_fixedparams",
