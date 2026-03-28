@@ -2456,14 +2456,29 @@
     "run_id": "run_p4_007_h1_transformer_w20_s5_20yr",
     "timestamp": "2026-03-28T18:26:34.559808+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Transformer with w20 for h1 \u2014 attention across 4-week window",
     "changes_from_previous": "--preset sp500 --horizon 1 --window 20 --stride 5 --years 20 --shuffle-split --arch transformer --samples-per-param 100",
     "config": {
       "cmd_args": "--preset sp500 --horizon 1 --window 20 --stride 5 --years 20 --shuffle-split --arch transformer --samples-per-param 100"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "actual_samples_per_param": 99.0,
+      "train_samples": 264520,
+      "best_val_acc": 0.544,
+      "test_acc": 0.545,
+      "test_loss": 0.6864,
+      "epochs_run": 100,
+      "runtime_min": 12.6,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 54.5% \u2264 no improvement \u274c vs best 68.8%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 0,
+      "window_size": 20
+    }
   }
 ]

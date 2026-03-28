@@ -302,7 +302,7 @@
     "id": "run_p4_007_h1_transformer_w20_s5_20yr",
     "hypothesis": "Transformer with w20 for h1 \u2014 attention across 4-week window",
     "cmd_args": "--preset sp500 --horizon 1 --window 20 --stride 5 --years 20 --shuffle-split --arch transformer --samples-per-param 100",
-    "status": "running"
+    "status": "discarded"
   },
   {
     "id": "run_p4_008_h5_tech_s133_7yr",
