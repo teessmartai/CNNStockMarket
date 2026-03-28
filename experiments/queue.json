@@ -442,7 +442,7 @@
     "id": "run_p5_011_h1_stride133_20yr_spp10",
     "hypothesis": "Best result used 7yr window. Test if 20yr data (full regime coverage pre/post-COVID) with stride=133 (zero leakage) beats 68.8%, but use samples-per-param=10 to increase model capacity given 20yr has ~2x fewer non-overlapping windows.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 20 --shuffle-split --samples-per-param 10",
-    "status": "running",
+    "status": "discarded",
     "source": "autostrategy",
     "generated_at": "2026-03-28T22:38:57.312748+00:00"
   },

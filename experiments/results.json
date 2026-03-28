@@ -3007,14 +3007,29 @@
     "run_id": "run_p5_011_h1_stride133_20yr_spp10",
     "timestamp": "2026-03-28T23:01:12.596658+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Best result used 7yr window. Test if 20yr data (full regime coverage pre/post-COVID) with stride=133 (zero leakage) beats 68.8%, but use samples-per-param=10 to increase model capacity given 20yr has ~2x fewer non-overlapping windows.",
     "changes_from_previous": "--preset sp500 --horizon 1 --stride 133 --years 20 --shuffle-split --samples-per-param 10",
     "config": {
       "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 20 --shuffle-split --samples-per-param 10"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "actual_samples_per_param": 9.9,
+      "train_samples": 9773,
+      "best_val_acc": 0.559,
+      "test_acc": 0.566,
+      "test_loss": 0.6825,
+      "epochs_run": 100,
+      "runtime_min": 4.4,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 56.6% \u2264 no improvement \u274c vs best 68.8%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 0,
+      "window_size": 128
+    }
   }
 ]
