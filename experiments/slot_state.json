@@ -5,10 +5,5 @@
     "version": 78,
     "started_at": "2026-03-28T03:31:10.239184+00:00"
   },
-  "b": {
-    "slot": "b",
-    "run_id": "run_p3_024_sp500_w20_s1_7yr_precovid_fixedparams",
-    "version": null,
-    "started_at": "2026-03-28T00:37:29.852573+00:00"
-  }
+  "b": null
 }
