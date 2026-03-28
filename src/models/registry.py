@@ -50,7 +50,8 @@ def _build_lstm(width: float, window_size, num_channels, num_classes, dropout, *
     nlayers = max(1, round(3 * math.log2(max(width, 0.01) + 1) + 1))
     nlayers = min(nlayers, 4)
     return StockLSTM(input_size=num_channels, hidden=hidden,
-                     num_layers=nlayers, num_classes=num_classes, dropout=dropout)
+                     num_layers=nlayers, num_classes=num_classes, dropout=dropout,
+                     window_size=window_size)
 
 
 def _build_transformer(width: float, window_size, num_channels, num_classes, dropout, **_):
@@ -76,7 +77,8 @@ def _build_tcn(width: float, window_size, num_channels, num_classes, dropout, **
     ch = max(8, round(256 * width))
     channels = [ch] * n_layers
     return StockTCN(input_size=num_channels, channels=channels,
-                    kernel_size=7, num_classes=num_classes, dropout=dropout)
+                    kernel_size=7, num_classes=num_classes, dropout=dropout,
+                    window_size=window_size)
 
 
 _ARCH_BUILDERS = {

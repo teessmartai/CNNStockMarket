@@ -276,10 +276,10 @@ class Trainer:
         self.checkpoint_dir.mkdir(parents=True, exist_ok=True)
         filepath = self.checkpoint_dir / filename
 
-        # Model configuration
+        # Model configuration (use getattr so non-CNN archs don't crash here)
         model_config = {
-            "window_size": self.model.window_size,
-            "num_channels": self.model.num_channels,
+            "window_size": getattr(self.model, "window_size", None),
+            "num_channels": getattr(self.model, "num_channels", None),
         }
 
         checkpoint = {

@@ -92,10 +92,15 @@ class StockTCN(nn.Module):
         kernel_size: int = 5,
         num_classes: int = 2,
         dropout: float = 0.2,
+        window_size: int = 128,
     ):
         super().__init__()
         if channels is None:
             channels = [64, 128, 128, 256]
+
+        # Store for checkpoint compatibility (trainer.save_checkpoint accesses these)
+        self.window_size = window_size
+        self.num_channels = input_size
 
         layers = []
         in_ch = input_size

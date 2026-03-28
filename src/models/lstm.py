@@ -22,8 +22,12 @@ class StockLSTM(nn.Module):
         num_layers: int = 2,
         num_classes: int = 2,
         dropout: float = 0.4,
+        window_size: int = 128,
     ):
         super().__init__()
+        # Store for checkpoint compatibility (trainer.save_checkpoint accesses these)
+        self.window_size = window_size
+        self.num_channels = input_size
         self.lstm = nn.LSTM(
             input_size=input_size,
             hidden_size=hidden,

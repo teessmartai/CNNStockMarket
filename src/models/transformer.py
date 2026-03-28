@@ -34,6 +34,10 @@ class StockTransformer(nn.Module):
     ):
         super().__init__()
 
+        # Store for checkpoint compatibility (trainer.save_checkpoint accesses these)
+        self.window_size = window_size
+        self.num_channels = input_size
+
         # Project OHLCV channels → d_model
         self.input_proj = nn.Linear(input_size, d_model)
 
