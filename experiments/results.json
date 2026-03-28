@@ -2611,5 +2611,33 @@
       "num_params": 0,
       "window_size": 20
     }
+  },
+  {
+    "run_id": "run_p4_012_h1_rsi_only_w20_s5_20yr",
+    "timestamp": "2026-03-28T19:33:26.403058+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "RSI alone for h1 \u2014 momentum oversold/overbought as the key signal.",
+    "changes_from_previous": "--preset sp500 --horizon 1 --window 20 --stride 5 --years 20 --shuffle-split --features rsi --samples-per-param 100",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 1 --window 20 --stride 5 --years 20 --shuffle-split --features rsi --samples-per-param 100"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
+  },
+  {
+    "run_id": "run_p4_013_h1_gap_vol_w20_s5_20yr",
+    "timestamp": "2026-03-28T19:33:28.193665+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Gap + volatility for h1 \u2014 overnight gaps and intraday range as next-day predictors.",
+    "changes_from_previous": "--preset sp500 --horizon 1 --window 20 --stride 5 --years 20 --shuffle-split --features gap,volatility --samples-per-param 100",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 1 --window 20 --stride 5 --years 20 --shuffle-split --features gap,volatility --samples-per-param 100"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
