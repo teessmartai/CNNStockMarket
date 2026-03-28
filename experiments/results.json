@@ -2292,5 +2292,33 @@
       "num_params": 0,
       "window_size": 128
     }
+  },
+  {
+    "run_id": "run_p4_001_h1_w20_s133_20yr",
+    "timestamp": "2026-03-28T16:59:25.737472+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Mirror of best h5 config (stride133, 20yr) but for h1 \u2014 does non-overlapping stride help next-day prediction too?",
+    "changes_from_previous": "--preset sp500 --horizon 1 --window 20 --stride 133 --years 20 --shuffle-split --samples-per-param 100",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 1 --window 20 --stride 133 --years 20 --shuffle-split --samples-per-param 100"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
+  },
+  {
+    "run_id": "run_p4_002_h1_w20_s5_20yr",
+    "timestamp": "2026-03-28T16:59:27.554092+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "w20 + stride 5 on 20yr: regime-agnostic baseline for h1 with reduced overlap",
+    "changes_from_previous": "--preset sp500 --horizon 1 --window 20 --stride 5 --years 20 --shuffle-split --samples-per-param 100",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 1 --window 20 --stride 5 --years 20 --shuffle-split --samples-per-param 100"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
