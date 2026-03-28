@@ -223,7 +223,21 @@ def slot_version_done(slot_state: dict):
     if slot_state is None:
         return "free"
     version = slot_state.get("version")
+
+    # No version captured — push may have failed silently (e.g. quota).
+    # Check how long we've been waiting; if >3h treat as error so slot is freed.
     if not version:
+        started_at = slot_state.get("started_at")
+        if started_at:
+            from datetime import timezone
+            try:
+                started = datetime.fromisoformat(started_at)
+                age_hours = (datetime.now(timezone.utc) - started).total_seconds() / 3600
+                if age_hours > 3:
+                    print(f"  ⚠️  Slot stuck with no version for {age_hours:.1f}h — treating as error")
+                    return "error"
+            except Exception:
+                pass
         return "running"
 
     # Try version-specific download via kagglehub — only succeeds when complete
