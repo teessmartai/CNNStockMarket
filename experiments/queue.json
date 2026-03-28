@@ -272,13 +272,13 @@
     "id": "run_p4_002_h1_w20_s5_20yr",
     "hypothesis": "w20 + stride 5 on 20yr: regime-agnostic baseline for h1 with reduced overlap",
     "cmd_args": "--preset sp500 --horizon 1 --window 20 --stride 5 --years 20 --shuffle-split --samples-per-param 100",
-    "status": "running"
+    "status": "discarded"
   },
   {
     "id": "run_p4_003_h1_w5_s1_20yr",
     "hypothesis": "Very short window (1 week) for h1 \u2014 captures intraweek momentum only",
     "cmd_args": "--preset sp500 --horizon 1 --window 5 --stride 1 --years 20 --shuffle-split --samples-per-param 100",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_p4_004_h1_w10_s1_20yr",

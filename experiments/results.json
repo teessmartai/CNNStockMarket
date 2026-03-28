@@ -2326,11 +2326,40 @@
     "run_id": "run_p4_002_h1_w20_s5_20yr",
     "timestamp": "2026-03-28T16:59:27.554092+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "w20 + stride 5 on 20yr: regime-agnostic baseline for h1 with reduced overlap",
     "changes_from_previous": "--preset sp500 --horizon 1 --window 20 --stride 5 --years 20 --shuffle-split --samples-per-param 100",
     "config": {
       "cmd_args": "--preset sp500 --horizon 1 --window 20 --stride 5 --years 20 --shuffle-split --samples-per-param 100"
+    },
+    "results": {
+      "actual_samples_per_param": 93.0,
+      "train_samples": 264520,
+      "best_val_acc": 0.537,
+      "test_acc": 0.533,
+      "test_loss": 0.6876,
+      "epochs_run": 73,
+      "runtime_min": 9.3,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 53.3% \u2264 no improvement \u274c vs best 68.8%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 0,
+      "window_size": 20
+    }
+  },
+  {
+    "run_id": "run_p4_003_h1_w5_s1_20yr",
+    "timestamp": "2026-03-28T17:14:54.860997+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Very short window (1 week) for h1 \u2014 captures intraweek momentum only",
+    "changes_from_previous": "--preset sp500 --horizon 1 --window 5 --stride 1 --years 20 --shuffle-split --samples-per-param 100",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 1 --window 5 --stride 1 --years 20 --shuffle-split --samples-per-param 100"
     },
     "results": {},
     "verdict": "pending",
