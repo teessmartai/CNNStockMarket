@@ -286,6 +286,9 @@ def parse_args() -> argparse.Namespace:
     # Control
     p.add_argument("--reset", action="store_true", help="Ignore existing checkpoint, start fresh")
     p.add_argument("--run-name", default=None, help="Override auto-generated run name")
+    p.add_argument("--mode", type=str, default="full", choices=["screen", "full"],
+                   help="screen=fast cheap run (3yr, 40 epochs, patience 8) for quick filtering; "
+                        "full=standard run (default)")
 
     return p.parse_args()
 
@@ -317,6 +320,12 @@ signal.signal(signal.SIGINT,  _handle_sigterm)
 # ── Main ──────────────────────────────────────────────────────────────────────
 def main():
     args = parse_args()
+
+    # Screen mode: fast/cheap proxy run — override years, epochs, patience
+    if args.mode == "screen":
+        args.years   = min(args.years,   3.0)
+        args.epochs  = min(args.epochs,  40)
+        args.patience = min(args.patience, 8)
 
     # Resolve tickers
     tickers = resolve_tickers(args.preset, args.tickers)

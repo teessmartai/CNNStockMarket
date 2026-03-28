@@ -72,6 +72,15 @@ stride=1 + shuffle-split combinations.  Safe options:
   - stride=5 with --shuffle-split (low but nonzero leakage, acceptable)
 """.strip()
 
+TWO_TIER_NOTE = """
+TWO-TIER SYSTEM:
+- "screen" runs are cheap (3yr data, 40 epochs, ~10 min each) for fast filtering
+- "full" runs use 7yr data, 100 epochs (~45 min each) — only for promoted winners
+- Promotions (screen → full) are handled automatically; you only propose NEW screen experiments
+- Always include --mode screen in your cmd_args
+- GPU budget: ~30h/week. Screen = ~0.17h each → ~170 screens/week. Full = ~0.75h each.
+""".strip()
+
 AVAILABLE_FLAGS = """
 --preset [sp500 | largecap-stable]   Stock universe (sp500=402 tickers, largecap-stable=55)
 --horizon [1..20]                    Prediction horizon in trading days (h1=next day, h5=1 week)
@@ -92,6 +101,7 @@ AVAILABLE_FLAGS = """
 """.strip()
 
 MAX_EXPERIMENTS_PER_BATCH = 6
+SCREEN_PROMOTE_THRESHOLD  = 0.62   # screen runs above this get promoted to full runs
 
 
 # ── Result summariser ─────────────────────────────────────────────────────────
@@ -153,10 +163,13 @@ def _build_summary() -> str:
 # ── LLM call ──────────────────────────────────────────────────────────────────
 
 SYSTEM_PROMPT = f"""You are an automated ML research strategist.
-Your job: propose the NEXT batch of experiments to run, based on prior results.
+Your job: propose the NEXT batch of NEW SCREEN experiments to run, based on prior results.
 
 RESEARCH GOAL:
 {RESEARCH_GOAL}
+
+TWO-TIER SYSTEM:
+{TWO_TIER_NOTE}
 
 AVAILABLE TRAIN FLAGS:
 {AVAILABLE_FLAGS}
@@ -172,6 +185,7 @@ RULES:
 8. Experiment IDs must follow pattern: run_p<phase>_<NNN>_<short_description>
    Use the next available phase number based on existing IDs.
 9. HORIZON: ALWAYS use --horizon 1. NEVER propose --horizon 5 or any other value. h1 only.
+10. MODE: ALWAYS include --mode screen in every cmd_args. Never propose --mode full (promotions are automatic).
 
 OUTPUT FORMAT — respond with ONLY valid JSON, no other text:
 [
@@ -226,7 +240,7 @@ def _valid_cmd_args(cmd_args: str) -> tuple[bool, str]:
         "--norm", "--dropout", "--lr", "--optimizer", "--residual",
         "--no-batchnorm", "--end-date", "--seed", "--epochs",
         "--target-params", "--clip-grad", "--patience", "--ckpt-every",
-        "--batch", "--weight-decay", "--scheduler", "--reset",
+        "--batch", "--weight-decay", "--scheduler", "--reset", "--mode",
     }
     tokens = cmd_args.split()
     for t in tokens:
@@ -255,81 +269,145 @@ def _parse_llm_response(text: str) -> list[dict]:
 
 # ── Main entry point ──────────────────────────────────────────────────────────
 
+def _build_promotions(queue: list, results: list, existing_ids: set) -> list:
+    """
+    Find completed screen runs above SCREEN_PROMOTE_THRESHOLD that haven't been
+    promoted yet, and return full-run equivalents to queue.
+    """
+    promotions = []
+    # Index queue entries by id for fast lookup
+    queue_by_id = {e["id"]: e for e in queue}
+
+    for r in results:
+        run_id  = r.get("run_id", "")
+        verdict = r.get("verdict", "")
+        test_acc = r.get("results", {}).get("test_acc", 0.0)
+
+        if verdict not in ("kept", "discarded"):
+            continue
+        if test_acc < SCREEN_PROMOTE_THRESHOLD:
+            continue
+
+        # Was this a screen run?
+        src_entry = queue_by_id.get(run_id, {})
+        cmd       = src_entry.get("cmd_args", "")
+        if "--mode screen" not in cmd:
+            continue
+
+        # Build the full-run id — replace _screen suffix or append _full
+        full_id = re.sub(r"_screen$", "", run_id) + "_full"
+        if full_id in existing_ids:
+            continue  # already promoted
+
+        # Build full cmd: drop --mode screen, bump years to 7 if it was 3
+        full_cmd = cmd.replace("--mode screen", "--mode full").strip()
+        # If screen used 3yr override, restore to 7yr for the full run
+        full_cmd = re.sub(r"--years\s+3\b", "--years 7", full_cmd)
+
+        hyp = src_entry.get("hypothesis", f"Full run of promoted screen (test={test_acc*100:.1f}%)")
+        promotions.append({
+            "id":           full_id,
+            "hypothesis":   f"[PROMOTED from screen {test_acc*100:.1f}%] {hyp}",
+            "cmd_args":     full_cmd,
+            "status":       "pending",
+            "source":       "autostrategy:promotion",
+            "promoted_from": run_id,
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+        })
+        print(f"  🚀 Promoting {run_id} ({test_acc*100:.1f}%) → {full_id}")
+
+    return promotions
+
+
 def run_strategy(dry_run: bool = False, max_experiments: int = MAX_EXPERIMENTS_PER_BATCH) -> int:
     """
-    Run the strategy loop: summarise results, call LLM, validate, queue.
+    Run the strategy loop: promote screen winners, then ask LLM for new screens.
 
     Returns:
         Number of experiments added to the queue.
     """
-    print("\n🧠 AutoStrategy: analysing results...")
-    summary = _build_summary()
-    print(summary[:600] + ("..." if len(summary) > 600 else ""))
-
-    print(f"\n🧠 Calling Claude ({_MODEL}) for next experiment batch...")
-    try:
-        raw = _call_claude(summary)
-    except urllib.error.HTTPError as e:
-        print(f"  API error: {e.code} {e.reason}")
-        body = e.read().decode()
-        print(f"  Body: {body[:300]}")
-        return 0
-    except Exception as e:
-        print(f"  Strategy call failed: {e}")
-        return 0
-
-    print(f"  Raw response:\n{raw[:800]}")
-
-    try:
-        proposals = _parse_llm_response(raw)
-    except Exception as e:
-        print(f"  Failed to parse LLM response: {e}")
-        return 0
-
-    # Load existing IDs for deduplication
+    # Load state
     queue   = json.loads(QUEUE_FILE.read_text())   if QUEUE_FILE.exists()   else []
     results = json.loads(RESULTS_FILE.read_text()) if RESULTS_FILE.exists() else []
     existing_ids = {e["id"] for e in queue} | {r["run_id"] for r in results}
 
-    validated = []
-    for p in proposals[:max_experiments]:
-        exp_id   = p.get("id", "").strip()
-        cmd_args = p.get("cmd_args", "").strip()
-        hyp      = p.get("hypothesis", "").strip()
+    # Step 1: auto-promote screen winners
+    promotions = _build_promotions(queue, results, existing_ids)
+    for p in promotions:
+        existing_ids.add(p["id"])
 
-        if not exp_id or not cmd_args:
-            print(f"  ⚠️  Skipping malformed proposal: {p}")
-            continue
-        if exp_id in existing_ids:
-            print(f"  ⚠️  Skipping duplicate id: {exp_id}")
-            continue
-        ok, reason = _valid_cmd_args(cmd_args)
-        if not ok:
-            print(f"  ⚠️  Invalid cmd_args for {exp_id}: {reason}")
-            continue
+    # Step 2: ask LLM to fill remaining slots with new screen experiments
+    llm_slots = max_experiments - len(promotions)
+    llm_proposals = []
+    if llm_slots > 0:
+        print("\n🧠 AutoStrategy: analysing results...")
+        summary = _build_summary()
+        print(summary[:600] + ("..." if len(summary) > 600 else ""))
 
-        validated.append({
-            "id":          exp_id,
-            "hypothesis":  hyp,
-            "cmd_args":    cmd_args,
-            "status":      "pending",
-            "source":      "autostrategy",
-            "generated_at": datetime.now(timezone.utc).isoformat(),
-        })
-        print(f"  ✅ {exp_id}: {hyp[:70]}")
+        print(f"\n🧠 Calling Claude ({_MODEL}) for {llm_slots} new screen experiment(s)...")
+        try:
+            raw = _call_claude(summary)
+        except urllib.error.HTTPError as e:
+            print(f"  API error: {e.code} {e.reason}")
+            body = e.read().decode()
+            print(f"  Body: {body[:300]}")
+            raw = ""
+        except Exception as e:
+            print(f"  Strategy call failed: {e}")
+            raw = ""
 
-    if not validated:
-        print("  No valid experiments proposed — stopping.")
+        if raw:
+            print(f"  Raw response:\n{raw[:800]}")
+            try:
+                proposals = _parse_llm_response(raw)
+            except Exception as e:
+                print(f"  Failed to parse LLM response: {e}")
+                proposals = []
+
+            for p in proposals[:llm_slots]:
+                exp_id   = p.get("id", "").strip()
+                cmd_args = p.get("cmd_args", "").strip()
+                hyp      = p.get("hypothesis", "").strip()
+
+                if not exp_id or not cmd_args:
+                    print(f"  ⚠️  Skipping malformed proposal: {p}")
+                    continue
+                if exp_id in existing_ids:
+                    print(f"  ⚠️  Skipping duplicate id: {exp_id}")
+                    continue
+                ok, reason = _valid_cmd_args(cmd_args)
+                if not ok:
+                    print(f"  ⚠️  Invalid cmd_args for {exp_id}: {reason}")
+                    continue
+
+                # Ensure screen mode is set
+                if "--mode screen" not in cmd_args:
+                    cmd_args += " --mode screen"
+
+                llm_proposals.append({
+                    "id":           exp_id,
+                    "hypothesis":   hyp,
+                    "cmd_args":     cmd_args,
+                    "status":       "pending",
+                    "source":       "autostrategy",
+                    "generated_at": datetime.now(timezone.utc).isoformat(),
+                })
+                existing_ids.add(exp_id)
+                print(f"  ✅ {exp_id}: {hyp[:70]}")
+
+    all_new = promotions + llm_proposals
+    if not all_new:
+        print("  Nothing to queue — stopping.")
         return 0
 
     if dry_run:
-        print(f"\n[dry-run] Would add {len(validated)} experiments (not writing).")
-        return len(validated)
+        print(f"\n[dry-run] Would add {len(promotions)} promotion(s) + {len(llm_proposals)} screen(s).")
+        return len(all_new)
 
-    queue.extend(validated)
+    queue.extend(all_new)
     QUEUE_FILE.write_text(json.dumps(queue, indent=2) + "\n")
-    print(f"\n✅ AutoStrategy added {len(validated)} experiments to queue.")
-    return len(validated)
+    print(f"\n✅ AutoStrategy: +{len(promotions)} promotion(s), +{len(llm_proposals)} new screen(s) → {len(all_new)} total queued.")
+    return len(all_new)
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
