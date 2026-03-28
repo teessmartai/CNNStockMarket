@@ -1808,21 +1808,36 @@
       "cmd_args": "--preset sp500 --years 20 --stride 5 --shuffle-split --samples-per-param 100"
     },
     "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "verdict": "discarded",
+    "notes": "kernel error \u2014 no output collected"
   },
   {
     "run_id": "run_p3_019_largecap_s5_20yr_precovid",
     "timestamp": "2026-03-28T00:21:59.147743+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Match run_p2_001 (64.4%) but end 2019-12-31. 54 largecap, stride=5, 20yr (1999-2019). Largest pre-COVID dataset \u2014 best chance of non-COVID signal.",
     "changes_from_previous": "--preset largecap-stable --years 20 --stride 5 --shuffle-split --end-date 2019-12-31 --samples-per-param 100",
     "config": {
       "cmd_args": "--preset largecap-stable --years 20 --stride 5 --shuffle-split --end-date 2019-12-31 --samples-per-param 100"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "actual_samples_per_param": null,
+      "train_samples": null,
+      "best_val_acc": 0.0,
+      "test_acc": 0.0,
+      "test_loss": 0,
+      "epochs_run": 0,
+      "runtime_min": 0,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 0.0% \u2264 no improvement \u274c vs best 68.8%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 0,
+      "window_size": 128
+    }
   }
 ]
