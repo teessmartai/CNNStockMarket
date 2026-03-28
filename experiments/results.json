@@ -2756,5 +2756,33 @@
       "num_params": 0,
       "window_size": 20
     }
+  },
+  {
+    "run_id": "run_p5_001_h1_stride133_7yr_tech",
+    "timestamp": "2026-03-28T21:12:31.214930+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Best result (68.8%) used h1 implicit + stride=133 + 7yr. Test if adding technical features (returns,gap,volatility,rsi,macd,bbands) improves on this clean baseline without leakage.",
+    "changes_from_previous": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --features returns,gap,volatility,rsi,macd,bbands --samples-per-param 100",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --features returns,gap,volatility,rsi,macd,bbands --samples-per-param 100"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
+  },
+  {
+    "run_id": "run_p5_002_h1_stride133_20yr_tech",
+    "timestamp": "2026-03-28T21:12:33.119239+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Expand the best h1+stride133+tech combo to 20yr (regime-agnostic). If features help with 7yr, test whether they generalize across pre/post-COVID without overfitting.",
+    "changes_from_previous": "--preset sp500 --horizon 1 --stride 133 --years 20 --shuffle-split --features returns,gap,volatility,rsi,macd,bbands --samples-per-param 100",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 20 --shuffle-split --features returns,gap,volatility,rsi,macd,bbands --samples-per-param 100"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
