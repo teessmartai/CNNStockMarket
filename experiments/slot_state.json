@@ -5,10 +5,5 @@
     "version": 88,
     "started_at": "2026-03-28T12:18:44.950218+00:00"
   },
-  "b": {
-    "slot": "b",
-    "run_id": "run_p3_011_transformer_s5_20yr_spp100",
-    "version": 87,
-    "started_at": "2026-03-28T11:58:14.929576+00:00"
-  }
+  "b": null
 }
