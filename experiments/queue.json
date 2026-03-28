@@ -386,7 +386,7 @@
     "id": "run_p5_004_h5_stride133_7yr_xrank",
     "hypothesis": "h5 (5-day horizon) is harder but economically meaningful. Test cross-sectional rank normalization (xrank) with zero-leakage stride=133 on 7yr window to handle market regime shifts.",
     "cmd_args": "--preset sp500 --horizon 5 --window 20 --stride 133 --years 7 --shuffle-split --features returns,gap,volatility,rsi,macd,bbands,xrank --samples-per-param 10",
-    "status": "pending",
+    "status": "skipped",
     "source": "autostrategy",
     "generated_at": "2026-03-28T21:11:53.667932+00:00"
   },

@@ -55,7 +55,8 @@ def _get_api_key() -> str:
 
 # ── Research context (repo-specific knowledge) ────────────────────────────────
 RESEARCH_GOAL = """
-Predict next-day (h1) or 5-day (h5) S&P 500 stock price direction (up/down binary).
+Predict NEXT-DAY (h1, --horizon 1) S&P 500 stock price direction (up/down binary).
+FOCUS: h1 ONLY. Do NOT propose h5 or any other horizon.
 PRIMARY METRIC: test accuracy (higher is better, baseline random = 50%).
 SECONDARY GOAL: regime-agnostic — model should work across market regimes (pre/post COVID).
 
@@ -170,6 +171,7 @@ RULES:
 7. Use --samples-per-param 10 when using --stride 133 with --years 7 (few samples → bigger model needed).
 8. Experiment IDs must follow pattern: run_p<phase>_<NNN>_<short_description>
    Use the next available phase number based on existing IDs.
+9. HORIZON: ALWAYS use --horizon 1. NEVER propose --horizon 5 or any other value. h1 only.
 
 OUTPUT FORMAT — respond with ONLY valid JSON, no other text:
 [
