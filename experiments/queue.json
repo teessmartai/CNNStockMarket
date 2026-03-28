@@ -410,7 +410,7 @@
     "id": "run_p5_007_h1_stride133_7yr_minmax",
     "hypothesis": "Best result (68.8%) used logreturns normalization implicitly. Test if minmax normalization (which preserves absolute price movements) captures different market dynamics better for h1 stride=133 7yr setup.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --norm minmax",
-    "status": "running",
+    "status": "discarded",
     "source": "autostrategy",
     "generated_at": "2026-03-28T22:38:57.312622+00:00"
   },
@@ -418,7 +418,7 @@
     "id": "run_p5_008_h1_stride133_7yr_dropout03",
     "hypothesis": "Best result had no explicit dropout control. Test if moderate dropout (0.3) regularizes the model better and improves generalization across market regimes, especially given the tight 68.8% margin.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --dropout 0.3",
-    "status": "running",
+    "status": "discarded",
     "source": "autostrategy",
     "generated_at": "2026-03-28T22:38:57.312675+00:00"
   },

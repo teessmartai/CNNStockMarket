@@ -2906,28 +2906,58 @@
     "run_id": "run_p5_007_h1_stride133_7yr_minmax",
     "timestamp": "2026-03-28T22:39:36.132131+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Best result (68.8%) used logreturns normalization implicitly. Test if minmax normalization (which preserves absolute price movements) captures different market dynamics better for h1 stride=133 7yr setup.",
     "changes_from_previous": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --norm minmax",
     "config": {
       "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --norm minmax"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "actual_samples_per_param": 26.4,
+      "train_samples": 3649,
+      "best_val_acc": 0.621,
+      "test_acc": 0.591,
+      "test_loss": 0.677,
+      "epochs_run": 100,
+      "runtime_min": 0.5,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 59.1% \u2264 no improvement \u274c vs best 68.8%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 0,
+      "window_size": 128
+    }
   },
   {
     "run_id": "run_p5_008_h1_stride133_7yr_dropout03",
     "timestamp": "2026-03-28T22:39:38.134759+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Best result had no explicit dropout control. Test if moderate dropout (0.3) regularizes the model better and improves generalization across market regimes, especially given the tight 68.8% margin.",
     "changes_from_previous": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --dropout 0.3",
     "config": {
       "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --dropout 0.3"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "actual_samples_per_param": 26.4,
+      "train_samples": 3648,
+      "best_val_acc": 0.468,
+      "test_acc": 0.464,
+      "test_loss": 0.6991,
+      "epochs_run": 17,
+      "runtime_min": 0.1,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 46.4% \u2264 no improvement \u274c vs best 68.8%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 0,
+      "window_size": 128
+    }
   }
 ]
