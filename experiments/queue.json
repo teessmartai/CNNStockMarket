@@ -370,7 +370,7 @@
     "id": "run_p5_002_h1_stride133_20yr_tech",
     "hypothesis": "Expand the best h1+stride133+tech combo to 20yr (regime-agnostic). If features help with 7yr, test whether they generalize across pre/post-COVID without overfitting.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 20 --shuffle-split --features returns,gap,volatility,rsi,macd,bbands --samples-per-param 100",
-    "status": "running",
+    "status": "discarded",
     "source": "autostrategy",
     "generated_at": "2026-03-28T21:11:53.667879+00:00"
   },
@@ -378,7 +378,7 @@
     "id": "run_p5_003_h1_stride133_7yr_lstm",
     "hypothesis": "Best result used default CNN. Test LSTM (sequential memory better for time series) with zero-leakage stride=133 + 7yr window to see if architecture choice matters more than data regime.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --arch lstm --samples-per-param 100",
-    "status": "pending",
+    "status": "running",
     "source": "autostrategy",
     "generated_at": "2026-03-28T21:11:53.667906+00:00"
   },

@@ -2790,11 +2790,40 @@
     "run_id": "run_p5_002_h1_stride133_20yr_tech",
     "timestamp": "2026-03-28T21:12:33.119239+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Expand the best h1+stride133+tech combo to 20yr (regime-agnostic). If features help with 7yr, test whether they generalize across pre/post-COVID without overfitting.",
     "changes_from_previous": "--preset sp500 --horizon 1 --stride 133 --years 20 --shuffle-split --features returns,gap,volatility,rsi,macd,bbands --samples-per-param 100",
     "config": {
       "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 20 --shuffle-split --features returns,gap,volatility,rsi,macd,bbands --samples-per-param 100"
+    },
+    "results": {
+      "actual_samples_per_param": 42.8,
+      "train_samples": 9767,
+      "best_val_acc": 0.54,
+      "test_acc": 0.539,
+      "test_loss": 0.6901,
+      "epochs_run": 100,
+      "runtime_min": 0.6,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 53.9% \u2264 no improvement \u274c vs best 68.8%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 0,
+      "window_size": 128
+    }
+  },
+  {
+    "run_id": "run_p5_003_h1_stride133_7yr_lstm",
+    "timestamp": "2026-03-28T21:22:57.015718+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Best result used default CNN. Test LSTM (sequential memory better for time series) with zero-leakage stride=133 + 7yr window to see if architecture choice matters more than data regime.",
+    "changes_from_previous": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --arch lstm --samples-per-param 100",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --arch lstm --samples-per-param 100"
     },
     "results": {},
     "verdict": "pending",
