@@ -2567,5 +2567,19 @@
     "results": {},
     "verdict": "pending",
     "notes": ""
+  },
+  {
+    "run_id": "run_p4_011_h1_xrank_w20_s5_20yr",
+    "timestamp": "2026-03-28T19:17:58.189032+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "h1 + all features + xrank. Cross-sectional rank is strongest regime-agnostic signal.",
+    "changes_from_previous": "--preset sp500 --horizon 1 --window 20 --stride 5 --years 20 --shuffle-split --features all+xrank --samples-per-param 100",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 1 --window 20 --stride 5 --years 20 --shuffle-split --features all+xrank --samples-per-param 100"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]

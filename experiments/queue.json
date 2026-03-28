@@ -326,7 +326,7 @@
     "id": "run_p4_011_h1_xrank_w20_s5_20yr",
     "hypothesis": "h1 + all features + xrank. Cross-sectional rank is strongest regime-agnostic signal.",
     "cmd_args": "--preset sp500 --horizon 1 --window 20 --stride 5 --years 20 --shuffle-split --features all+xrank --samples-per-param 100",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_p4_012_h1_rsi_only_w20_s5_20yr",
