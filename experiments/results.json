@@ -2451,5 +2451,19 @@
       "num_params": 0,
       "window_size": 20
     }
+  },
+  {
+    "run_id": "run_p4_007_h1_transformer_w20_s5_20yr",
+    "timestamp": "2026-03-28T18:26:34.559808+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Transformer with w20 for h1 \u2014 attention across 4-week window",
+    "changes_from_previous": "--preset sp500 --horizon 1 --window 20 --stride 5 --years 20 --shuffle-split --arch transformer --samples-per-param 100",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 1 --window 20 --stride 5 --years 20 --shuffle-split --arch transformer --samples-per-param 100"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
