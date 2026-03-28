@@ -2712,5 +2712,19 @@
     "results": {},
     "verdict": "pending",
     "notes": ""
+  },
+  {
+    "run_id": "run_p4_016_h5_xrank_20yr_spp100",
+    "timestamp": "2026-03-28T20:09:23.492327+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "h5 + xrank on 20yr \u2014 cross-sectional rank with sufficient data",
+    "changes_from_previous": "--preset sp500 --horizon 5 --window 20 --stride 5 --years 20 --shuffle-split --features all+xrank --samples-per-param 100",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 5 --window 20 --stride 5 --years 20 --shuffle-split --features all+xrank --samples-per-param 100"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
