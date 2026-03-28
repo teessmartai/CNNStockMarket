@@ -2674,15 +2674,30 @@
     "run_id": "run_p4_014_h5_tech_s133_7yr_spp10",
     "timestamp": "2026-03-28T19:58:58.351426+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "h5 + all tech features, spp=10 so model has capacity for 15 channels on stride-133 dataset",
     "changes_from_previous": "--preset sp500 --horizon 5 --window 20 --stride 133 --years 7 --shuffle-split --features all --samples-per-param 10",
     "config": {
       "cmd_args": "--preset sp500 --horizon 5 --window 20 --stride 133 --years 7 --shuffle-split --features all --samples-per-param 10"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "actual_samples_per_param": 11.0,
+      "train_samples": 3652,
+      "best_val_acc": 0.568,
+      "test_acc": 0.585,
+      "test_loss": 0.6841,
+      "epochs_run": 100,
+      "runtime_min": 0.2,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 58.5% \u2264 no improvement \u274c vs best 68.8%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 0,
+      "window_size": 20
+    }
   },
   {
     "run_id": "run_p4_015_h5_tech_20yr_spp100",

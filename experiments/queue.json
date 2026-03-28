@@ -344,7 +344,7 @@
     "id": "run_p4_014_h5_tech_s133_7yr_spp10",
     "hypothesis": "h5 + all tech features, spp=10 so model has capacity for 15 channels on stride-133 dataset",
     "cmd_args": "--preset sp500 --horizon 5 --window 20 --stride 133 --years 7 --shuffle-split --features all --samples-per-param 10",
-    "status": "running"
+    "status": "discarded"
   },
   {
     "id": "run_p4_015_h5_tech_20yr_spp100",
