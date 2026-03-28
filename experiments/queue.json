@@ -405,5 +405,53 @@
     "status": "discarded",
     "source": "autostrategy",
     "generated_at": "2026-03-28T21:11:53.667981+00:00"
+  },
+  {
+    "id": "run_p5_007_h1_stride133_7yr_minmax",
+    "hypothesis": "Best result (68.8%) used logreturns normalization implicitly. Test if minmax normalization (which preserves absolute price movements) captures different market dynamics better for h1 stride=133 7yr setup.",
+    "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --norm minmax",
+    "status": "running",
+    "source": "autostrategy",
+    "generated_at": "2026-03-28T22:38:57.312622+00:00"
+  },
+  {
+    "id": "run_p5_008_h1_stride133_7yr_dropout03",
+    "hypothesis": "Best result had no explicit dropout control. Test if moderate dropout (0.3) regularizes the model better and improves generalization across market regimes, especially given the tight 68.8% margin.",
+    "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --dropout 0.3",
+    "status": "running",
+    "source": "autostrategy",
+    "generated_at": "2026-03-28T22:38:57.312675+00:00"
+  },
+  {
+    "id": "run_p5_009_h1_stride133_7yr_adamw",
+    "hypothesis": "Best result used adam (default). AdamW (decoupled weight decay) may provide better regularization and generalization on the h1 stride=133 7yr clean setup without leakage.",
+    "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --optimizer adamw",
+    "status": "pending",
+    "source": "autostrategy",
+    "generated_at": "2026-03-28T22:38:57.312701+00:00"
+  },
+  {
+    "id": "run_p5_010_h1_stride133_7yr_window40",
+    "hypothesis": "Best result used default window (w20). Test if expanding to w40 (twice the lookback) captures longer-term dependencies better for next-day prediction while maintaining h1 stride=133 zero-leakage setup.",
+    "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --window 40",
+    "status": "pending",
+    "source": "autostrategy",
+    "generated_at": "2026-03-28T22:38:57.312726+00:00"
+  },
+  {
+    "id": "run_p5_011_h1_stride133_20yr_spp10",
+    "hypothesis": "Best result used 7yr window. Test if 20yr data (full regime coverage pre/post-COVID) with stride=133 (zero leakage) beats 68.8%, but use samples-per-param=10 to increase model capacity given 20yr has ~2x fewer non-overlapping windows.",
+    "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 20 --shuffle-split --samples-per-param 10",
+    "status": "pending",
+    "source": "autostrategy",
+    "generated_at": "2026-03-28T22:38:57.312748+00:00"
+  },
+  {
+    "id": "run_p5_012_h1_stride5_7yr_chronological",
+    "hypothesis": "Best stride=133 got 68.8% with shuffle-split. Test if chronological split (no shuffle, preserve temporal order, eliminates regime-mixing bias) with stride=5 and 7yr achieves comparable or better accuracy through stronger temporal integrity.",
+    "cmd_args": "--preset sp500 --horizon 1 --stride 5 --years 7 --samples-per-param 100 --window 20",
+    "status": "pending",
+    "source": "autostrategy",
+    "generated_at": "2026-03-28T22:38:57.312771+00:00"
   }
 ]

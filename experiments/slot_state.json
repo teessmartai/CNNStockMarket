@@ -1,4 +1,14 @@
 {
-  "a": null,
-  "b": null
+  "a": {
+    "slot": "a",
+    "run_id": "run_p5_007_h1_stride133_7yr_minmax",
+    "version": 110,
+    "started_at": "2026-03-28T22:39:38.134725+00:00"
+  },
+  "b": {
+    "slot": "b",
+    "run_id": "run_p5_008_h1_stride133_7yr_dropout03",
+    "version": 111,
+    "started_at": "2026-03-28T22:39:39.994136+00:00"
+  }
 }
