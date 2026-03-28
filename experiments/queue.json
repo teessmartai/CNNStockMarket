@@ -296,7 +296,7 @@
     "id": "run_p4_006_h1_lstm_w20_s5_20yr",
     "hypothesis": "LSTM with w20 for h1 \u2014 sequential memory may suit next-day prediction better",
     "cmd_args": "--preset sp500 --horizon 1 --window 20 --stride 5 --years 20 --shuffle-split --arch lstm --samples-per-param 100",
-    "status": "running"
+    "status": "discarded"
   },
   {
     "id": "run_p4_007_h1_transformer_w20_s5_20yr",
