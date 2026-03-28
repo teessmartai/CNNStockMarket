@@ -261,5 +261,47 @@
     "hypothesis": "T+1, window=128 (6mo): baseline T+1 with current window. Compare vs w30 and w90.",
     "cmd_args": "--preset sp500 --horizon 1 --window 128 --stride 1 --years 7 --shuffle-split --samples-per-param 100",
     "status": "discarded"
+  },
+  {
+    "id": "run_p4_001_h1_w20_s133_20yr",
+    "hypothesis": "Mirror of best h5 config (stride133, 20yr) but for h1 \u2014 does non-overlapping stride help next-day prediction too?",
+    "cmd_args": "--preset sp500 --horizon 1 --window 20 --stride 133 --years 20 --shuffle-split --samples-per-param 100",
+    "status": "pending"
+  },
+  {
+    "id": "run_p4_002_h1_w20_s5_20yr",
+    "hypothesis": "w20 + stride 5 on 20yr: regime-agnostic baseline for h1 with reduced overlap",
+    "cmd_args": "--preset sp500 --horizon 1 --window 20 --stride 5 --years 20 --shuffle-split --samples-per-param 100",
+    "status": "pending"
+  },
+  {
+    "id": "run_p4_003_h1_w5_s1_20yr",
+    "hypothesis": "Very short window (1 week) for h1 \u2014 captures intraweek momentum only",
+    "cmd_args": "--preset sp500 --horizon 1 --window 5 --stride 1 --years 20 --shuffle-split --samples-per-param 100",
+    "status": "pending"
+  },
+  {
+    "id": "run_p4_004_h1_w10_s1_20yr",
+    "hypothesis": "Biweekly window for h1 on 20yr data",
+    "cmd_args": "--preset sp500 --horizon 1 --window 10 --stride 1 --years 20 --shuffle-split --samples-per-param 100",
+    "status": "pending"
+  },
+  {
+    "id": "run_p4_005_h1_w20_s1_20yr",
+    "hypothesis": "w20 stride 1 on 20yr \u2014 max samples, 4-week window, regime agnostic",
+    "cmd_args": "--preset sp500 --horizon 1 --window 20 --stride 1 --years 20 --shuffle-split --samples-per-param 100",
+    "status": "pending"
+  },
+  {
+    "id": "run_p4_006_h1_lstm_w20_s5_20yr",
+    "hypothesis": "LSTM with w20 for h1 \u2014 sequential memory may suit next-day prediction better",
+    "cmd_args": "--preset sp500 --horizon 1 --window 20 --stride 5 --years 20 --shuffle-split --arch lstm --samples-per-param 100",
+    "status": "pending"
+  },
+  {
+    "id": "run_p4_007_h1_transformer_w20_s5_20yr",
+    "hypothesis": "Transformer with w20 for h1 \u2014 attention across 4-week window",
+    "cmd_args": "--preset sp500 --horizon 1 --window 20 --stride 5 --years 20 --shuffle-split --arch transformer --samples-per-param 100",
+    "status": "pending"
   }
 ]
