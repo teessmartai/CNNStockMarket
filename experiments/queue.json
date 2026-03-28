@@ -344,13 +344,13 @@
     "id": "run_p4_014_h5_tech_s133_7yr_spp10",
     "hypothesis": "h5 + all tech features, spp=10 so model has capacity for 15 channels on stride-133 dataset",
     "cmd_args": "--preset sp500 --horizon 5 --window 20 --stride 133 --years 7 --shuffle-split --features all --samples-per-param 10",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_p4_015_h5_tech_20yr_spp100",
     "hypothesis": "h5 + all tech features on 20yr data \u2014 enough samples for spp=100 to give a real model",
     "cmd_args": "--preset sp500 --horizon 5 --window 20 --stride 5 --years 20 --shuffle-split --features all --samples-per-param 100",
-    "status": "pending"
+    "status": "running"
   },
   {
     "id": "run_p4_016_h5_xrank_20yr_spp100",
