@@ -3695,5 +3695,19 @@
     "results": {},
     "verdict": "pending",
     "notes": ""
+  },
+  {
+    "run_id": "run_p6_004_h1_stride133_7yr_dropout01_retry1",
+    "timestamp": "2026-03-29T20:00:54.485574+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "[RETRY 1/2 \u2014 infra] Best result has implicit dropout (~0.2). Very low dropout (0.1) may reduce over-regularization while still preventing overfitting, allowing the model to capture more nuanced market patterns in the h1 stride=133 7yr setup.",
+    "changes_from_previous": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --dropout 0.1 --mode screen",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --dropout 0.1 --mode screen"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
