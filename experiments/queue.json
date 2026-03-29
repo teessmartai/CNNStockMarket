@@ -522,7 +522,7 @@
     "id": "run_p5_016_h1_stride133_20yr_spp10_retry1",
     "hypothesis": "[RETRY 1/2 \u2014 infra] Best 20yr result (66.0%) used default spp=100. With 20yr data, spp=10 creates a much larger model (400M params). Test if the extra capacity helps utilize the full 20yr regime diversity better.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 20 --shuffle-split --samples-per-param 10 --mode screen",
-    "status": "pending",
+    "status": "running",
     "source": "retry:run_p5_016_h1_stride133_20yr_spp10",
     "retry_count": 1
   },
