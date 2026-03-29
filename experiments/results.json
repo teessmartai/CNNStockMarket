@@ -3132,5 +3132,19 @@
     "results": {},
     "verdict": "pending",
     "notes": ""
+  },
+  {
+    "run_id": "run_p5_016_h1_stride133_20yr_spp10",
+    "timestamp": "2026-03-29T01:57:51.504109+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Best 20yr result (66.0%) used default spp=100. With 20yr data, spp=10 creates a much larger model (400M params). Test if the extra capacity helps utilize the full 20yr regime diversity better.",
+    "changes_from_previous": "--preset sp500 --horizon 1 --stride 133 --years 20 --shuffle-split --samples-per-param 10 --mode screen",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 20 --shuffle-split --samples-per-param 10 --mode screen"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
