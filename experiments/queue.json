@@ -474,7 +474,7 @@
     "id": "run_p5_015_h1_stride133_7yr_xrank",
     "hypothesis": "Feature engineering with xrank (cross-sectional rank normalization) shows promise in h5 experiments. Test if xrank features improve h1 stride=133 7yr by reducing market-regime sensitivity.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --features returns,gap,volatility,rsi,macd,bbands,xrank --mode screen",
-    "status": "pending",
+    "status": "running",
     "source": "autostrategy",
     "generated_at": "2026-03-28T23:26:50.447810+00:00"
   },

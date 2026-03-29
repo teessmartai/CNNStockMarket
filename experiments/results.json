@@ -3118,5 +3118,19 @@
       "num_params": 0,
       "window_size": 128
     }
+  },
+  {
+    "run_id": "run_p5_015_h1_stride133_7yr_xrank",
+    "timestamp": "2026-03-29T01:38:45.509499+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Feature engineering with xrank (cross-sectional rank normalization) shows promise in h5 experiments. Test if xrank features improve h1 stride=133 7yr by reducing market-regime sensitivity.",
+    "changes_from_previous": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --features returns,gap,volatility,rsi,macd,bbands,xrank --mode screen",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --features returns,gap,volatility,rsi,macd,bbands,xrank --mode screen"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
