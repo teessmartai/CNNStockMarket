@@ -498,7 +498,7 @@
     "id": "run_p5_018_h1_stride133_7yr_lstm",
     "hypothesis": "CNN dominates top results. Test if LSTM architecture better captures temporal dependencies in daily price movements for the proven stride=133 7yr setup.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --arch lstm --mode screen",
-    "status": "running",
+    "status": "discarded",
     "source": "autostrategy",
     "generated_at": "2026-03-28T23:26:50.447888+00:00"
   },
@@ -532,6 +532,14 @@
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --dropout 0.6 --mode screen",
     "status": "pending",
     "source": "retry:run_p5_017_h1_stride133_7yr_dropout05",
+    "retry_count": 1
+  },
+  {
+    "id": "run_p5_018_h1_stride133_7yr_lstm_retry1",
+    "hypothesis": "[RETRY 1/2 \u2014 infra] CNN dominates top results. Test if LSTM architecture better captures temporal dependencies in daily price movements for the proven stride=133 7yr setup.",
+    "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --arch lstm --mode screen",
+    "status": "pending",
+    "source": "retry:run_p5_018_h1_stride133_7yr_lstm",
     "retry_count": 1
   }
 ]
