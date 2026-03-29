@@ -560,6 +560,38 @@ def daemon_tick():
                 entry["notes"]   = f"kernel {status} — no output collected"
                 print(f"    No metrics collected ({status})")
 
+            # ── Retry logic ────────────────────────────────────────────────
+            # Infra failures (no metrics, or test_acc=0.0) get re-queued
+            # up to MAX_RETRIES times.  Intentional discards are not retried.
+            MAX_RETRIES = 2
+            is_infra_fail = (
+                entry is not None
+                and entry.get("results", {}).get("test_acc", -1) == 0.0
+            ) or (status == "error")
+
+            # Find the original queue entry to check retry count
+            orig_qe = next((qe for qe in queue if qe["id"] == run_id), None)
+            retry_count = orig_qe.get("retry_count", 0) if orig_qe else 0
+            already_retry = orig_qe.get("source", "").startswith("retry") if orig_qe else False
+
+            if is_infra_fail and retry_count < MAX_RETRIES:
+                cmd_args = (orig_qe or {}).get("cmd_args", slot_run.get("cmd_args", ""))
+                # Ensure screen mode on retry — save GPU
+                if cmd_args and "--mode screen" not in cmd_args:
+                    cmd_args = cmd_args + " --mode screen"
+                if cmd_args:
+                    new_id = f"{run_id}_retry{retry_count + 1}"
+                    retry_entry = {
+                        "id":          new_id,
+                        "hypothesis":  f"[RETRY {retry_count+1}/{MAX_RETRIES}] {(orig_qe or {}).get('hypothesis', '')}",
+                        "cmd_args":    cmd_args,
+                        "status":      "pending",
+                        "source":      f"retry:{run_id}",
+                        "retry_count": retry_count + 1,
+                    }
+                    queue.append(retry_entry)
+                    print(f"    ⚠️  Infra failure — re-queued as {new_id} (retry {retry_count+1}/{MAX_RETRIES})")
+
             # Mark queue entry done
             for qe in queue:
                 if qe["id"] == run_id:
