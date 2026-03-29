@@ -3089,5 +3089,19 @@
       "num_params": 0,
       "window_size": 40
     }
+  },
+  {
+    "run_id": "run_p5_014_h1_stride133_7yr_adamw_lr",
+    "timestamp": "2026-03-29T00:33:07.257155+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Best result uses default adam optimizer. Test if adamw with slightly lower lr (5e-4) provides better regularization and convergence stability for the proven stride=133 7yr config.",
+    "changes_from_previous": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --optimizer adamw --lr 5e-4 --mode screen",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --optimizer adamw --lr 5e-4 --mode screen"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
