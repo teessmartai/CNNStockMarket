@@ -3707,8 +3707,8 @@
       "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --dropout 0.1 --mode screen"
     },
     "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "verdict": "discarded",
+    "notes": "kernel error \u2014 no output collected"
   },
   {
     "run_id": "run_p6_005_h1_stride133_7yr_lr1e4_retry1",

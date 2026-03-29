@@ -5,10 +5,5 @@
     "version": null,
     "started_at": "2026-03-29T20:46:18.323605+00:00"
   },
-  "b": {
-    "slot": "b",
-    "run_id": "run_p6_004_h1_stride133_7yr_dropout01_retry1",
-    "version": null,
-    "started_at": "2026-03-29T20:00:55.806350+00:00"
-  }
+  "b": null
 }

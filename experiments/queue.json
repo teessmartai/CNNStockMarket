@@ -658,7 +658,7 @@
     "id": "run_p6_004_h1_stride133_7yr_dropout01_retry1",
     "hypothesis": "[RETRY 1/2 \u2014 infra] Best result has implicit dropout (~0.2). Very low dropout (0.1) may reduce over-regularization while still preventing overfitting, allowing the model to capture more nuanced market patterns in the h1 stride=133 7yr setup.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --dropout 0.1 --mode screen",
-    "status": "running",
+    "status": "discarded",
     "source": "retry:run_p6_004_h1_stride133_7yr_dropout01",
     "retry_count": 1
   },
@@ -700,6 +700,14 @@
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --window 10 --mode screen",
     "status": "pending",
     "source": "retry:run_p6_003_h1_stride133_7yr_window10_retry1",
+    "retry_count": 2
+  },
+  {
+    "id": "run_p6_004_h1_stride133_7yr_dropout01_retry1_retry2",
+    "hypothesis": "[RETRY 2/2 \u2014 infra] [RETRY 1/2 \u2014 infra] Best result has implicit dropout (~0.2). Very low dropout (0.1) may reduce over-regularization while still preventing overfitting, allowing the model to capture more nuanced market patterns in the h1 stride=133 7yr setup.",
+    "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --dropout 0.1 --mode screen",
+    "status": "pending",
+    "source": "retry:run_p6_004_h1_stride133_7yr_dropout01_retry1",
     "retry_count": 2
   }
 ]
