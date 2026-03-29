@@ -1,10 +1,5 @@
 {
-  "a": {
-    "slot": "a",
-    "run_id": "run_p6_005_h1_stride133_7yr_lr1e4_retry1",
-    "version": null,
-    "started_at": "2026-03-29T20:46:18.323605+00:00"
-  },
+  "a": null,
   "b": {
     "slot": "b",
     "run_id": "run_p6_006_h1_stride133_7yr_window30_retry1",
