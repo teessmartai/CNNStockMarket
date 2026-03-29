@@ -665,19 +665,49 @@ def daemon_tick():
                 cmd_args    = (orig_qe or {}).get("cmd_args", slot_run.get("cmd_args", ""))
 
                 if failure_kind == "bug":
-                    # Code bug — notify, don't retry
-                    tb = extract_traceback(_log_path)
-                    msg = (
-                        f"🐛 AutoResearch bug in *{run_id}*\n\n"
-                        f"```\n{tb}\n```\n\n"
-                        f"Run marked `error:bug`. Fix the code, then manually re-queue if needed."
-                    )
-                    print(f"    🐛 Code bug detected — notifying via Signal")
-                    print(f"    Traceback snippet:\n{tb[:300]}")
-                    notify_signal(msg)
+                    # Code bug — attempt autonomous fix, then retry
+                    print(f"    🐛 Code bug detected — attempting auto-fix...")
+                    _fixer_path = Path(__file__).parent / "fixer.py"
+                    fixed = False
+                    if _fixer_path.exists():
+                        try:
+                            import importlib.util as _ilu
+                            _spec = _ilu.spec_from_file_location("fixer", _fixer_path)
+                            _mod  = _ilu.module_from_spec(_spec)
+                            _spec.loader.exec_module(_mod)
+                            fixed = _mod.attempt_fix(_log_path, run_id)
+                        except Exception as _fe:
+                            print(f"    Fixer error: {_fe}")
+                            import traceback; traceback.print_exc()
+
+                    if fixed and cmd_args and retry_count < MAX_RETRIES:
+                        # Fix applied — rebuild dataset and retry
+                        rebuild_dataset("autofixer: code fix applied")
+                        if "--mode screen" not in cmd_args:
+                            cmd_args = cmd_args + " --mode screen"
+                        new_id = f"{run_id}_retry{retry_count + 1}"
+                        queue.append({
+                            "id":          new_id,
+                            "hypothesis":  f"[AUTO-FIXED + RETRY {retry_count+1}/{MAX_RETRIES}] "
+                                           f"{(orig_qe or {}).get('hypothesis', '')}",
+                            "cmd_args":    cmd_args,
+                            "status":      "pending",
+                            "source":      f"autofixer:{run_id}",
+                            "retry_count": retry_count + 1,
+                        })
+                        print(f"    ✅ Fix applied — re-queued as {new_id}")
+                    else:
+                        # Fix failed — notify as last resort
+                        tb = extract_traceback(_log_path)
+                        msg = (
+                            f"🐛 AutoResearch: could not auto-fix bug in *{run_id}*\n\n"
+                            f"```\n{tb}\n```\n\nManual fix needed."
+                        )
+                        notify_signal(msg)
+                        print(f"    ⚠️  Auto-fix failed — sent Signal alert")
                     if entry:
                         entry["verdict"] = "error"
-                        entry["notes"]   = f"code bug: {tb[:120]}"
+                        entry["notes"]   = f"code bug {'(auto-fixed, retrying)' if fixed else '(manual fix needed)'}"
 
                 elif retry_count < MAX_RETRIES:
                     # Infra failure or OOM — retry
