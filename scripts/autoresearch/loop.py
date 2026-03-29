@@ -434,7 +434,20 @@ def save_slots(slots):
 
 
 def regenerate_results_md():
-    """Regenerate RESULTS.md from results.json — called after every experiment."""
+    """Regenerate RESULTS.md — delegates to reporter.py if present, else legacy."""
+    _reporter = Path(__file__).parent / "reporter.py"
+    if _reporter.exists():
+        try:
+            import importlib.util as _ilu
+            _spec = _ilu.spec_from_file_location("reporter", _reporter)
+            _mod  = _ilu.module_from_spec(_spec)
+            _spec.loader.exec_module(_mod)
+            _mod.write_results_md()
+            return
+        except Exception as _e:
+            print(f"  reporter.py error: {_e} — falling back to legacy")
+
+    # ── Legacy fallback (kept for repos without reporter.py) ──────────────────
     from datetime import datetime as dt
 
     results = load_json(RESULTS_FILE, [])
