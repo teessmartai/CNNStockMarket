@@ -3500,15 +3500,30 @@
     "run_id": "run_p5_018_h1_stride133_7yr_lstm_retry1_retry2",
     "timestamp": "2026-03-29T08:30:29.422350+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "[RETRY 2/2 \u2014 infra] [RETRY 1/2 \u2014 infra] CNN dominates top results. Test if LSTM architecture better captures temporal dependencies in daily price movements for the proven stride=133 7yr setup.",
     "changes_from_previous": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --arch lstm --mode screen",
     "config": {
       "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --arch lstm --mode screen"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "actual_samples_per_param": null,
+      "train_samples": null,
+      "best_val_acc": 0.0,
+      "test_acc": 0.0,
+      "test_loss": 0,
+      "epochs_run": 0,
+      "runtime_min": 0,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 0.0% \u2264 no improvement \u274c vs best 68.8%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 0,
+      "window_size": 128
+    }
   },
   {
     "run_id": "run_p6_001_h1_stride133_7yr_transformer",
