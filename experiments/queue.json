@@ -554,7 +554,7 @@
     "id": "run_p5_015_h1_stride133_7yr_xrank_retry1_retry2",
     "hypothesis": "[RETRY 2/2 \u2014 infra] [RETRY 1/2] Feature engineering with xrank (cross-sectional rank normalization) shows promise in h5 experiments. Test if xrank features improve h1 stride=133 7yr by reducing market-regime sensitivity.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --features returns,gap,volatility,rsi,macd,bbands,xrank --mode screen",
-    "status": "pending",
+    "status": "running",
     "source": "retry:run_p5_015_h1_stride133_7yr_xrank_retry1",
     "retry_count": 2
   },
