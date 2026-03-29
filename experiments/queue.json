@@ -506,7 +506,7 @@
     "id": "run_p5_010_h1_stride133_7yr_window40_retry1",
     "hypothesis": "[RETRY 1/2] Best result used default window (w20). Test if expanding to w40 (twice the lookback) captures longer-term dependencies better for next-day prediction while maintaining h1 stride=133 zero-leakage setup.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --window 40 --mode screen",
-    "status": "running",
+    "status": "discarded",
     "source": "retry:run_p5_010_h1_stride133_7yr_window40",
     "retry_count": 1
   },
@@ -541,5 +541,13 @@
     "status": "pending",
     "source": "retry:run_p5_018_h1_stride133_7yr_lstm",
     "retry_count": 1
+  },
+  {
+    "id": "run_p5_010_h1_stride133_7yr_window40_retry1_retry2",
+    "hypothesis": "[RETRY 2/2 \u2014 infra] [RETRY 1/2] Best result used default window (w20). Test if expanding to w40 (twice the lookback) captures longer-term dependencies better for next-day prediction while maintaining h1 stride=133 zero-leakage setup.",
+    "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --window 40 --mode screen",
+    "status": "pending",
+    "source": "retry:run_p5_010_h1_stride133_7yr_window40_retry1",
+    "retry_count": 2
   }
 ]
