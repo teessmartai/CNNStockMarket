@@ -3000,8 +3000,8 @@
       "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --window 40"
     },
     "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "verdict": "discarded",
+    "notes": "kernel error \u2014 no output collected"
   },
   {
     "run_id": "run_p5_011_h1_stride133_20yr_spp10",

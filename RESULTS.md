@@ -1,6 +1,6 @@
 # AutoResearch Results
 
-_Last updated: 2026-03-29 01:38 UTC_
+_Last updated: 2026-03-29 01:52 UTC_
 
 > **spp** = train_samples / num_params. Old runs used a fixed 35M-param model (spp ≈ 1:800–1:27K, severely overparameterized). New runs use `--samples-per-param` so the model auto-sizes to the data.
 
