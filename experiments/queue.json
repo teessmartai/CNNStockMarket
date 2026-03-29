@@ -578,7 +578,7 @@
     "id": "run_p5_018_h1_stride133_7yr_lstm_retry1_retry2",
     "hypothesis": "[RETRY 2/2 \u2014 infra] [RETRY 1/2 \u2014 infra] CNN dominates top results. Test if LSTM architecture better captures temporal dependencies in daily price movements for the proven stride=133 7yr setup.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --arch lstm --mode screen",
-    "status": "pending",
+    "status": "running",
     "source": "retry:run_p5_018_h1_stride133_7yr_lstm_retry1",
     "retry_count": 2
   }
