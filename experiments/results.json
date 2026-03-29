@@ -3190,5 +3190,19 @@
     "results": {},
     "verdict": "pending",
     "notes": ""
+  },
+  {
+    "run_id": "run_p5_018_h1_stride133_7yr_lstm",
+    "timestamp": "2026-03-29T03:01:05.003650+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "CNN dominates top results. Test if LSTM architecture better captures temporal dependencies in daily price movements for the proven stride=133 7yr setup.",
+    "changes_from_previous": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --arch lstm --mode screen",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --arch lstm --mode screen"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]

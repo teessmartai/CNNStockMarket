@@ -5,5 +5,10 @@
     "version": 120,
     "started_at": "2026-03-29T02:43:35.738222+00:00"
   },
-  "b": null
+  "b": {
+    "slot": "b",
+    "run_id": "run_p5_018_h1_stride133_7yr_lstm",
+    "version": 121,
+    "started_at": "2026-03-29T03:01:06.775770+00:00"
+  }
 }
