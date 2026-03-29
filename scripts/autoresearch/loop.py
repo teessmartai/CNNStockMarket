@@ -252,6 +252,88 @@ def slot_version_done(slot_state: dict):
     return "running"
 
 
+# ── Failure classification ──────────────────────────────────────────────────
+
+# Patterns that indicate a code bug vs transient infra failure
+_BUG_PATTERNS = [
+    r"Traceback \(most recent call last\)",
+    r"^\s*File \".*\", line \d+",
+    r"(AttributeError|TypeError|ValueError|KeyError|ImportError|ModuleNotFoundError"
+    r"|NameError|IndexError|RuntimeError|AssertionError):",
+    r"CUDA out of memory",   # OOM is retryable but flagged separately
+]
+_INFRA_PATTERNS = [
+    r"CUDA out of memory",
+    r"Connection (reset|refused|timed? ?out)",
+    r"Kernel (died|killed|crashed)",
+    r"No space left on device",
+]
+
+def classify_failure(log_path: Optional[Path]) -> str:
+    """
+    Inspect a downloaded log and return one of:
+      'bug'   — Python traceback / exception detected → notify, no retry
+      'oom'   — GPU OOM → retry once (might be transient)
+      'infra' — timeout / network / no log → retry
+    """
+    if not log_path or not log_path.exists():
+        return "infra"
+    text = log_path.read_text(errors="replace")
+    has_bug   = any(re.search(p, text, re.MULTILINE) for p in _BUG_PATTERNS)
+    has_oom   = bool(re.search(r"CUDA out of memory", text))
+    if has_bug and not has_oom:
+        return "bug"
+    if has_oom:
+        return "oom"
+    return "infra"
+
+
+def extract_traceback(log_path: Path, max_lines: int = 15) -> str:
+    """Pull the last traceback from the log for the notification message."""
+    if not log_path or not log_path.exists():
+        return "(no log available)"
+    lines = log_path.read_text(errors="replace").splitlines()
+    # Walk backwards to find the last traceback block
+    end = len(lines)
+    for i in range(len(lines) - 1, -1, -1):
+        if re.search(r"Traceback \(most recent call last\)", lines[i]):
+            snippet = lines[i:min(i + max_lines, end)]
+            return "\n".join(snippet)
+    # Fallback: last N lines
+    return "\n".join(lines[-max_lines:])
+
+
+def notify_signal(message: str) -> None:
+    """Send a message to TJ via the OpenClaw gateway Signal channel."""
+    import urllib.request, urllib.error, json as _json
+    try:
+        gw_cfg  = Path.home() / ".openclaw" / "openclaw.json"
+        raw     = Path(gw_cfg).read_text()
+        # Extract gateway port (simple regex, avoids full HJSON parse)
+        m_port  = re.search(r'"port"\s*:\s*(\d+)', raw)
+        m_token = re.search(r'"token"\s*:\s*"([^"]+)"', raw)
+        if not m_port or not m_token:
+            print(f"  [notify] Could not parse gateway config — skipping notification")
+            return
+        port  = m_port.group(1)
+        token = m_token.group(1)
+        payload = _json.dumps({
+            "channel": "signal",
+            "to":      "+16479068186",
+            "message": message,
+        }).encode()
+        req = urllib.request.Request(
+            f"http://127.0.0.1:{port}/api/message/send",
+            data=payload,
+            headers={"Content-Type": "application/json", "Authorization": f"Bearer {token}"},
+            method="POST",
+        )
+        urllib.request.urlopen(req, timeout=10)
+        print(f"  [notify] Signal notification sent.")
+    except Exception as e:
+        print(f"  [notify] Failed to send Signal notification: {e}")
+
+
 # ── Result parsing ─────────────────────────────────────────────────────────
 
 def parse_log(log_path: Path):
@@ -561,36 +643,62 @@ def daemon_tick():
                 print(f"    No metrics collected ({status})")
 
             # ── Retry logic ────────────────────────────────────────────────
-            # Infra failures (no metrics, or test_acc=0.0) get re-queued
-            # up to MAX_RETRIES times.  Intentional discards are not retried.
+            # Classify the failure before deciding whether to retry.
             MAX_RETRIES = 2
-            is_infra_fail = (
-                entry is not None
-                and entry.get("results", {}).get("test_acc", -1) == 0.0
-            ) or (status == "error")
+            is_failed = (
+                (entry is not None and entry.get("results", {}).get("test_acc", -1) == 0.0)
+                or status == "error"
+            )
 
-            # Find the original queue entry to check retry count
-            orig_qe = next((qe for qe in queue if qe["id"] == run_id), None)
-            retry_count = orig_qe.get("retry_count", 0) if orig_qe else 0
-            already_retry = orig_qe.get("source", "").startswith("retry") if orig_qe else False
+            if is_failed:
+                # Download log if we don't already have it
+                _log_path = None
+                if status == "error" or (entry and not entry.get("results")):
+                    _ver = slot_run.get("version")
+                    if _ver:
+                        _log_path = download_log_for_version(_ver)
 
-            if is_infra_fail and retry_count < MAX_RETRIES:
-                cmd_args = (orig_qe or {}).get("cmd_args", slot_run.get("cmd_args", ""))
-                # Ensure screen mode on retry — save GPU
-                if cmd_args and "--mode screen" not in cmd_args:
-                    cmd_args = cmd_args + " --mode screen"
-                if cmd_args:
-                    new_id = f"{run_id}_retry{retry_count + 1}"
-                    retry_entry = {
-                        "id":          new_id,
-                        "hypothesis":  f"[RETRY {retry_count+1}/{MAX_RETRIES}] {(orig_qe or {}).get('hypothesis', '')}",
-                        "cmd_args":    cmd_args,
-                        "status":      "pending",
-                        "source":      f"retry:{run_id}",
-                        "retry_count": retry_count + 1,
-                    }
-                    queue.append(retry_entry)
-                    print(f"    ⚠️  Infra failure — re-queued as {new_id} (retry {retry_count+1}/{MAX_RETRIES})")
+                failure_kind = classify_failure(_log_path)
+
+                orig_qe     = next((qe for qe in queue if qe["id"] == run_id), None)
+                retry_count = orig_qe.get("retry_count", 0) if orig_qe else 0
+                cmd_args    = (orig_qe or {}).get("cmd_args", slot_run.get("cmd_args", ""))
+
+                if failure_kind == "bug":
+                    # Code bug — notify, don't retry
+                    tb = extract_traceback(_log_path)
+                    msg = (
+                        f"🐛 AutoResearch bug in *{run_id}*\n\n"
+                        f"```\n{tb}\n```\n\n"
+                        f"Run marked `error:bug`. Fix the code, then manually re-queue if needed."
+                    )
+                    print(f"    🐛 Code bug detected — notifying via Signal")
+                    print(f"    Traceback snippet:\n{tb[:300]}")
+                    notify_signal(msg)
+                    if entry:
+                        entry["verdict"] = "error"
+                        entry["notes"]   = f"code bug: {tb[:120]}"
+
+                elif retry_count < MAX_RETRIES:
+                    # Infra failure or OOM — retry
+                    if cmd_args and "--mode screen" not in cmd_args:
+                        cmd_args = cmd_args + " --mode screen"
+                    if cmd_args:
+                        new_id = f"{run_id}_retry{retry_count + 1}"
+                        retry_entry = {
+                            "id":          new_id,
+                            "hypothesis":  f"[RETRY {retry_count+1}/{MAX_RETRIES} — {failure_kind}] "
+                                           f"{(orig_qe or {}).get('hypothesis', '')}",
+                            "cmd_args":    cmd_args,
+                            "status":      "pending",
+                            "source":      f"retry:{run_id}",
+                            "retry_count": retry_count + 1,
+                        }
+                        queue.append(retry_entry)
+                        print(f"    ⚠️  {failure_kind} failure — re-queued as {new_id} "
+                              f"(retry {retry_count+1}/{MAX_RETRIES})")
+                else:
+                    print(f"    ❌ {failure_kind} failure — max retries reached, abandoning {run_id}")
 
             # Mark queue entry done
             for qe in queue:
