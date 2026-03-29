@@ -626,7 +626,7 @@
     "id": "run_p6_006_h1_stride133_7yr_window30",
     "hypothesis": "Explore window between tested w=20 (best) and w=40/w=60 (prior runs). w=30 (6 trading days) may better balance lookback horizon and noise, capturing short-term mean reversion patterns specific to h1 next-day prediction.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --window 30 --mode screen",
-    "status": "pending",
+    "status": "running",
     "source": "autostrategy",
     "generated_at": "2026-03-29T09:16:03.474732+00:00"
   },
