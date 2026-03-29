@@ -530,7 +530,7 @@
     "id": "run_p5_017_h1_stride133_7yr_dropout05_retry1",
     "hypothesis": "[RETRY 1/2 \u2014 infra] Best result (68.8%) uses default dropout=0.5. Test if increased dropout (0.6) acts as stronger regularization to prevent overfitting on the 7yr COVID-inclusive window.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --dropout 0.6 --mode screen",
-    "status": "running",
+    "status": "discarded",
     "source": "retry:run_p5_017_h1_stride133_7yr_dropout05",
     "retry_count": 1
   },
@@ -564,6 +564,14 @@
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 20 --shuffle-split --samples-per-param 10 --mode screen",
     "status": "pending",
     "source": "retry:run_p5_016_h1_stride133_20yr_spp10_retry1",
+    "retry_count": 2
+  },
+  {
+    "id": "run_p5_017_h1_stride133_7yr_dropout05_retry1_retry2",
+    "hypothesis": "[RETRY 2/2 \u2014 infra] [RETRY 1/2 \u2014 infra] Best result (68.8%) uses default dropout=0.5. Test if increased dropout (0.6) acts as stronger regularization to prevent overfitting on the 7yr COVID-inclusive window.",
+    "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --dropout 0.6 --mode screen",
+    "status": "pending",
+    "source": "retry:run_p5_017_h1_stride133_7yr_dropout05_retry1",
     "retry_count": 2
   }
 ]
