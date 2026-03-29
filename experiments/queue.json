@@ -458,7 +458,7 @@
     "id": "run_p5_013_h1_stride133_7yr_larger_window",
     "hypothesis": "Best result (68.8%) uses default window=20. Test if a larger lookback window (w=40) captures longer-term patterns better for h1 stride=133 setup, improving signal-to-noise ratio.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --window 40 --mode screen",
-    "status": "running",
+    "status": "discarded",
     "source": "autostrategy",
     "generated_at": "2026-03-28T23:26:50.447732+00:00"
   },
