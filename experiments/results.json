@@ -3094,14 +3094,29 @@
     "run_id": "run_p5_014_h1_stride133_7yr_adamw_lr",
     "timestamp": "2026-03-29T00:33:07.257155+00:00",
     "kaggle_kernel_version": null,
-    "device": "pending",
+    "device": "Tesla P100-PCIE-16GB",
     "hypothesis": "Best result uses default adam optimizer. Test if adamw with slightly lower lr (5e-4) provides better regularization and convergence stability for the proven stride=133 7yr config.",
     "changes_from_previous": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --optimizer adamw --lr 5e-4 --mode screen",
     "config": {
       "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --optimizer adamw --lr 5e-4 --mode screen"
     },
-    "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "results": {
+      "actual_samples_per_param": null,
+      "train_samples": null,
+      "best_val_acc": 0.0,
+      "test_acc": 0.0,
+      "test_loss": 0,
+      "epochs_run": 0,
+      "runtime_min": 0,
+      "early_stopped": true
+    },
+    "verdict": "discarded",
+    "notes": "test_acc 0.0% \u2264 no improvement \u274c vs best 68.8%",
+    "arch_meta": {
+      "arch": "cnn",
+      "size": "large",
+      "num_params": 0,
+      "window_size": 128
+    }
   }
 ]

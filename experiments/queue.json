@@ -466,7 +466,7 @@
     "id": "run_p5_014_h1_stride133_7yr_adamw_lr",
     "hypothesis": "Best result uses default adam optimizer. Test if adamw with slightly lower lr (5e-4) provides better regularization and convergence stability for the proven stride=133 7yr config.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --optimizer adamw --lr 5e-4 --mode screen",
-    "status": "running",
+    "status": "discarded",
     "source": "autostrategy",
     "generated_at": "2026-03-28T23:26:50.447781+00:00"
   },
