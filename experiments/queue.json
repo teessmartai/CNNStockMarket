@@ -802,7 +802,7 @@
     "id": "run_p7_004_h1_stride5_20yr_chronological_retry1",
     "hypothesis": "[RETRY 1/2 \u2014 infra] Stride=133 is data-limited for 20yr (only ~532 samples). Test if stride=5 with 20yr data + chronological split (no shuffle) improves regime generalization by respecting temporal order while gaining 2.7x more training data.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 5 --years 20 --samples-per-param 100 --window 20 --mode screen",
-    "status": "pending",
+    "status": "running",
     "source": "retry:run_p7_004_h1_stride5_20yr_chronological",
     "retry_count": 1
   },

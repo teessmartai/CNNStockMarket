@@ -3947,5 +3947,19 @@
     "results": {},
     "verdict": "pending",
     "notes": ""
+  },
+  {
+    "run_id": "run_p7_004_h1_stride5_20yr_chronological_retry1",
+    "timestamp": "2026-03-30T23:53:57.907487+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "[RETRY 1/2 \u2014 infra] Stride=133 is data-limited for 20yr (only ~532 samples). Test if stride=5 with 20yr data + chronological split (no shuffle) improves regime generalization by respecting temporal order while gaining 2.7x more training data.",
+    "changes_from_previous": "--preset sp500 --horizon 1 --stride 5 --years 20 --samples-per-param 100 --window 20 --mode screen",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 1 --stride 5 --years 20 --samples-per-param 100 --window 20 --mode screen"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
