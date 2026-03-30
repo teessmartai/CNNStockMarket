@@ -746,7 +746,7 @@
     "id": "run_p7_003_h1_stride133_7yr_lr5e4",
     "hypothesis": "Best run used default lr (1e-3). Test if lr=5e-4 (lower than default) provides better convergence and generalization on the small training set (133 non-overlapping samples from 7yr data).",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --lr 5e-4 --mode screen",
-    "status": "pending",
+    "status": "running",
     "source": "autostrategy",
     "generated_at": "2026-03-30T09:04:09.819116+00:00"
   },

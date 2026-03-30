@@ -3849,5 +3849,19 @@
     "results": {},
     "verdict": "pending",
     "notes": ""
+  },
+  {
+    "run_id": "run_p7_003_h1_stride133_7yr_lr5e4",
+    "timestamp": "2026-03-30T12:10:34.495850+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Best run used default lr (1e-3). Test if lr=5e-4 (lower than default) provides better convergence and generalization on the small training set (133 non-overlapping samples from 7yr data).",
+    "changes_from_previous": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --lr 5e-4 --mode screen",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --lr 5e-4 --mode screen"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
