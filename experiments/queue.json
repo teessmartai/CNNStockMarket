@@ -754,7 +754,7 @@
     "id": "run_p7_004_h1_stride5_20yr_chronological",
     "hypothesis": "Stride=133 is data-limited for 20yr (only ~532 samples). Test if stride=5 with 20yr data + chronological split (no shuffle) improves regime generalization by respecting temporal order while gaining 2.7x more training data.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 5 --years 20 --samples-per-param 100 --window 20 --mode screen",
-    "status": "pending",
+    "status": "running",
     "source": "autostrategy",
     "generated_at": "2026-03-30T09:04:09.819141+00:00"
   },
