@@ -730,7 +730,7 @@
     "id": "run_p7_001_h1_stride133_7yr_ensemble_features",
     "hypothesis": "Best result (68.8%) uses raw OHLCV features. Test if adding engineered technical features (returns, gap, volatility, RSI, MACD, BBands) + cross-sectional rank normalization improves signal robustness without introducing leakage.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --features returns,gap,volatility,rsi,macd,bbands,xrank --mode screen",
-    "status": "running",
+    "status": "discarded",
     "source": "autostrategy",
     "generated_at": "2026-03-30T09:04:09.819042+00:00"
   },
@@ -773,5 +773,13 @@
     "status": "pending",
     "source": "autostrategy",
     "generated_at": "2026-03-30T09:04:09.819192+00:00"
+  },
+  {
+    "id": "run_p7_001_h1_stride133_7yr_ensemble_features_retry1",
+    "hypothesis": "[RETRY 1/2 \u2014 infra] Best result (68.8%) uses raw OHLCV features. Test if adding engineered technical features (returns, gap, volatility, RSI, MACD, BBands) + cross-sectional rank normalization improves signal robustness without introducing leakage.",
+    "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --features returns,gap,volatility,rsi,macd,bbands,xrank --mode screen",
+    "status": "pending",
+    "source": "retry:run_p7_001_h1_stride133_7yr_ensemble_features",
+    "retry_count": 1
   }
 ]
