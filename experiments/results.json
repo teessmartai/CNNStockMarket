@@ -3877,5 +3877,19 @@
     "results": {},
     "verdict": "pending",
     "notes": ""
+  },
+  {
+    "run_id": "run_p7_005_h1_stride133_7yr_dropout02",
+    "timestamp": "2026-03-30T15:16:41.763535+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "Best result used default dropout (0.5). Test if dropout=0.2 (lower regularization) helps small non-overlapping sample size (133 windows) better by reducing underfitting while still preventing overfitting.",
+    "changes_from_previous": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --dropout 0.2 --mode screen",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --dropout 0.2 --mode screen"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
