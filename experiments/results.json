@@ -3749,8 +3749,8 @@
       "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --arch transformer --mode screen"
     },
     "results": {},
-    "verdict": "pending",
-    "notes": ""
+    "verdict": "discarded",
+    "notes": "kernel error \u2014 no output collected"
   },
   {
     "run_id": "run_p6_002_h1_stride133_7yr_tcn_retry1_retry2",
