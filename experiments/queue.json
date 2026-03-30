@@ -698,7 +698,7 @@
     "id": "run_p6_003_h1_stride133_7yr_window10_retry1_retry2",
     "hypothesis": "[RETRY 2/2 \u2014 infra] [RETRY 1/2 \u2014 infra] Best result used default window=20. Shorter window (w=10) may reduce noise and focus on immediate prior 2 trading days' signals, potentially improving signal-to-noise ratio for next-day prediction while maintaining stride=133 non-overlapping structure.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --window 10 --mode screen",
-    "status": "running",
+    "status": "discarded",
     "source": "retry:run_p6_003_h1_stride133_7yr_window10_retry1",
     "retry_count": 2
   },
