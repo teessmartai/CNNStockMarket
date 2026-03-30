@@ -690,7 +690,7 @@
     "id": "run_p6_002_h1_stride133_7yr_tcn_retry1_retry2",
     "hypothesis": "[RETRY 2/2 \u2014 infra] [RETRY 1/2 \u2014 infra] TCN (temporal convolutional network) with causal convolutions may outperform standard CNN by preserving temporal causality without data leakage, while maintaining the non-overlapping stride=133 properties that eliminate leakage.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --arch tcn --mode screen",
-    "status": "pending",
+    "status": "running",
     "source": "retry:run_p6_002_h1_stride133_7yr_tcn_retry1",
     "retry_count": 2
   },
