@@ -3989,5 +3989,19 @@
     "results": {},
     "verdict": "pending",
     "notes": ""
+  },
+  {
+    "run_id": "run_p7_001_h1_stride133_7yr_ensemble_features_retry1_retry2",
+    "timestamp": "2026-03-31T03:40:08.261199+00:00",
+    "kaggle_kernel_version": null,
+    "device": "pending",
+    "hypothesis": "[RETRY 2/2 \u2014 infra] [RETRY 1/2 \u2014 infra] Best result (68.8%) uses raw OHLCV features. Test if adding engineered technical features (returns, gap, volatility, RSI, MACD, BBands) + cross-sectional rank normalization improves signal robustness without introducing leakage.",
+    "changes_from_previous": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --features returns,gap,volatility,rsi,macd,bbands,xrank --mode screen",
+    "config": {
+      "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --features returns,gap,volatility,rsi,macd,bbands,xrank --mode screen"
+    },
+    "results": {},
+    "verdict": "pending",
+    "notes": ""
   }
 ]
