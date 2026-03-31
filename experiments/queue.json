@@ -858,7 +858,7 @@
     "id": "run_p7_005_h1_stride133_7yr_dropout02_retry1_retry2",
     "hypothesis": "[RETRY 2/2 \u2014 infra] [RETRY 1/2 \u2014 infra] Best result used default dropout (0.5). Test if dropout=0.2 (lower regularization) helps small non-overlapping sample size (133 windows) better by reducing underfitting while still preventing overfitting.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --dropout 0.2 --mode screen",
-    "status": "pending",
+    "status": "running",
     "source": "retry:run_p7_005_h1_stride133_7yr_dropout02_retry1",
     "retry_count": 2
   },
