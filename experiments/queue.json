@@ -834,7 +834,7 @@
     "id": "run_p7_002_h1_stride133_7yr_window15_retry1_retry2",
     "hypothesis": "[RETRY 2/2 \u2014 infra] [RETRY 1/2 \u2014 infra] Best config uses default window (20). Test if window=15 (shorter memory) improves h1 next-day predictions by reducing noise and focusing on most recent price action, while maintaining stride=133 zero-leakage.",
     "cmd_args": "--preset sp500 --horizon 1 --stride 133 --years 7 --shuffle-split --samples-per-param 100 --window 15 --mode screen",
-    "status": "running",
+    "status": "discarded",
     "source": "retry:run_p7_002_h1_stride133_7yr_window15_retry1",
     "retry_count": 2
   },
